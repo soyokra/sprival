@@ -2,15 +2,16 @@
 Spring Component Integration Framework
 
 #### HTTP请求
-- 日志
-- 限流
 - 分布式锁
+- 限流
+- 监控日志
 
 #### MySQL
 - 连接池
 - ORM
-- 监控：慢日志，sql异常
-- sql日志打印
+- SQL语句构造，SQL执行优化
+- 事务
+- 监控日志
 
 #### HTTP客户端
 
