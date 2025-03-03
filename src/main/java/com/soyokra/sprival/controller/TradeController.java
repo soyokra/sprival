@@ -22,7 +22,6 @@ public class TradeController {
     @ResponseBody
     public ResponseUtils<?> query(){
         List<Trade> trades = tradeProvider.list();
-
         return ResponseUtils.success(trades);
     }
 }
