@@ -1,13 +1,12 @@
 ## 前言
+todo
 
-## spring集成
-
-### 调用链路
+## 调用链路
 ![图片替代文本](DataSource.drawio.png)
 
-### 详细说明
+## 详细说明
 
-#### DynamicDataSourceAutoConfiguration
+### DynamicDataSourceAutoConfiguration
 dataSource()方法注册了DataSource类型的Bean，这个Bean的实现类是DynamicRoutingDataSource。当其他组件通过Spring自动注入DataSource类型的Bean的时候，实际上用的就是mybatis-plus提供的
 DynamicRoutingDataSource。
 
@@ -37,7 +36,7 @@ public class DynamicDataSourceAutoConfiguration implements InitializingBean {
 ```
 
 
-#### DynamicDataSourceCreatorAutoConfiguration
+### DynamicDataSourceCreatorAutoConfiguration
 hikariDataSourceCreator()方法注册了HikariDataSourceCreator类型的bean，HikariDataSourceCreator实现了DataSourceCreator接口。
 
 dataSourceCreator()方法注册为DefaultDataSourceCreator类型的bean，参数就是DataSourceCreator这个接口类型，实际注入的就是HikariDataSourceCreator。DefaultDataSourceCreator会使用
@@ -63,7 +62,7 @@ dataSourceCreator()方法注册为DefaultDataSourceCreator类型的bean，参数
     }
 ```
 
-#### DynamicRoutingDataSource
+### DynamicRoutingDataSource
 DynamicRoutingDataSource实现了InitializingBean接口，其方法afterPropertiesSet()会在Spring容器完成Bean的属性注入之后调用。
 
 
@@ -99,7 +98,7 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource implemen
 }
 ```
 
-#### DynamicDataSourceProvider
+### DynamicDataSourceProvider
 YmlDynamicDataSourceProvider继承了AbstractDataSourceProvider抽象类，实现了DynamicDataSourceProvider接口。
 
 YmlDynamicDataSourceProvider的loadDataSources()方法调用到了AbstractDataSourceProvider的createDataSourceMap()方法。AbstractDataSourceProvider又注入了DefaultDataSourceCreator属性。
@@ -129,7 +128,7 @@ public abstract class AbstractDataSourceProvider implements DynamicDataSourcePro
 }
 ```
 
-#### HikariDataSourceCreator
+### HikariDataSourceCreator
 HikariDataSourceCreator的doCreateDataSource方法创建了HikariDataSource。
 ```java
 @Override
@@ -143,7 +142,7 @@ HikariDataSourceCreator的doCreateDataSource方法创建了HikariDataSource。
 ```
 
 
-#### MybatisPlusAutoConfiguration
+### MybatisPlusAutoConfiguration
 sqlSessionFactory方法注册了SqlSessionFactory类型的Bean，注入的DataSource就是DynamicDataSourceAutoConfiguration注册的DynamicRoutingDataSource类型的Bean
 
 sqlSessionTemplate方法注册了SqlSessionTemplate类型的Bean，注入了SqlSessionFactory类型的Bean。
@@ -178,7 +177,7 @@ public class MybatisPlusAutoConfiguration implements InitializingBean {
 }
 ```
 
-### 总结
+## 总结
 mybatis-plus的动态数据源DynamicRoutingDataSource集成了mybatis的SqlSessionFactory和hikari的HikariDataSource。
 
 ![图片替代文本](DataSource-Simple.drawio.png)

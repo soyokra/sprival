@@ -37,7 +37,7 @@ class Test {
 ## spring集成
 集成到spring的时候，需要将项目中定义的所有Mapper转换为Proxy，并且注册为Bean。
 
-### 关键路径
+## 关键路径
 ```text
 @MapperScan("com.soyokra.sprival.dao.*.mapper")
 => MapperScan @Import({MapperScannerRegistrar.class})：注册MapperScannerRegistrar
@@ -49,9 +49,9 @@ class Test {
 => 最终通过mybatis-plus的MybatisMapperRegistry执行到MybatisMapperProxyFactory，生成了MybatisMapperProxy代理类作为Mapper接口的实现
 ```
 
-### 详细说明
+## 详细说明
 
-#### MapperScan
+### MapperScan
 @MapperScan("com.soyokra.sprival.dao.*.mapper")设置了需要扫描的包basePackages为"com.soyokra.sprival.dao.*.mapper"
 
 ```java
@@ -68,7 +68,7 @@ public @interface MapperScan {
 }
 ```
 
-#### MapperScannerRegistrar
+### MapperScannerRegistrar
 MapperScan注解本身注解了@Import({MapperScannerRegistrar.class})
 
 MapperScannerRegistrar这个类实现了接口ImportBeanDefinitionRegistrar
@@ -91,7 +91,7 @@ public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
 }
 ```
 
-#### MapperScannerConfigurer
+### MapperScannerConfigurer
 MapperScannerConfigurer这个类实现了BeanDefinitionRegistryPostProcessor的接口
 
 在postProcessBeanDefinitionRegistry方法里实例化了ClassPathMapperScanner，通过ClassPathMapperScanner进行类文件扫描和BeanDefinition的注册
@@ -110,7 +110,7 @@ public class MapperScannerConfigurer
 
 ```
 
-#### ClassPathMapperScanner
+### ClassPathMapperScanner
 对basePackages下的文件进行扫描注册成BeanDefinition，并且设置了BeanDefinition的属性beanClass为MapperFactoryBean
 ```java
 public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
@@ -132,7 +132,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
 }
 ```
 
-#### MapperFactoryBean
+### MapperFactoryBean
 MapperFactoryBean实现了FactoryBean接口
 Spring将Mapper注册为Bean的时候，用的是MapperFactoryBean的getObject()，这个方法调用到了SqlSessionTemplate.getMapper()
 ```java
@@ -155,7 +155,7 @@ public abstract class SqlSessionDaoSupport extends DaoSupport {
 ```
 
 
-#### SqlSessionTemplate
+### SqlSessionTemplate
 
 SqlSessionTemplate调用的是 getConfiguration().getMapper(type, this)。由于这个SqlSessionTemplate是mybatis-plus注册的Bean，Configuration实际上是mybatis-plus
 实现的，最终最终通过mybatis-plus的MybatisMapperRegistry执行到MybatisMapperProxyFactory，生成了MybatisMapperProxy代理类作为Mapper接口的实现
@@ -174,7 +174,7 @@ public class SqlSessionTemplate implements SqlSession, DisposableBean {
 }
 ```
 
-#### MybatisPlusAutoConfiguration
+### MybatisPlusAutoConfiguration
 mybatis-plus注册SqlSessionFactory 和 SqlSessionTemplate bean
 ```java
 @Configuration(
@@ -203,7 +203,7 @@ public class MybatisPlusAutoConfiguration implements InitializingBean {
 }
 ```
 
-### 总结
+## 总结
 mybatis通过MapperScan注解扫描mapper接口，注册为bean的时候的是FactoryBean模式将实现类转换为MapperProxy代理
 
 mybatis-plus通过注册SqlSesstionTemplate这个bean，注册bean的时候，将MapperProxy代理替换成自己的MybatisMapperProxy代理

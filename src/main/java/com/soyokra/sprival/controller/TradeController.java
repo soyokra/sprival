@@ -21,7 +21,7 @@ public class TradeController {
     @GetMapping(value = "/query")
     @ResponseBody
     public ResponseUtils<?> query(){
-        List<Trade> trades = tradeProvider.list();
+        List<Trade> trades = tradeProvider.getTrades();
         return ResponseUtils.success(trades);
     }
 }
