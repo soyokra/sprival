@@ -25,5 +25,3 @@ Spring Component Integration Framework
 
 #### Redis
 
-#### ElasticSearch
-
