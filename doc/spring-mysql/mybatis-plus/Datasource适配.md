@@ -1,10 +1,10 @@
-## 前言
-todo
+## 简述
+mybatis-plus的动态数据源DynamicRoutingDataSource集成了mybatis的SqlSessionFactory和hikari的HikariDataSource。
 
-## 调用链路
+![图片替代文本](DataSource-Simple.drawio.png)
+
+## 源码解析
 ![图片替代文本](DataSource.drawio.png)
-
-## 详细说明
 
 ### DynamicDataSourceAutoConfiguration
 dataSource()方法注册了DataSource类型的Bean，这个Bean的实现类是DynamicRoutingDataSource。当其他组件通过Spring自动注入DataSource类型的Bean的时候，实际上用的就是mybatis-plus提供的
@@ -178,6 +178,3 @@ public class MybatisPlusAutoConfiguration implements InitializingBean {
 ```
 
 ## 总结
-mybatis-plus的动态数据源DynamicRoutingDataSource集成了mybatis的SqlSessionFactory和hikari的HikariDataSource。
-
-![图片替代文本](DataSource-Simple.drawio.png)

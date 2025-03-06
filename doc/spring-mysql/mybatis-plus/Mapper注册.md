@@ -1,4 +1,4 @@
-## 前言
+## 简述
 mybatis通常的用法如下：
 
 定义接口
@@ -34,10 +34,15 @@ class Test {
 
 这里的UserMapper实现实际上是一个代理MapperProxy。这种方式简单来说就是，定义接口，调用接口方法的时候，通过代理方式处理接口实现
 
-## spring集成
 集成到spring的时候，需要将项目中定义的所有Mapper转换为Proxy，并且注册为Bean。
 
-## 关键路径
+mybatis通过MapperScan注解扫描mapper接口，注册为bean的时候的是FactoryBean模式将实现类转换为MapperProxy代理，
+对于mybatis-plus来说，通过注册SqlSessionTemplate这个bean，将MapperProxy代理替换成自己的MybatisMapperProxy代理
+
+
+## 源码解析
+
+### 关键路径
 ```text
 @MapperScan("com.soyokra.sprival.dao.*.mapper")
 => MapperScan @Import({MapperScannerRegistrar.class})：注册MapperScannerRegistrar
@@ -48,8 +53,6 @@ class Test {
 => SqlSessionTemplate调用的是 getConfiguration().getMapper(type, this)。这个SqlSessionTemplate是mybatis-plus注册的Bean，Configuration是mybatis-plus的
 => 最终通过mybatis-plus的MybatisMapperRegistry执行到MybatisMapperProxyFactory，生成了MybatisMapperProxy代理类作为Mapper接口的实现
 ```
-
-## 详细说明
 
 ### MapperScan
 @MapperScan("com.soyokra.sprival.dao.*.mapper")设置了需要扫描的包basePackages为"com.soyokra.sprival.dao.*.mapper"
@@ -203,12 +206,7 @@ public class MybatisPlusAutoConfiguration implements InitializingBean {
 }
 ```
 
-## 总结
-mybatis通过MapperScan注解扫描mapper接口，注册为bean的时候的是FactoryBean模式将实现类转换为MapperProxy代理
 
-mybatis-plus通过注册SqlSesstionTemplate这个bean，注册bean的时候，将MapperProxy代理替换成自己的MybatisMapperProxy代理
-
-换言之，mybatis-plus在mybatis基础上，将mapper接口的实现变成自己的MybatisMapperProxy注册到spring中。
 
 
 

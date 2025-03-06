@@ -1,10 +1,12 @@
-## 前言
-todo
+## 简述
+调用mybatis-plus内置方法时，首先会根据@DS注解进行动态数据源切换。然后通过代理的方式使用mybatis的SqlSession执行MappedStatement。并且，Wrapper对象作为参数，mybatis会反射解析，替换占位符，包括查询字段，SQL片段和查询参数
 
-## 调用链路图
-todo 
+SqlSession使用的DataSource是mybatis-plus注入的DynamicRoutingDataSource。参见DataSource适配。
 
-## 详细说明
+mybatis-plus使用mybatis解析xxxMapper.xml，解析注册sql模板MappedStatement。同时通过构造脚本的方式，将内置查询方法，例如selectList, insert, update, delete等
+方法也注册成MappedStatement。参见SQL模板注册
+
+## 源码解析
 
 #### DynamicDataSourceAutoConfiguration
 
