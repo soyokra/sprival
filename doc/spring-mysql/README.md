@@ -4,5 +4,3 @@
 - hikari
 - p6spy
 - mybatis-plus
-
-## mysql服务端架构

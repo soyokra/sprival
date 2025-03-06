@@ -218,3 +218,32 @@ public class MybatisMapperMethod {
     }
 }   
 ```
+
+#### ibatis执行
+
+通过ASTProperty类和反射的方式执行到mybatis-plus的AbstractWrapper方法
+```java
+public class ASTProperty extends SimpleNode implements NodeType {
+    protected Object getValueBody(OgnlContext context, Object source) throws OgnlException {
+        Object property = this.getProperty(context, source);
+        Object result = OgnlRuntime.getProperty(context, source, property);
+        if (result == null) {
+            result = OgnlRuntime.getNullHandler(OgnlRuntime.getTargetClass(source)).nullPropertyValue(context, source, property);
+        }
+
+        return result;
+    }
+}
+
+public abstract class AbstractWrapper<T, R, Children extends AbstractWrapper<T, R, Children>> extends Wrapper<T>
+        implements Compare<Children, R>, Nested<Children, Children>, Join<Children>, Func<Children, R> {
+    @Override
+    public MergeSegments getExpression() {
+        return expression;
+    }
+
+    public Map<String, Object> getParamNameValuePairs() {
+        return paramNameValuePairs;
+    }
+}
+```

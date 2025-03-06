@@ -19,9 +19,9 @@ import java.util.List;
  */
 @Service
 public class TradeProvider extends BaseTblProvider<TradeMapper, Trade> implements TradeContract {
-    public List<Trade> getTrades() {
+    public List<Trade> getTrades(String tradeId) {
         QueryWrapper<Trade> queryWrapper = new QueryWrapper<Trade>();
-        queryWrapper.lambda().eq(Trade::getTradeId, 1);
+        queryWrapper.lambda().eq(Trade::getTradeId, tradeId);
         return list(queryWrapper);
     }
 }
