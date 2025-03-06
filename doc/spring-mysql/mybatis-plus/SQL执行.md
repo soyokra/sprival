@@ -1,10 +1,21 @@
 ## 简述
-调用mybatis-plus内置方法时，首先会根据@DS注解进行动态数据源切换。然后通过代理的方式使用mybatis的SqlSession执行MappedStatement。并且，Wrapper对象作为参数，mybatis会反射解析，替换占位符，包括查询字段，SQL片段和查询参数
+
+mybatis-plus查询方法有三种
+
+一种是继承BaseMapper，可以称之为mybatis-plus内置查询
+
+一种是继承ServiceImpl，这个类的方法是对BaseMapper的增加，底层也是调用BaseMapper的方法，也称之为mybatis-plus内置查询
+
+一种是mybatis方式，即注解和xml。可以称之为mybatis原生方式
+
+无论是通过那种方式执行查询，首先会根据@DS注解进行动态数据源切换。
+
+对于mybatis-plus内置查询，会通过代理的方式用mybatis的SqlSession执行SQL。
+
+执行的SQL由两部分组成，一个是预生成的MappedStatement，也就是SQL模板。一个是Wrapper对象，也就是动态参数。mybatis-plus生成的SQL模板内的占位符不仅仅有查询参数，还有查询字段，SQL片段这种占位符
+然后通过Wrapper动态生成where条件，查询字段等替换掉SQL模板的占位符，构成完整的SQL。参见SQL模板注册
 
 SqlSession使用的DataSource是mybatis-plus注入的DynamicRoutingDataSource。参见DataSource适配。
-
-mybatis-plus使用mybatis解析xxxMapper.xml，解析注册sql模板MappedStatement。同时通过构造脚本的方式，将内置查询方法，例如selectList, insert, update, delete等
-方法也注册成MappedStatement。参见SQL模板注册
 
 ## 源码解析
 
