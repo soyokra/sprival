@@ -8,11 +8,33 @@
 ## 配置说明
 
 ### mybatis-plus
+```yml
+spring.datasource.dynamic.datasource.primary = master # 默认库
+
+# 主库
+spring.datasource.dynamic.datasource.master.username = root
+spring.datasource.dynamic.datasource.master.password = workdock
+spring.datasource.dynamic.datasource.master.url = jdbc:mysql://localhost:3306/sprival
+spring.datasource.dynamic.datasource.master.driver-class-name = com.mysql.jdbc.Driver
+spring.datasource.dynamic.datasource.master.type = com.zaxxer.hikari.HikariDataSource #使用Hikaricp
+
+# 从库
+spring.datasource.dynamic.datasource.slave.username = root
+spring.datasource.dynamic.datasource.slave.password = workdock
+spring.datasource.dynamic.datasource.slave.url = jdbc:mysql://localhost:3306/sprival
+spring.datasource.dynamic.datasource.slave.driver-class-name = com.mysql.jdbc.Driver
+spring.datasource.dynamic.datasource.slave.type = com.zaxxer.hikari.HikariDataSource #使用Hikaricp
+
+# hikari
+# spring.datasource.dynamic.datasource.master.hikari.xxx
+# spring.datasource.dynamic.datasource.hikari.xxx
+```
+
+> 连接池可以全局配置，也可以每个连接库单独配置
 
 ### hikari
 ```yml
 ## hikari全局配置
-spring.datasource.dynamic.hikari.connection_test_query = SELECT 1 FROM DUAL
 spring.datasource.dynamic.hikari.is-auto-commit =  true
 spring.datasource.dynamic.hikari.max_lifetime = 30000
 spring.datasource.dynamic.hikari.min_idle = 10
