@@ -1,4 +1,4 @@
-package com.soyokra.sprival.dao.sprival.config.hikari;
+package com.soyokra.sprival.config.hikari;
 
 import com.baomidou.dynamic.datasource.creator.HikariDataSourceCreator;
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DataSourceProperty;
@@ -24,10 +24,4 @@ public class HikariDataSourcePlusCreator extends HikariDataSourceCreator {
         dataSource.setMetricRegistry(meterRegistry);
         return dataSource;
     }
-
-    @Override
-    public boolean support(DataSourceProperty dataSourceProperty) {
-        return true;
-    }
-
 }

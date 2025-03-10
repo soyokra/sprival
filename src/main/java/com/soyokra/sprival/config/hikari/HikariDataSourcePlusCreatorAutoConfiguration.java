@@ -1,6 +1,5 @@
-package com.soyokra.sprival.dao.sprival.config.hikari;
+package com.soyokra.sprival.config.hikari;
 
-import com.baomidou.dynamic.datasource.creator.HikariDataSourceCreator;
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceCreatorAutoConfiguration;
 import com.zaxxer.hikari.HikariDataSource;
 import io.micrometer.core.instrument.MeterRegistry;
