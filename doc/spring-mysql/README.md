@@ -2,9 +2,10 @@
 - jdbc
 - mybatis
 - hikari
-- p6spy
 - mybatis-plus
+- p6spy
 - micrometer
+- dropwizard
 
 ## 配置说明
 
@@ -49,7 +50,6 @@ spring.datasource.dynamic.hikari.connection_init_sql = set session wait_timeout=
 - autoCommit: 事务自动提交，默认值TRUE
 - connectionTimeout: 从连接池拿连接的超时时长, 最小值250毫秒，默认30秒
 - idleTimeout：空闲连接超时时间，超过最小空闲连接数的连接空闲保持的存活的时长，单位毫秒，最小值10秒， 默认值10分钟
-- keepaliveTime：空闲连接从连接池中检出进行心跳检查的时间，必须小于maxLifetime，单位毫秒，最小值30秒，默认值30分钟
 - maxLifetime：最小空闲连接保持存活的最大时长，这个值应该小于数据库允许客户端连接存活的最大时长，单位毫秒，最小值30秒，默认值30分钟
 - connectionTestQuery：用于驱动不支持JDBC4 连接检查Connection.isValid()接口，用于心跳检查
 - minimumIdle：最小空闲连接，默认值和maximumPoolSize。建议和maximumPoolSize一样，作为固定连接池使用
@@ -59,7 +59,7 @@ spring.datasource.dynamic.hikari.connection_init_sql = set session wait_timeout=
 >最小空闲连接：假设minimumIdle=10，maximumPoolSize=15，应用一直占用10个连接，那么hikari会参试创建10个空闲连接，但是受到最大连接数限制，只会创建5个空闲连接
 假设应用释放了这个10个连接，由于最小空闲连接数是10个，hikari会关掉5个空闲连接
 
-参考文档：[https://github.com/brettwooldridge/HikariCP](https://github.com/brettwooldridge/HikariCP)
+参考文档：[https://github.com/brettwooldridge/HikariCP/tree/HikariCP-3.4.5](https://github.com/brettwooldridge/HikariCP/tree/HikariCP-3.4.5)
 
 ### p6spy
 

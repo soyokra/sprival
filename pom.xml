@@ -102,6 +102,12 @@
             <version>${p6spy.version}</version>
             <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-core</artifactId>
+            <version>2.1.8</version>
+        </dependency>
         <!-- MySQL -->
 
 
@@ -112,6 +118,13 @@
             <version>${micrometer.version}</version>
         </dependency>
         <!-- Monitor -->
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
 
     </dependencies>
 

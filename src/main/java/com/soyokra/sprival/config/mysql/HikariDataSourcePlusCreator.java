@@ -1,4 +1,4 @@
-package com.soyokra.sprival.config.hikari;
+package com.soyokra.sprival.config.mysql;
 
 import com.baomidou.dynamic.datasource.creator.HikariDataSourceCreator;
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DataSourceProperty;
