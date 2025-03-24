@@ -1,4 +1,4 @@
-package com.soyokra.sprival.config.mysql;
+package com.soyokra.sprival.config.clickhouse;
 
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceCreatorAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

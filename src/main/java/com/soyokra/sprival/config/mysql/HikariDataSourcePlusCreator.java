@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 
 /**
  * HikariDataSourceCreator加强版，支持监控
+ * 健康检查，指标监控
  */
 public class HikariDataSourcePlusCreator extends HikariDataSourceCreator {
 

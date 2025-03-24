@@ -1,4 +1,4 @@
-package com.soyokra.sprival.config.mysql;
+package com.soyokra.sprival.config.clickhouse;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

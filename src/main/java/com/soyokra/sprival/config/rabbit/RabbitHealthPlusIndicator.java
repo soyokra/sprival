@@ -5,6 +5,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.actuate.amqp.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 
+/**
+ * 健康检查，指标监控
+ */
 @Slf4j
 public class RabbitHealthPlusIndicator extends RabbitHealthIndicator {
 

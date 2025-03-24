@@ -1,4 +1,4 @@
-package com.soyokra.sprival.config.mysql;
+package com.soyokra.sprival.config.clickhouse;
 
 import com.baomidou.dynamic.datasource.creator.AbstractDataSourceCreator;
 import com.baomidou.dynamic.datasource.creator.DataSourceCreator;
@@ -11,9 +11,9 @@ import javax.sql.DataSource;
 
 public class ClickHouseDataSourceCreator  extends AbstractDataSourceCreator implements DataSourceCreator, InitializingBean {
 
-    private final com.soyokra.sprival.config.mysql.ClickHouseProperties clickHouseProperties;
+    private final com.soyokra.sprival.config.clickhouse.ClickHouseProperties clickHouseProperties;
 
-    public ClickHouseDataSourceCreator(com.soyokra.sprival.config.mysql.ClickHouseProperties clickHouseProperties) {
+    public ClickHouseDataSourceCreator(com.soyokra.sprival.config.clickhouse.ClickHouseProperties clickHouseProperties) {
         this.clickHouseProperties = clickHouseProperties;
     }
 
@@ -32,6 +32,7 @@ public class ClickHouseDataSourceCreator  extends AbstractDataSourceCreator impl
         return "ru.yandex.clickhouse.ClickHouseDataSource".equals(type.getName());
     }
 
+    //  Spring 容器完成对 Bean 的属性设置之后调用
     @Override
     public void afterPropertiesSet() throws Exception {
 
