@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
-import com.soyokra.sprival.dao.sprival.BaseTblProvider;
+import com.soyokra.sprival.dao.master.BaseTblProvider;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;

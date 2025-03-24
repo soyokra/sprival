@@ -1,0 +1,39 @@
+package com.soyokra.sprival.config.mysql;
+
+import com.baomidou.dynamic.datasource.creator.AbstractDataSourceCreator;
+import com.baomidou.dynamic.datasource.creator.DataSourceCreator;
+import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DataSourceProperty;
+import org.springframework.beans.factory.InitializingBean;
+import ru.yandex.clickhouse.ClickHouseDataSource;
+import ru.yandex.clickhouse.settings.ClickHouseProperties;
+
+import javax.sql.DataSource;
+
+public class ClickHouseDataSourceCreator  extends AbstractDataSourceCreator implements DataSourceCreator, InitializingBean {
+
+    private final com.soyokra.sprival.config.mysql.ClickHouseProperties clickHouseProperties;
+
+    public ClickHouseDataSourceCreator(com.soyokra.sprival.config.mysql.ClickHouseProperties clickHouseProperties) {
+        this.clickHouseProperties = clickHouseProperties;
+    }
+
+    @Override
+    public DataSource doCreateDataSource(DataSourceProperty dataSourceProperty) {
+        ClickHouseProperties clickHouseProperties = new ClickHouseProperties();
+        clickHouseProperties.setUser(dataSourceProperty.getUsername());
+        clickHouseProperties.setPassword(dataSourceProperty.getPassword());
+        clickHouseProperties.setDatabase(this.clickHouseProperties.getDatabase());
+        return new ClickHouseDataSource(dataSourceProperty.getUrl(), clickHouseProperties);
+    }
+
+    @Override
+    public boolean support(DataSourceProperty dataSourceProperty) {
+        Class<? extends DataSource> type = dataSourceProperty.getType();
+        return "ru.yandex.clickhouse.ClickHouseDataSource".equals(type.getName());
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
+    }
+}

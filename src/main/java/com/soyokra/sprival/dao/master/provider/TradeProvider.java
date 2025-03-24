@@ -1,10 +1,10 @@
-package com.soyokra.sprival.dao.sprival.provider;
+package com.soyokra.sprival.dao.master.provider;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.soyokra.sprival.dao.sprival.model.Trade;
-import com.soyokra.sprival.dao.sprival.mapper.TradeMapper;
-import com.soyokra.sprival.dao.sprival.contract.TradeContract;
-import com.soyokra.sprival.dao.sprival.BaseTblProvider;
+import com.soyokra.sprival.dao.master.contract.TradeContract;
+import com.soyokra.sprival.dao.master.mapper.TradeMapper;
+import com.soyokra.sprival.dao.master.model.Trade;
+import com.soyokra.sprival.dao.master.BaseTblProvider;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

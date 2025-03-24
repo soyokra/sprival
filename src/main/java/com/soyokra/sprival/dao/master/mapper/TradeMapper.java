@@ -1,6 +1,6 @@
-package com.soyokra.sprival.dao.sprival.mapper;
+package com.soyokra.sprival.dao.master.mapper;
 
-import com.soyokra.sprival.dao.sprival.model.Trade;
+import com.soyokra.sprival.dao.master.model.Trade;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 

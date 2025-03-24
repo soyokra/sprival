@@ -1,6 +1,6 @@
-package com.soyokra.sprival.dao.sprival.contract;
+package com.soyokra.sprival.dao.master.contract;
 
-import com.soyokra.sprival.dao.sprival.model.Trade;
+import com.soyokra.sprival.dao.master.model.Trade;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
