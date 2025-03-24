@@ -13,6 +13,8 @@ public class ClickHouseDataSourceCreator  extends AbstractDataSourceCreator impl
 
     private final com.soyokra.sprival.config.clickhouse.ClickHouseProperties clickHouseProperties;
 
+    public static final String CLICK_HOUSE_DATASOURCE = "ru.yandex.clickhouse.ClickHouseDataSource";
+
     public ClickHouseDataSourceCreator(com.soyokra.sprival.config.clickhouse.ClickHouseProperties clickHouseProperties) {
         this.clickHouseProperties = clickHouseProperties;
     }
@@ -29,7 +31,7 @@ public class ClickHouseDataSourceCreator  extends AbstractDataSourceCreator impl
     @Override
     public boolean support(DataSourceProperty dataSourceProperty) {
         Class<? extends DataSource> type = dataSourceProperty.getType();
-        return "ru.yandex.clickhouse.ClickHouseDataSource".equals(type.getName());
+        return CLICK_HOUSE_DATASOURCE.equals(type.getName());
     }
 
     //  Spring 容器完成对 Bean 的属性设置之后调用
