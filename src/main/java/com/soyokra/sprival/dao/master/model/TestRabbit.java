@@ -1,5 +1,6 @@
 package com.soyokra.sprival.dao.master.model;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class TestRabbit implements Serializable {
     /**
      * 测试ID
      */
+    @TableId
     private String testId;
 
     /**
