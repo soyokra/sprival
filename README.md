@@ -35,7 +35,7 @@ TODO
 #### ClickHouse
 TODO
 
-## 源码分析文档目录
+## 源码分析目录
 - [spring-core](./doc/spring-core/README.md)
 - [spring-mysql](./doc/spring-mysql/README.md)
 - [spring-clickhouse](./doc/spring-clickhouse/README.md)
