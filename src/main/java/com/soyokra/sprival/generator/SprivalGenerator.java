@@ -26,7 +26,7 @@ public class SprivalGenerator {
         String password = "workdock";
         String rootPath = ".\\src\\main";
         String packageParent = "com.soyokra.sprival.dao";
-        String packageModuleName = "sprival";
+        String packageModuleName = "master";
 
         DataSourceConfig dataSourceConfig = new DataSourceConfig.Builder(url,username,password)
                 .build();
