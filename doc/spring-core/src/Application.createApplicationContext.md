@@ -1,4 +1,15 @@
 ## 简介
+createApplicationContext方法功能是为了实例化一个Context
+
+实际上创建的是AnnotationConfigServletWebServerApplicationContext这个类的实例
+
+并且实例化AnnotatedBeanDefinitionReader类作为reader
+
+实例化ClassPathBeanDefinitionScanner作为scanner
+
+获取的AppClassLoader作为classLoader
+
+实例化DefaultListableBeanFactory作为beanFactory
 
 ## 源码分析
 servlet应用类型创建的context是AnnotationConfigServletWebServerApplicationContext
@@ -51,7 +62,7 @@ instantiateClass:204, BeanUtils (org.springframework.beans)
 instantiateClass:139, BeanUtils (org.springframework.beans)
 ```
 
-调用了AnnotationConfigServletWebServerApplicationContext的构造方法
+调用了AnnotationConfigServletWebServerApplicationContext的构造方法，初始化reader和scanner
 
 ```java
 public class AnnotationConfigServletWebServerApplicationContext extends ServletWebServerApplicationContext
