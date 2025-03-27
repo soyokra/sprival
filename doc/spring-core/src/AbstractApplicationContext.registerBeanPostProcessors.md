@@ -1,5 +1,7 @@
 ## 简述
-注册BeanPostProcessor接口实现类
+
+BeanDefinitionRegistryPostProcessor.postProcessBeanDefinitionRegistry
+BeanFactoryPostProcessor.postProcessBeanFactory
 
 ```java
 final class PostProcessorRegistrationDelegate {

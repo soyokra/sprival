@@ -1,5 +1,7 @@
 ## 简述
-spring boot的Application.refreshContext方法实际上调用的是spring framework的AbstractApplicationContext.refresh方法
+spring boot的Application.refreshContext方法
+实际上调用的是spring framework的AbstractApplicationContext.refresh方法
+
 
 ```java
 public abstract class AbstractApplicationContext extends DefaultResourceLoader

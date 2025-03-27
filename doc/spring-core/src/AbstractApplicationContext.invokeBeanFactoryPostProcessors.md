@@ -3,6 +3,28 @@
 BeanDefinitionRegistryPostProcessor.postProcessBeanDefinitionRegistry
 BeanFactoryPostProcessor.postProcessBeanFactory
 
+
+
+## BeanDefinitionRegistryPostProcessor.postProcessBeanDefinitionRegistry
+```text
+ConfigurationClassPostProcessor
+MapperScannerConfigurer
+```
+
+
+## BeanFactoryPostProcessor.postProcessBeanFactory
+```text
+SharedMetadataReaderFactoryContextInitializer$CachingMetadataReaderFactoryPostProcessor
+ConfigurationWarningsApplicationContextInitializer$ConfigurationWarningsPostProcessor
+ConfigurationClassPostProcessor
+MapperScannerConfigurer
+
+ConfigFileApplicationListener$PropertySourceOrderingPostProcessor
+PropertySourcePlaceholderConfigurer
+EventListenerMethodProcessor
+ErrorMvcAutoConfiguration$PreserveErrorControllerTargetClassPostProcessor
+```
+
 ```java
 final class PostProcessorRegistrationDelegate {
 
@@ -143,6 +165,7 @@ final class PostProcessorRegistrationDelegate {
 }
 ```
 
+## ConfigurationClassPostProcessor
 扫描文件，创建BeanDefinition
 执行ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry，扫描包下文件注册beanDefinition
 ```java
