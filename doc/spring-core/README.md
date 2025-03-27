@@ -12,6 +12,7 @@
     - [AbstractApplicationContext.obtainFreshBeanFactory](src/AbstractApplicationContext.obtainFreshBeanFactory.md)
     - [AbstractApplicationContext.prepareBeanFactory](src/AbstractApplicationContext.prepareBeanFactory.md)
     - [AbstractApplicationContext.postProcessBeanFactory](src/AbstractApplicationContext.postProcessBeanFactory.md)
+    - [AbstractApplicationContext.invokeBeanFactoryPostProcessors](src/AbstractApplicationContext.invokeBeanFactoryPostProcessors.md)
     - [AbstractApplicationContext.registerBeanPostProcessors](src/AbstractApplicationContext.registerBeanPostProcessors.md)
     - [AbstractApplicationContext.initMessageSource](src/AbstractApplicationContext.initMessageSource.md)
     - [AbstractApplicationContext.initApplicationEventMulticaster](src/AbstractApplicationContext.initApplicationEventMulticaster.md)
