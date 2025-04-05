@@ -1,7 +1,5 @@
 ## 简述
 
-BeanDefinitionRegistryPostProcessor.postProcessBeanDefinitionRegistry
-BeanFactoryPostProcessor.postProcessBeanFactory
 
 ```java
 final class PostProcessorRegistrationDelegate {
@@ -74,4 +72,31 @@ final class PostProcessorRegistrationDelegate {
         beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(applicationContext));
     }
 }
+```
+
+新注册了以下的BeanPostProcessor
+```text
+PostProcessorRegistrationDelegate$BeanPostProcessorChecker
+ConfigurationPropertiesBindingPostProcessor
+AnnotationAwareAspectJAutoProxyCreator
+RabbitConnectionFactoryMetricsPostProcessor
+DataSourceInitializerPostProcessor
+AsyncAnnotationBeanPostProcessor
+MethodValidationPostProcessor
+RabbitListenerAnnotationBeanPostProcessor
+PersistenceExceptionTranslationPostProcessor
+WebServerFactoryCustomizerBeanPostProcessor
+ErrorPageRegistrarBeanPostProcessor
+HealthEndpointConfiguration$HealthEndpointGroupsBeanPostProcessor
+MeterRegistryPostProcessor
+CommonAnnotationBeanPostProcessor
+AutowiredAnnotationBeanPostProcessor
+```
+
+之前就已经注册的BeanPostProcessor
+```text
+ApplicationContextAwareProcessor
+ApplicationListenerDetector
+WebApplicationContextServletContextAwareProcessor
+ConfigurationClassPostProcessor$ImportAwareBeanPostProcessor
 ```

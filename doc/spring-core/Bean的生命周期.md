@@ -118,7 +118,7 @@ public @interface Bean {
 ## Bean的生命周期接口
 ### Bean定义阶段：
 - ImportBeanDefinitionRegistrar接口
-  - registerBeanDefinitions方法：注册或修改BeanDefination
+  - registerBeanDefinitions方法：注册或修改BeanDefinition
 
 ### Bean定义之后，初始化之前阶段：
 - BeanDefinitionRegistryPostProcessor接口

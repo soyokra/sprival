@@ -1,29 +1,7 @@
 ## 简述
-调用BeanDefinition接口
-BeanDefinitionRegistryPostProcessor.postProcessBeanDefinitionRegistry
-BeanFactoryPostProcessor.postProcessBeanFactory
+执行BeanDefinitionRegistryPostProcessor.postProcessBeanDefinitionRegistry
 
-
-
-## BeanDefinitionRegistryPostProcessor.postProcessBeanDefinitionRegistry
-```text
-ConfigurationClassPostProcessor
-MapperScannerConfigurer
-```
-
-
-## BeanFactoryPostProcessor.postProcessBeanFactory
-```text
-SharedMetadataReaderFactoryContextInitializer$CachingMetadataReaderFactoryPostProcessor
-ConfigurationWarningsApplicationContextInitializer$ConfigurationWarningsPostProcessor
-ConfigurationClassPostProcessor
-MapperScannerConfigurer
-
-ConfigFileApplicationListener$PropertySourceOrderingPostProcessor
-PropertySourcePlaceholderConfigurer
-EventListenerMethodProcessor
-ErrorMvcAutoConfiguration$PreserveErrorControllerTargetClassPostProcessor
-```
+执行BeanFactoryPostProcessor.postProcessBeanFactory
 
 ```java
 final class PostProcessorRegistrationDelegate {
@@ -165,9 +143,32 @@ final class PostProcessorRegistrationDelegate {
 }
 ```
 
-## ConfigurationClassPostProcessor
-扫描文件，创建BeanDefinition
-执行ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry，扫描包下文件注册beanDefinition
+
+BeanDefinitionRegistryPostProcessor.postProcessBeanDefinitionRegistry实现类
+```text
+ConfigurationClassPostProcessor
+MapperScannerConfigurer
+```
+
+BeanFactoryPostProcessor.postProcessBeanFactory实现类
+```text
+SharedMetadataReaderFactoryContextInitializer$CachingMetadataReaderFactoryPostProcessor
+ConfigurationWarningsApplicationContextInitializer$ConfigurationWarningsPostProcessor
+ConfigurationClassPostProcessor
+MapperScannerConfigurer
+
+ConfigFileApplicationListener$PropertySourceOrderingPostProcessor
+PropertySourcePlaceholderConfigurer
+EventListenerMethodProcessor
+ErrorMvcAutoConfiguration$PreserveErrorControllerTargetClassPostProcessor
+```
+
+
+ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry方法
+
+扫描包下文件注册beanDefinition
+
+通过 ClassPathBeanDefinitionScanner执行
 ```java
 public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateComponentProvider {
     protected Set<BeanDefinitionHolder> doScan(String... basePackages) {
@@ -220,3 +221,5 @@ refreshContext:402, SpringApplication (org.springframework.boot)
 run:312, SpringApplication (org.springframework.boot)
 main:35, StartApplication (com.zuzuche.widget.start)
 ```
+
+###

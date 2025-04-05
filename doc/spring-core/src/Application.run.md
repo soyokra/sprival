@@ -1,6 +1,20 @@
 ## 简述
 spring boot的SpringApplication类的启动流程，本质是初始化一个ApplicationContext
 
+
+new Application，加载spring.factories
+```java
+public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+    this.resourceLoader = resourceLoader;
+    Assert.notNull(primarySources, "PrimarySources must not be null");
+    this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+    this.webApplicationType = WebApplicationType.deduceFromClasspath();
+    setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+    setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+    this.mainApplicationClass = deduceMainApplicationClass();
+}
+```
+
 ```java
 public ConfigurableApplicationContext run(String... args) {
     StopWatch stopWatch = new StopWatch();
