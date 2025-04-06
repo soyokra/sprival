@@ -1,5 +1,9 @@
 ## 简述
-
+IOC
+  - 容器
+  - bean的生命周期
+  - 循环依赖
+AOP
 
 ## 目录
 
@@ -16,6 +20,8 @@
       - [ConfigurationClassPostProcessor.processConfigBeanDefinitions](src/ConfigurationClassPostProcessor.processConfigBeanDefinitions.md)
         - [ConfigurationClassParser.parse](src/ConfigurationClassParser.parse.md)
           - [AutoConfigurationImportSelector.getAutoConfigurationEntry](src/AutoConfigurationImportSelector.getAutoConfigurationEntry.md)
+      - [MapperScannerConfigurer.postProcessBeanDefinitionRegistry](src/MapperScannerConfigurer.postProcessBeanDefinitionRegistry.md)
+        - [ClassPathMapperScanner.scan](src/ClassPathMapperScanner.scan.md)
     - [AbstractApplicationContext.registerBeanPostProcessors](src/AbstractApplicationContext.registerBeanPostProcessors.md)
     - [AbstractApplicationContext.initMessageSource](src/AbstractApplicationContext.initMessageSource.md)
     - [AbstractApplicationContext.initApplicationEventMulticaster](src/AbstractApplicationContext.initApplicationEventMulticaster.md)

@@ -1,8 +1,9 @@
 ## 说明
 配置类处理器
-
-- 解析@Configuration注解的类，注册为BeanDefinition
-- 处理实现ImportSelector接口方式的类，注册BeanDefinition
+- 处理@Component注解类，注册为BeanDefinition
+- 处理@Configuration注解类，注册为BeanDefinition
+- 处理@Import注解类
+- 处理实现ImportSelector接口方式的类，执行注册BeanDefinition的方法
   - SpringBoot的自动装配AutoConfigurationImportSelector使用的是ImportSelector接口方式
 
 > configCandidates实际上就是SprivalApplication
@@ -114,6 +115,15 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
     }
 }
 ```
+
+
+
+
+
+
+
+
+
 
 
 

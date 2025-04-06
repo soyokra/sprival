@@ -125,5 +125,6 @@ public @interface Bean {
   - postProcessBeanDefinitionRegistry方法
 - BeanFactoryPostProcessor接口
   - postProcessBeanFactory方法：对 Bean 定义进行修改和定制
+
 ### Bean初始化阶段
 ![Bean初始化阶段](./src/bean_lifecycle_002.png)
