@@ -1,15 +1,22 @@
 ## Bean的生命周期
-spring容器可以简单概括为spring通过扫描xml文件和注解获取相关信息，将类实例化为对象存储起来。spring将这些对象
-定义了一个概念，叫做bean。
+广义的Bean的生命周期包含三个部分
+
+#### MultiDefinition
+Bean本质是一个实例化的对象，要实例化出一个对象，首先要有模板，这个模板就是类或者接口。
+其次要有如何实例化的描述信息，这种描述信息主要是以xml形式或者注解形式生成。
+
+
+#### BeanDefinition
+BeanDefinition是标准化后的Bean如何实例化的描述信息，由于初始的实例化的描述信息的形式多样，需要一个标准化的中间产物，方便后续处理
+
+#### Bean
+Bean就是根据BeanDefinition使用反射的方式实例化的对象
+
 
 ![Bean的生命周期](./src/bean_lifecycle_001.png)
 
-bean的生产主要有三个关键部分：
-- 类文件 + 注册信息
-- BeanDefinition
-- Bean
+## MultiDefinition
 
-### 类文件+注册信息
 #### xml方式
 
 ```xml
@@ -112,19 +119,12 @@ public @interface Bean {
 * initMethod：自定义初始化方法
 * destroyMethod：自定义销毁方法
 
-### BeanDefinition
+## BeanDefinition
+BeanDefinition是一个接口，实际上可能有多种BeanDefinition类。
+
+注解方式生成BeanDefinition的过程主要是通过BeanDefinitionRegistryPostProcessor接口的postProcessBeanDefinitionRegistry方法完成的
+主要的实现类是ConfigurationClassPostProcessor
 
 
-## Bean的生命周期接口
-### Bean定义阶段：
-- ImportBeanDefinitionRegistrar接口
-  - registerBeanDefinitions方法：注册或修改BeanDefinition
-
-### Bean定义之后，初始化之前阶段：
-- BeanDefinitionRegistryPostProcessor接口
-  - postProcessBeanDefinitionRegistry方法
-- BeanFactoryPostProcessor接口
-  - postProcessBeanFactory方法：对 Bean 定义进行修改和定制
-
-### Bean初始化阶段
+## Bean
 ![Bean初始化阶段](./src/bean_lifecycle_002.png)

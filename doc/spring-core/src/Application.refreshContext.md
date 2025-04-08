@@ -2,7 +2,14 @@
 spring boot的Application.refreshContext方法
 实际上调用的是spring framework的AbstractApplicationContext.refresh方法
 
+- 创建BeanFactory
+- BeanFactory后置处理
+  - 处理注解类文件，生成和注册BeanDefinition
+  - 占位符解析
+- 消息本地化，事件广播，实例化webServer，注册监听器
+- 实例化bean
 
+## 源码分析
 ```java
 public abstract class AbstractApplicationContext extends DefaultResourceLoader
         implements ConfigurableApplicationContext {
@@ -20,31 +27,32 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
             prepareBeanFactory(beanFactory);
 
             try {
-                // Allows post-processing of the bean factory in context subclasses.
+                // 后置处理BeanFactory，预留的方法扩展点，子类可以在BeanFactory实例化完成后做点什么
                 postProcessBeanFactory(beanFactory);
 
-                // Invoke factory processors registered as beans in the context.
+                // 调用BeanFactory后置处理器。接口扩展点
                 invokeBeanFactoryPostProcessors(beanFactory);
 
-                // Register bean processors that intercept bean creation.
+                // 注册bean后置处理器
                 registerBeanPostProcessors(beanFactory);
 
-                // Initialize message source for this context.
+                // 消息本地化机制
                 initMessageSource();
 
-                // Initialize event multicaster for this context.
+                // 事件广播
                 initApplicationEventMulticaster();
 
-                // Initialize other special beans in specific context subclasses.
+                // 模板方法，让子类能够实例化一些特殊的bean
+                // webServer就是这一步实例化的
                 onRefresh();
 
-                // Check for listener beans and register them.
+                //注册监听器
                 registerListeners();
 
-                // Instantiate all remaining (non-lazy-init) singletons.
+                // 实例化所有非懒加载的bean
                 finishBeanFactoryInitialization(beanFactory);
 
-                // Last step: publish corresponding event.
+                // 完成后的一些工作
                 finishRefresh();
             } catch (BeansException ex) {
                 if (logger.isWarnEnabled()) {
@@ -70,7 +78,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 }
 ```
 
-参考调用栈
+## 参考调用栈
 ```text
 refresh:520, AbstractApplicationContext (org.springframework.context.support)
 refresh:143, ServletWebServerApplicationContext (org.springframework.boot.web.servlet.context)
