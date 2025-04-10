@@ -11,8 +11,12 @@
 ```java
 public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPostProcessor,
         PriorityOrdered, ResourceLoaderAware, BeanClassLoaderAware, EnvironmentAware {
+    
     public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
         List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
+        
+        // registry => sprivalApplication的beanFactory
+        // 6个RootBeenDefinition和自身 sprivalApplication
         String[] candidateNames = registry.getBeanDefinitionNames();
 
         for (String beanName : candidateNames) {
@@ -22,6 +26,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
                     logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
                 }
             } else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
+                // 筛选出sprivalApplication
                 configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));
             }
         }

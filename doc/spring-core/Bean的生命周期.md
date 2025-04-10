@@ -122,8 +122,22 @@ public @interface Bean {
 ## BeanDefinition
 BeanDefinition是一个接口，实际上可能有多种BeanDefinition类。
 
+
+1. 注册RootBeanDefinition ConfigurationClassPostProcessor
+2. 执行BeanDefinitionRegistryPostProcessor接口的postProcessBeanDefinitionRegistry方法
+   a. 使用ConfigurationClassPostProcessor bean 
+
+
 注解方式生成BeanDefinition的过程主要是通过BeanDefinitionRegistryPostProcessor接口的postProcessBeanDefinitionRegistry方法完成的
 主要的实现类是ConfigurationClassPostProcessor
+
+ConfigurationClassBeanDefinitionReader
+ConfigurationClass
+
+
+@Component(@Repository, @Service, @Controller, @Configuration) + @ComponentScan
+@Import
+ImportSelector接口
 
 
 ## Bean
