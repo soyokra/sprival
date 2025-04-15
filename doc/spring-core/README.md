@@ -32,3 +32,11 @@ AOP
     - [AbstractApplicationContext.destroyBeans](src/AbstractApplicationContext.destroyBeans.md)
     - [AbstractApplicationContext.cancelRefresh](src/AbstractApplicationContext.cancelRefresh.md)
     - [AbstractApplicationContext.resetCommonCaches](src/AbstractApplicationContext.resetCommonCaches.md)
+
+
+  
+- 总的流程图
+- 注册BeanDefinition流程图
+- 注册Bean流程图
+- 本地话消息流程图
+- 事件监听，注册，广播流程图

@@ -1,5 +1,6 @@
 ## Bean的生命周期
-广义的Bean的生命周期包含三个部分
+广义的Bean的生命周期包含三个部分：MultiDefinition，BeanDefinition，Bean。两个步骤：注册BeanDefinition，注册Bean
+
 
 #### MultiDefinition
 Bean本质是一个实例化的对象，要实例化出一个对象，首先要有模板，这个模板就是类或者接口。
@@ -119,25 +120,46 @@ public @interface Bean {
 * initMethod：自定义初始化方法
 * destroyMethod：自定义销毁方法
 
+注解的方式包括如下
+
+- @Component注解(@Repository, @Service, @Controller, @Configuration) + @ComponentScan
+- @Import注解，@ImportSource注解，ImportSelect接口
+
 ## BeanDefinition
-BeanDefinition是一个接口，实际上可能有多种BeanDefinition类。
+BeanDefinition是一个接口，实际上可能有多种BeanDefinition类：
+- RootBeanDefinition
+   - AbstractBeanDefinition
+      - BeanMetadataAttributeAccessor
+      - BeanDefinition
+         - AttributeAccessor
+         - BeanMetadataElement
+- AnnotatedGenericBeanDefinition
+   - GenericBeanDefinition
+      - AbstractBeanDefinition
+   - AnnotatedBeanDefinition
+      - BeanDefinition
+- ChildBeanDefinition
+   - AbstractBeanDefinition
+- ScannedGenericBeanDefinition
+   - GenericBeanDefinition
+   - AnnotatedBeanDefinition
 
 
-1. 注册RootBeanDefinition ConfigurationClassPostProcessor
-2. 执行BeanDefinitionRegistryPostProcessor接口的postProcessBeanDefinitionRegistry方法
-   a. 使用ConfigurationClassPostProcessor bean 
+注解类型的类和接口是通过执行BeanDefinitionRegistryPostProcessor接口的postProcessBeanDefinitionRegistry方法注册
+的，核心实现类如下
+
+- ConfigurationClassPostProcessor
+- ConfigurationClass
+- ConfigurationClassBeanDefinitionReader
 
 
-注解方式生成BeanDefinition的过程主要是通过BeanDefinitionRegistryPostProcessor接口的postProcessBeanDefinitionRegistry方法完成的
-主要的实现类是ConfigurationClassPostProcessor
+执行顺序上，
+1. 扫描启动对象sprivalApplication的基础目录下所有@Component注解的类，转化为ConfigurationClass对象
+2. 处理@Import和ImportSelector接口的类，转化为ConfigurationClass对象
+3. 处理ConfigurationClass注册BeanDefinition
 
-ConfigurationClassBeanDefinitionReader
-ConfigurationClass
+执行过程中有递归法，会扫描出100多个ConfigurationClass对象
 
-
-@Component(@Repository, @Service, @Controller, @Configuration) + @ComponentScan
-@Import
-ImportSelector接口
 
 
 ## Bean
