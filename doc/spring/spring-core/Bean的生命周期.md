@@ -164,3 +164,11 @@ BeanDefinition是一个接口，实际上可能有多种BeanDefinition类：
 
 ## Bean
 ![Bean初始化阶段](./src/bean_lifecycle_002.png)
+
+https://www.processon.com/view/617febcbe0b34d1a7ea5405b
+
+
+三级缓存：
+一级缓存（singletonObjects）
+二级缓存（singletonFactories）
+三级缓存（earlySingletonObjects）
