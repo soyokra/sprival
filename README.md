@@ -3,6 +3,21 @@ Spring Component Integration Framework
 
 包含组件集成和源码分析。spring官方文档参见[2.3.12.RELEASE](https://docs.spring.io/spring-boot/docs/2.3.12.RELEASE/reference/html/)
 
+
+监控/告警/日志
+
+health-check
+exception-handle
+timeout-set
+
+
+app => app => app
+           => mysql
+           => redis
+           => mongodb
+           => clickhouse
+           => ...
+
 #### code
 - spring 组件集成
 - spring cloud集成
@@ -27,7 +42,7 @@ Spring Component Integration Framework
 增加支持hikari的指标监控
 
 #### HTTP请求
-- Sentinel(限流)
+- Sentinel(限流：令牌桶、漏水桶、固定窗口、滑动窗口)
 - 日志
 - jwt
 - 分布式锁
