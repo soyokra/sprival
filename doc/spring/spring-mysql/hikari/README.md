@@ -13,7 +13,10 @@ hikaricp_connections_pending
 hikaricp_connections_idle           
 hikaricp_connections_acquire_seconds_count           
 hikaricp_connections_acquire_seconds_sum           
-hikaricp_connections_acquire_seconds_max         
+hikaricp_connections_acquire_seconds_max    
+hikaricp_connections_creation_seconds_count     
+hikaricp_connections_creation_seconds_sum     
+hikaricp_connections_creation_seconds_max   
 hikaricp_connections_usage_seconds_count           
 hikaricp_connections_usage_seconds_sum           
 hikaricp_connections_usage_seconds_max 
@@ -41,7 +44,7 @@ hikaricp_connections_timeout_total
 | hikaricp_connections_timeout_total            |      count       | Total number of timeout connections                 |
 
 
-#### grafana配置
+#### PromQL
 连接池基本配置指标
 ```PromQL
 #总连接数
@@ -82,6 +85,24 @@ avg(rate(hikaricp_connections_acquire_seconds_sum[5m]) / rate(hikaricp_connectio
 
 # 最大获取时长（秒）
 avg(hikaricp_connections_acquire_seconds_max) by (job)
+```
+
+连接创建性能
+```PromQL
+创建连接的总次数
+hikaricp_connections_creation_seconds_count
+
+所有连接创建操作的总耗时
+hikaricp_connections_creation_seconds_sum
+
+连接创建操作的最大耗时（秒）
+hikaricp_connections_creation_seconds_max
+
+# 连接创建平均时长（秒）
+avg(rate(hikaricp_connections_creation_seconds_sum[5m]) / rate(hikaricp_connections_creation_seconds_count[5m])) by (job)
+
+# 连接创建最大时长（秒）
+avg(hikaricp_connections_creation_seconds_max) by (job)
 ```
 
 连接使用性能指标
