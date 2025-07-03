@@ -11,11 +11,11 @@ import javax.sql.DataSource;
  * HikariDataSourceCreator加强版，支持监控
  * 健康检查，指标监控
  */
-public class HikariDataSourcePlusCreator extends HikariDataSourceCreator {
+public class SprivalHikariDataSourceCreator extends HikariDataSourceCreator {
 
     private final MeterRegistry meterRegistry;
 
-    public HikariDataSourcePlusCreator(MeterRegistry meterRegistry) {
+    public SprivalHikariDataSourceCreator(MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
     }
 

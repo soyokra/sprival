@@ -4,8 +4,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +18,8 @@ import java.util.Map;
 // ConditionalOnBean要求RabbitTemplate的BeanDefinition要存在
 // RabbitHealthPlusContributorAutoConfiguration在注册BeanDefinition 会先于 RabbitAutoConfiguration
 //@ConditionalOnBean(RabbitTemplate.class)
-public class RabbitHealthPlusContributorAutoConfiguration
-		extends CompositeHealthContributorConfiguration<RabbitHealthPlusIndicator, RabbitTemplate> {
+public class SprivalRabbitHealthContributorAutoConfiguration
+		extends CompositeHealthContributorConfiguration<SprivalRabbitHealthIndicator, RabbitTemplate> {
 
 	@Bean
 	public HealthContributor rabbitHealthContributor(Map<String, RabbitTemplate> rabbitTemplates) {

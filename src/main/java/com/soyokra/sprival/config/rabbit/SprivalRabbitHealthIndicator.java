@@ -9,9 +9,9 @@ import org.springframework.boot.actuate.health.Health;
  * 健康检查，指标监控
  */
 @Slf4j
-public class RabbitHealthPlusIndicator extends RabbitHealthIndicator {
+public class SprivalRabbitHealthIndicator extends RabbitHealthIndicator {
 
-    public RabbitHealthPlusIndicator(RabbitTemplate rabbitTemplate) {
+    public SprivalRabbitHealthIndicator(RabbitTemplate rabbitTemplate) {
         super(rabbitTemplate);
     }
 

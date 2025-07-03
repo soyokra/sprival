@@ -1,4 +1,5 @@
 ## 客户端组件
+
 - jdbc
 - mybatis
 - hikari
@@ -10,6 +11,7 @@
 ## 配置说明
 
 ### mybatis-plus
+
 ```yml
 spring.datasource.dynamic.datasource.primary = master # 默认库
 
@@ -35,6 +37,7 @@ spring.datasource.dynamic.datasource.slave.type = com.zaxxer.hikari.HikariDataSo
 > 连接池可以全局配置，也可以每个连接库单独配置
 
 ### hikari
+
 ```yml
 ## hikari全局配置
 spring.datasource.dynamic.hikari.is-auto-commit =  true
@@ -55,21 +58,21 @@ spring.datasource.dynamic.hikari.connection_init_sql = set session wait_timeout=
 - minimumIdle：最小空闲连接，默认值和maximumPoolSize。建议和maximumPoolSize一样，作为固定连接池使用
 - maximumPoolSize：最大连接数，应用请求超过最大连接数的时候，会等待connectionTimeout再抛出异常
 
-
->最小空闲连接：假设minimumIdle=10，maximumPoolSize=15，应用一直占用10个连接，那么hikari会参试创建10个空闲连接，但是受到最大连接数限制，只会创建5个空闲连接
-假设应用释放了这个10个连接，由于最小空闲连接数是10个，hikari会关掉5个空闲连接
+> 最小空闲连接：假设minimumIdle=10，maximumPoolSize=15，应用一直占用10个连接，那么hikari会参试创建10个空闲连接，但是受到最大连接数限制，只会创建5个空闲连接
+> 假设应用释放了这个10个连接，由于最小空闲连接数是10个，hikari会关掉5个空闲连接
 
 参考文档：[https://github.com/brettwooldridge/HikariCP/tree/HikariCP-3.4.5](https://github.com/brettwooldridge/HikariCP/tree/HikariCP-3.4.5)
 
 ### p6spy
 
-
 ### micrometer监控hikari
+
 由于mybatis-plus默认的HikariDataSourceCreator不支持设置metricRegistry，因此需要改造一下
 
 结合DynamicDataSourceCreatorAutoConfiguration的dataSourceCreator方法和DefaultDataSourceCreator的
 createDataSource可知，可以注册多个DataSourceCreator类型的Bean，最终只会使用一个，由于我们使用的是hikari，因此
 需要在hikariDataSourceCreator之前注册一个增强版的hikariDataSourcePlusCreator
+
 ```java
 @Configuration
 public class DynamicDataSourceCreatorAutoConfiguration {
@@ -156,4 +159,3 @@ public class HikariDataSourcePlusCreatorAutoConfiguration {
     }
 }
 ```
-

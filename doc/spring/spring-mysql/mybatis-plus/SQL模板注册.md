@@ -1,4 +1,5 @@
 ## 简述
+
 SQL模板注册，就是创建和添加MappedStatement
 
 mybatis-plus会复用mybatis，将xxxMapper.xml文件定义的sql模板解析成MappedStatement。因此在xxxMapper.xml定义sql用法和mybatis一样
@@ -8,63 +9,65 @@ mybatis-plus会复用mybatis，将xxxMapper.xml文件定义的sql模板解析成
 mybatis-plus的Wrapper是mybatis的实体，mybatis会反射解析属性，对脚本动态内容进行判断和替换
 
 脚本代码会转成sqlNode对象，脚本动态内容进行判断和替换的过程是转成sqlNode后执行的
+
 ```xml
 <script>
-	<if test="ew != null and ew.sqlFirst != null">
-		${ew.sqlFirst}
-	</if> 
+    <if test="ew != null and ew.sqlFirst != null">
+        ${ew.sqlFirst}
+    </if> 
 
-	SELECT 
+    SELECT 
 
-	<choose>
-		<when test="ew != null and ew.sqlSelect != null">
-			${ew.sqlSelect}
-		</when>
-		<otherwise>
-			trade_id,created_at,updated_at
-		</otherwise>
-	</choose> 
+    <choose>
+        <when test="ew != null and ew.sqlSelect != null">
+            ${ew.sqlSelect}
+        </when>
+        <otherwise>
+            trade_id,created_at,updated_at
+        </otherwise>
+    </choose> 
 
-	FROM trade 
+    FROM trade 
 
-	<if test="ew != null">
-		<where>
-			<if test="ew.entity != null">
-				<if test="ew.entity['tradeId'] != null"> 
-					AND trade_id=#{ew.entity.tradeId}
-				</if>
-				<if test="ew.entity['createdAt'] != null"> 
-					AND created_at=#{ew.entity.createdAt}
-				</if>
-				<if test="ew.entity['updatedAt'] != null"> 
-					AND updated_at=#{ew.entity.updatedAt}
-				</if>
-			</if>
+    <if test="ew != null">
+        <where>
+            <if test="ew.entity != null">
+                <if test="ew.entity['tradeId'] != null"> 
+                    AND trade_id=#{ew.entity.tradeId}
+                </if>
+                <if test="ew.entity['createdAt'] != null"> 
+                    AND created_at=#{ew.entity.createdAt}
+                </if>
+                <if test="ew.entity['updatedAt'] != null"> 
+                    AND updated_at=#{ew.entity.updatedAt}
+                </if>
+            </if>
 
-			<if test="ew.sqlSegment != null and ew.sqlSegment != '' and ew.nonEmptyOfWhere">
-				<if test="ew.nonEmptyOfEntity and ew.nonEmptyOfNormal"> 
-					AND
-				</if> 
-				${ew.sqlSegment}
-			</if>
-		</where>
+            <if test="ew.sqlSegment != null and ew.sqlSegment != '' and ew.nonEmptyOfWhere">
+                <if test="ew.nonEmptyOfEntity and ew.nonEmptyOfNormal"> 
+                    AND
+                </if> 
+                ${ew.sqlSegment}
+            </if>
+        </where>
 
-		<if test="ew.sqlSegment != null and ew.sqlSegment != '' and ew.emptyOfWhere">
-			${ew.sqlSegment}
-		</if>
-	</if>  
+        <if test="ew.sqlSegment != null and ew.sqlSegment != '' and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </if>  
 
-	<if test="ew != null and ew.sqlComment != null">
-		${ew.sqlComment}
-	</if>
+    <if test="ew != null and ew.sqlComment != null">
+        ${ew.sqlComment}
+    </if>
 </script>
 ```
-
 
 ## 源码解析
 
 ### MybatisPlusAutoConfiguration
+
 MybatisPlusAutoConfiguration的sqlSessionFactory()方法注册SqlSessionFactory类型的bean。是由MybatisSqlSessionFactoryBean进行处理的
+
 ```java
 @Configuration(
     proxyBeanMethods = false
@@ -84,6 +87,7 @@ public class MybatisPlusAutoConfiguration implements InitializingBean {
 ```
 
 ### MybatisSqlSessionFactoryBean
+
 MybatisSqlSessionFactoryBean 实际上构建sqlSessionFactory是通过afterPropertiesSet方法
 
 ```java
@@ -107,16 +111,18 @@ public class MybatisSqlSessionFactoryBean implements FactoryBean<SqlSessionFacto
         // xml文件解析
         XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder(mapperLocation.getInputStream(), (Configuration)targetConfiguration, mapperLocation.toString(), ((Configuration)targetConfiguration).getSqlFragments());
         xmlMapperBuilder.parse();
-        
+
         //
     }
-    
-    
+
+
 }
 ```
 
 ### XMLMapperBuilder
+
 XMLMapperBuilder解析TradeMapper.xml，并将文件内的sql模板语句注册成MappedStatement
+
 ```java
 public class XMLMapperBuilder extends BaseBuilder {
     public void parse() {
@@ -155,10 +161,9 @@ public class XMLMapperBuilder extends BaseBuilder {
 }
 ```
 
-
 ### MybatisConfiguration
-XMLMapperBuilder 通过configuration，转到了MybatisConfiguration.addMapper() 方法
 
+XMLMapperBuilder 通过configuration，转到了MybatisConfiguration.addMapper() 方法
 
 ```java
 public class XMLMapperBuilder extends BaseBuilder {
@@ -176,6 +181,7 @@ public class MybatisConfiguration extends Configuration {
 ```
 
 ### MybatisMapperRegistry
+
 ```java
 public class MybatisMapperRegistry extends MapperRegistry {
     @Override
@@ -200,6 +206,7 @@ public class MybatisMapperRegistry extends MapperRegistry {
 ```
 
 ### MybatisMapperAnnotationBuilder
+
 ```java
 public class MybatisMapperAnnotationBuilder extends MapperAnnotationBuilder {
     @Override
@@ -226,6 +233,7 @@ public class MybatisMapperAnnotationBuilder extends MapperAnnotationBuilder {
 ```
 
 ### AbstractSqlInjector
+
 ```java
 public abstract class AbstractSqlInjector implements ISqlInjector {
     @Override
@@ -237,6 +245,7 @@ public abstract class AbstractSqlInjector implements ISqlInjector {
 ```
 
 ### AbstractMethod
+
 ```java
 public abstract class AbstractMethod implements Constants {
     public void inject(MapperBuilderAssistant builderAssistant, Class<?> mapperClass, Class<?> modelClass, TableInfo tableInfo) {
@@ -246,6 +255,7 @@ public abstract class AbstractMethod implements Constants {
 ```
 
 ### SelectList
+
 ```java
 public class SelectList extends AbstractMethod {
     @Override

@@ -1,4 +1,5 @@
 ## 服务端架构
+
 ![图片替代文本](clickhouse-cluster.drawio.png)
 
 clickhouse最简化的高可用架构是3节点1分片2副本。
@@ -12,6 +13,7 @@ clickhouse最简化的高可用架构是3节点1分片2副本。
 使用的时候，也不需要同时创建分布式表和本地表支持分布式查询。
 
 ### 配置示例
+
 ```xml
 <clickhouse>
     <remote_servers>
@@ -39,13 +41,13 @@ clickhouse最简化的高可用架构是3节点1分片2副本。
     <server_id>1</server_id>
     <log_storage_path>/var/lib/clickhouse/coordination/log</log_storage_path>
     <snapshot_storage_path>/var/lib/clickhouse/coordination/snapshots</snapshot_storage_path>
-    
+
     <coordination_settings>
         <operation_timeout_ms>10000</operation_timeout_ms>
         <session_timeout_ms>30000</session_timeout_ms>
         <raft_logs_level>warning</raft_logs_level>
     </coordination_settings>
-    
+
     <raft_configuration>
         <server>
             <id>1</id>
@@ -82,6 +84,7 @@ clickhouse最简化的高可用架构是3节点1分片2副本。
 ```
 
 ### 查看集群信息
+
 ```sql
 -- 查看集群信息
 select * from system.clusters;

@@ -45,14 +45,16 @@ public class DynamicDataSourceAutoConfiguration implements InitializingBean {
 ```
 
 #### AbstractAdvisorAutoProxyCreator
+
 通过getAdvicesAndAdvisorsForBean为使用了@DS注解的bean创建cglib代理，执行所有方法的时候，都会执行到DynamicDataSourceAnnotationInterceptor
+
 ```java
 public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyCreator {
     @Override
     @Nullable
     protected Object[] getAdvicesAndAdvisorsForBean(
            Class<?> beanClass, String beanName, @Nullable TargetSource targetSource) {
-    
+
         List<Advisor> advisors = findEligibleAdvisors(beanClass, beanName);
         if (advisors.isEmpty()) {
            return DO_NOT_PROXY;
@@ -63,9 +65,11 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 ```
 
 #### DynamicDataSourceAnnotationInterceptor
+
 DynamicDataSourceAnnotationInterceptor实现MethodInterceptor接口，MethodInterceptor继承自Interceptor接口，Interceptor继承自Advice接口。因此，DynamicDataSourceAnnotationInterceptor就是AOP的Advice
 
 Spring会调用到DynamicDataSourceAnnotationInterceptor的invoke方法，将当前注解的数据源设置到DynamicDataSourceContextHolder类的当前线程，并且这个线程使用的数据结构是栈
+
 ```java
 public class DynamicDataSourceAnnotationInterceptor implements MethodInterceptor {
     @Override
@@ -93,7 +97,7 @@ public final class DynamicDataSourceContextHolder {
         LOOKUP_KEY_HOLDER.get().push(dataSourceStr);
         return dataSourceStr;
     }
-    
+
     public static void poll() {
         Deque<String> deque = LOOKUP_KEY_HOLDER.get();
         deque.poll();
@@ -105,11 +109,13 @@ public final class DynamicDataSourceContextHolder {
 ```
 
 #### TradeProvider
+
 TradeProvider 继承了ServiceImpl，ServiceImpl实现了IService接口。
 
 TradeProvider.list() => IService.list() => this.getBaseMapper().selectList(queryWrapper)
 
 getBaseMapper()返回的mapper就是MapperScan扫描并且注册的MybatisMapperProxy代理
+
 ```java
 @Service
 public class TradeProvider extends BaseTblProvider<TradeMapper, Trade> implements TradeContract {
@@ -120,7 +126,7 @@ public class TradeProvider extends BaseTblProvider<TradeMapper, Trade> implement
 public class ServiceImpl<M extends BaseMapper<T>, T> implements IService<T> {
     @Autowired
     protected M baseMapper;
-    
+
     public M getBaseMapper() {
         return this.baseMapper;
     }
@@ -138,6 +144,7 @@ public interface IService<T> {
 ```
 
 #### MybatisMapperProxy
+
 MybatisMapperProxy 的 invoke调用的是MybatisMapperMethod的execute方法，
 
 ```java
@@ -153,15 +160,15 @@ public class MybatisMapperProxy<T> implements InvocationHandler, Serializable {
             throw ExceptionUtil.unwrapThrowable(t);
         }
     }
-    
+
     private static class PlainMethodInvoker implements MapperMethodInvoker {
         private final MybatisMapperMethod mapperMethod;
-    
+
         public PlainMethodInvoker(MybatisMapperMethod mapperMethod) {
             super();
             this.mapperMethod = mapperMethod;
         }
-    
+
         @Override
         public Object invoke(Object proxy, Method method, Object[] args, SqlSession sqlSession) throws Throwable {
             return mapperMethod.execute(sqlSession, args);
@@ -171,7 +178,9 @@ public class MybatisMapperProxy<T> implements InvocationHandler, Serializable {
 ```
 
 #### MybatisMapperMethod
+
 MybatisMapperMethod的execute()最终调用的是mybatis的sqlSession.select()，这个SqlSession就是之前Datasource适配注册的SqlTemplate
+
 ```java
 public class MybatisMapperMethod {
     public Object execute(SqlSession sqlSession, Object[] args) {
@@ -235,6 +244,7 @@ public class MybatisMapperMethod {
 #### ibatis执行
 
 通过ASTProperty类和反射的方式执行到mybatis-plus的AbstractWrapper方法
+
 ```java
 public class ASTProperty extends SimpleNode implements NodeType {
     protected Object getValueBody(OgnlContext context, Object source) throws OgnlException {

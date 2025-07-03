@@ -12,14 +12,14 @@ import org.springframework.core.annotation.Order;
  * HikariDataSourceCreator加强版自动配置
  */
 @Configuration
-public class HikariDataSourcePlusCreatorAutoConfiguration {
+public class SprivalHikariDataSourceCreatorAutoConfiguration {
     @ConditionalOnClass(HikariDataSource.class)
     @Configuration
     static class HikariDataSourcePlusCreatorConfiguration {
         @Bean
         @Order(DynamicDataSourceCreatorAutoConfiguration.HIKARI_ORDER-1)
-        public HikariDataSourcePlusCreator hikariDataSourcePlusCreator(MeterRegistry meterRegistry) {
-            return new HikariDataSourcePlusCreator(meterRegistry);
+        public SprivalHikariDataSourceCreator hikariDataSourcePlusCreator(MeterRegistry meterRegistry) {
+            return new SprivalHikariDataSourceCreator(meterRegistry);
         }
     }
 }
