@@ -131,3 +131,20 @@ General configuration:
 - mongodb_driver_pool_size: gauge; the current size of the connection pool, including idle and  in-use members
 - mongodb_driver_pool_waitqueuesize: gauge; the current size of the wait queue for a connection from the pool
 
+### PromSQL配置
+```promSQL
+# 平均耗时
+avg(rate(mongodb_driver_commands_seconds_sum[5m]) / rate(mongodb_driver_commands_seconds_count[5m])) by (job)
+
+# 命令执行时间 TOP 20
+topk(20, mongodb_driver_commands_seconds_max)
+
+# 使用中的连接数
+sum(mongodb_driver_pool_checkedout) by (job)
+
+# 连接池的总大小
+sum(mongodb_driver_pool_size) by (job)
+
+# 当前等待从连接池获取连接的请求数量
+sum(mongodb_driver_pool_waitqueuesize) by (job)
+```
