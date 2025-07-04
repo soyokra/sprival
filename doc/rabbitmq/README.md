@@ -1,7 +1,12 @@
-## 服务端架构
+# rabbitmq
 
-![图片替代文本](rabbitmq-cluster.drawio.png)
+## 集群架构
+- Clustering
+- Federation
+- Shovels
 
-rabbitmq最简化的高可用架构需要3个节点，队列选用quorum，三个节点的节点类型都设置为磁盘类型，持久化元数据，对队列性能没有影响
+### Clustering
+rabbitmq集群的节点都是平等的，没有所谓的主从节点。主从是在队列层面，早期版本的classic queue需要设置队列为Durable和HA mode，队列才会在不同的节点
+形成主从副本和持久化。新版本的Quorum Queues基于Raft协议，默认就是durable, replicated, highly available queue
 
-## 监控
+![clustering.png](clustering.png)
