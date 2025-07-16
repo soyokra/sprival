@@ -1,5 +1,6 @@
 package com.soyokra.sprival.support.mq;
 
+import com.soyokra.sprival.support.mq.kafka.KafkaProvider;
 import com.soyokra.sprival.support.mq.rabbit.RabbitProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,14 +10,20 @@ public class MqFactory {
     @Autowired
     RabbitProvider rabbitProvider;
 
+    @Autowired
+    KafkaProvider kafkaProvider;
+
     public enum Driver {
-        RABBITMQ
+        RABBITMQ,
+        KAFKA
     }
 
     public IAdmin admin(Driver driver) {
         switch (driver) {
             case RABBITMQ:
                 return rabbitProvider;
+            case KAFKA:
+                return kafkaProvider;
         }
         return rabbitProvider;
     }
@@ -25,6 +32,8 @@ public class MqFactory {
         switch (driver) {
             case RABBITMQ:
                 return rabbitProvider;
+            case KAFKA:
+                return kafkaProvider;
         }
         return rabbitProvider;
     }
@@ -34,6 +43,8 @@ public class MqFactory {
         switch (driver) {
             case RABBITMQ:
                 return rabbitProvider;
+            case KAFKA:
+                return kafkaProvider;
         }
         return rabbitProvider;
     }

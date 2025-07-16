@@ -50,5 +50,12 @@ public class ConsumerRunner implements ApplicationRunner {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+
+        try {
+            IConsumer consumerImpl2 = mqFactory.consumer(MqFactory.Driver.KAFKA);
+            consumerImpl2.listenerUp(null);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
     }
 }

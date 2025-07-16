@@ -7,6 +7,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.config.KafkaListenerEndpointRegistrar;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -30,6 +31,7 @@ public class RabbitProvider implements IAdmin, IBroker, IConsumer {
 
     @Autowired
     RabbitMessageListener rabbitMessageListener;
+
 
     protected static Map<String, SimpleMessageListenerContainer> CONSUMER_LISTENER_MAP = new ConcurrentHashMap<>();
 
@@ -80,7 +82,6 @@ public class RabbitProvider implements IAdmin, IBroker, IConsumer {
     public void listenerDown(List<Consumer> consumerList) {
         listenerHandler(consumerList);
     }
-
 
     protected void listenerHandler(List<Consumer> consumerList) {
         if(! CollectionUtils.isEmpty(consumerList)) {
@@ -146,7 +147,6 @@ public class RabbitProvider implements IAdmin, IBroker, IConsumer {
             listenerAutoClose(consumerSet);
         }
     }
-
 
     protected void listenerAutoClose(Set<String> consumerSet) {
         for (Map.Entry<String, SimpleMessageListenerContainer> entry : CONSUMER_LISTENER_MAP.entrySet()) {
