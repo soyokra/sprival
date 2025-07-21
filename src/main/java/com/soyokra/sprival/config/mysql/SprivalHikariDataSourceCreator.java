@@ -8,8 +8,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import javax.sql.DataSource;
 
 /**
- * HikariDataSourceCreator加强版，支持监控
- * 健康检查，指标监控
+ * hikari数据源创建器增加micrometer监控指标采集注入
  */
 public class SprivalHikariDataSourceCreator extends HikariDataSourceCreator {
 

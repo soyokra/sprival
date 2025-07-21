@@ -9,16 +9,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 /**
- * HikariDataSourceCreator加强版自动配置
+ * 自定义hikari数据源创建器自动装配
  */
 @Configuration
 public class SprivalHikariDataSourceCreatorAutoConfiguration {
     @ConditionalOnClass(HikariDataSource.class)
     @Configuration
     static class HikariDataSourcePlusCreatorConfiguration {
+
+        /**
+         * 在源码的之前注册bean就能替换掉默认的hikari数据源创建器
+         */
         @Bean
         @Order(DynamicDataSourceCreatorAutoConfiguration.HIKARI_ORDER-1)
-        public SprivalHikariDataSourceCreator hikariDataSourcePlusCreator(MeterRegistry meterRegistry) {
+        public SprivalHikariDataSourceCreator sprivalHikariDataSourceCreator(MeterRegistry meterRegistry) {
             return new SprivalHikariDataSourceCreator(meterRegistry);
         }
     }
