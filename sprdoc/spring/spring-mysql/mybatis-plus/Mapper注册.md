@@ -1,4 +1,4 @@
-## 简述
+# Mapper注册
 
 mybatis通常的用法如下：
 
