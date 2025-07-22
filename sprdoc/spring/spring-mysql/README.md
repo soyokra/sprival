@@ -1,12 +1,11 @@
 # spring-mysql
 
 ## 组件
-- jdbc
-- mybatis
-- hikari
-- mybatis-plus
-- p6spy
-- sharding-jdbc
+- [mybatis-plus](./mybatis-plus/README.md)
+- [jdbc](./jdbc/README.md)
+- [mybatis](./mybatis/README.md)
+- [hikari](./hikari/README.md)
+- [p6spy](./p6spy/README.md)
 
 ## 配置说明
 数据库连接配置
@@ -66,11 +65,37 @@ hikari线程池配置说明
 参考文档：[https://github.com/brettwooldridge/HikariCP/tree/HikariCP-3.4.5](https://github.com/brettwooldridge/HikariCP/tree/HikariCP-3.4.5)
 
 
+## 监控设置
+mybatis-plus集成hikari配置micrometer组件采集监控指标需要处理一下，具体参见源码
+```text
+SprivalHikariDataSourceCreator
+SprivalHikariDataSourceCreatorAutoConfiguration
+```
 
+访问http://127.0.0.1/api/actuator/metrics就能看到hikaricp的指标
 
-## 监控预警
-
-### 连接池监控
+```text
+    "hikaricp.connections",
+    "hikaricp.connections.acquire",
+    "hikaricp.connections.active",
+    "hikaricp.connections.creation",
+    "hikaricp.connections.idle",
+    "hikaricp.connections.max",
+    "hikaricp.connections.min",
+    "hikaricp.connections.pending",
+    "hikaricp.connections.timeout",
+    "hikaricp.connections.usage",
+```
 
 
 ## 源码分析
+mybatis-plus自动装配实现了对mybatis和hikari的集成。
+
+mybatis-plus的DynamicRoutingDataSource继承自DataSource，并且注册了mybatis的SqlSessionFactory Bean，
+注入的实例就是DynamicRoutingDataSource。因此使用mybatis执行sql的时候，实际上 使用的是mybatis-plus的DynamicRoutingDataSource
+
+如果选择hikari作为DataSource，mybatis-plus会将HikariDataSource注入到DynamicRoutingDataSource，使用到连接池的时候，会引用HikariDataSource。
+
+hikari通过DriverDataSource加载驱动，进而使用到对应厂商jdbc的实现类
+
+![关系图](relation.png)
