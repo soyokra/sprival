@@ -1,0 +1,141 @@
+version: '3'
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+
+services:
+  ### elasticsearch ################################################
+  elasticsearch:
+    build:
+      context: ./elasticsearch
+    volumes:
+      - ./elasticsearch/volumes/data:/usr/share/elasticsearch/data
+      - ./elasticsearch/volumes/logs:/usr/share/elasticsearch/logs
+    environment:
+      - node.name=es-node-1
+      - cluster.name=docker-elastic-cluster
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=workdock
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - backend
+
+  ### redis ################################################
+  redis:
+    build:
+      context: ./redis
+    ports:
+      - "6379:6379"
+    networks:
+      - frontend
+      - backend
+    volumes:
+      - ./redis/volumes/data:/data
+
+  ### RabbitMQ #############################################
+  rabbitmq:
+    build: ./rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15671:15671"
+    privileged: true
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    hostname: workdock-rabbitmq
+    volumes:
+      - ./rabbitmq/volumes/data:/var/lib/rabbitmq
+    networks:
+      - backend
+
+  ### MongoDB ##############################################
+  mongodb:
+    build: ./mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=workdock
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongodb/volumes/data/db:/data/db
+      - ./mongodb/volumes/data/configdb:/data/configdb
+    networks:
+      - backend
+
+  ### ClickHouse ##############################################
+  clickhouse:
+    build: ./clickhouse
+    ports:
+      - "8123:8123"
+    networks:
+      - backend
+
+  ### Grafana ###################################################
+  grafana:
+    build:
+      context: ./grafana
+    volumes:
+      - ./grafana/volumes/data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=workdock
+    ports:
+      - "3000:3000"
+    networks:
+      - frontend
+      - backend
+    links:
+      - prometheus
+
+  ### Prometheus ###################################################
+  prometheus:
+    build:
+      context: ./prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/volumes/data:/prometheus/prom/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - frontend
+      - backend
+
+  ### Kafka ###################################################
+  kafka:
+    build:
+      context: ./kafka
+    volumes:
+      - ./kafka/volumes/data:/var/lib/kafka/data
+    ports:
+      - "9092:9092"
+    networks:
+      - frontend
+      - backend
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller  # 同时作为 broker 和 controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093  # 控制器列表，包含当前节点
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: CONTROLLER://:9093,PLAINTEXT://:29092,PLAINTEXT_HOST://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER  # 新增：指定控制器使用的监听器
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
