@@ -2,4 +2,4 @@
 Spring组件框架
 
 ## 集成组件
-- [spring-mysql](doc/spring/spring-mysql/README.md)
+- [spring-mysql](sprdoc/spring/spring-mysql/README.md)
