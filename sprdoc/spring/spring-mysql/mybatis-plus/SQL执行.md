@@ -17,9 +17,8 @@ mybatis-plus查询方法有三种
 
 SqlSession使用的DataSource是mybatis-plus注入的DynamicRoutingDataSource。DynamicRoutingDataSource底层使用的数据源可以是Hikari, Druid。。。参见DataSource适配。
 
-## 源码解析
 
-#### DynamicDataSourceAutoConfiguration
+## DynamicDataSourceAutoConfiguration
 
 dynamicDatasourceAnnotationAdvisor()方法将DynamicDataSourceAnnotationInterceptor注册为Advisor类型的Bean，DS注解类作为Pointcut
 
@@ -44,7 +43,7 @@ public class DynamicDataSourceAutoConfiguration implements InitializingBean {
 }
 ```
 
-#### AbstractAdvisorAutoProxyCreator
+## AbstractAdvisorAutoProxyCreator
 
 通过getAdvicesAndAdvisorsForBean为使用了@DS注解的bean创建cglib代理，执行所有方法的时候，都会执行到DynamicDataSourceAnnotationInterceptor
 
@@ -64,11 +63,11 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 }
 ```
 
-#### DynamicDataSourceAnnotationInterceptor
+## DynamicDataSourceAnnotationInterceptor
 
-DynamicDataSourceAnnotationInterceptor实现MethodInterceptor接口，MethodInterceptor继承自Interceptor接口，Interceptor继承自Advice接口。因此，DynamicDataSourceAnnotationInterceptor就是AOP的Advice
+- DynamicDataSourceAnnotationInterceptor实现MethodInterceptor接口，MethodInterceptor继承自Interceptor接口，Interceptor继承自Advice接口。因此，DynamicDataSourceAnnotationInterceptor就是AOP的Advice
 
-Spring会调用到DynamicDataSourceAnnotationInterceptor的invoke方法，将当前注解的数据源设置到DynamicDataSourceContextHolder类的当前线程，并且这个线程使用的数据结构是栈
+- Spring会调用到DynamicDataSourceAnnotationInterceptor的invoke方法，将当前注解的数据源设置到DynamicDataSourceContextHolder类的当前线程，并且这个线程使用的数据结构是栈
 
 ```java
 public class DynamicDataSourceAnnotationInterceptor implements MethodInterceptor {
@@ -108,13 +107,11 @@ public final class DynamicDataSourceContextHolder {
 }
 ```
 
-#### TradeProvider
+## TradeProvider
 
-TradeProvider 继承了ServiceImpl，ServiceImpl实现了IService接口。
-
-TradeProvider.list() => IService.list() => this.getBaseMapper().selectList(queryWrapper)
-
-getBaseMapper()返回的mapper就是MapperScan扫描并且注册的MybatisMapperProxy代理
+- TradeProvider 继承了ServiceImpl，ServiceImpl实现了IService接口。
+- TradeProvider.list() => IService.list() => this.getBaseMapper().selectList(queryWrapper)
+- getBaseMapper()返回的mapper就是MapperScan扫描并且注册的MybatisMapperProxy代理
 
 ```java
 @Service
@@ -143,7 +140,7 @@ public interface IService<T> {
 }
 ```
 
-#### MybatisMapperProxy
+## MybatisMapperProxy
 
 MybatisMapperProxy 的 invoke调用的是MybatisMapperMethod的execute方法，
 
@@ -177,7 +174,7 @@ public class MybatisMapperProxy<T> implements InvocationHandler, Serializable {
 }
 ```
 
-#### MybatisMapperMethod
+## MybatisMapperMethod
 
 MybatisMapperMethod的execute()最终调用的是mybatis的sqlSession.select()，这个SqlSession就是之前Datasource适配注册的SqlTemplate
 
@@ -241,7 +238,7 @@ public class MybatisMapperMethod {
 }   
 ```
 
-#### ibatis执行
+## ibatis执行
 
 通过ASTProperty类和反射的方式执行到mybatis-plus的AbstractWrapper方法
 

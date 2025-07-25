@@ -1,4 +1,4 @@
-# Mapper注册
+# Mapper
 
 mybatis通常的用法如下：
 
@@ -36,16 +36,13 @@ class Test {
 }
 ```
 
-这里的UserMapper实现实际上是一个代理MapperProxy。这种方式简单来说就是，定义接口，调用接口方法的时候，通过代理方式处理接口实现
+- 这里的UserMapper实现实际上是一个代理MapperProxy。这种方式简单来说就是，定义接口，调用接口方法的时候，通过代理方式处理接口实现
+- 集成到spring的时候，需要将项目中定义的所有Mapper转换为Proxy，并且注册为Bean。
+- mybatis通过MapperScan注解扫描mapper接口，注册为bean的时候的是FactoryBean模式将实现类转换为MapperProxy代理，
+- 对于mybatis-plus来说，通过注册SqlSessionTemplate这个bean，将MapperProxy代理替换成自己的MybatisMapperProxy代理
 
-集成到spring的时候，需要将项目中定义的所有Mapper转换为Proxy，并且注册为Bean。
 
-mybatis通过MapperScan注解扫描mapper接口，注册为bean的时候的是FactoryBean模式将实现类转换为MapperProxy代理，
-对于mybatis-plus来说，通过注册SqlSessionTemplate这个bean，将MapperProxy代理替换成自己的MybatisMapperProxy代理
-
-## 源码解析
-
-### 关键路径
+## 主要的调用链路
 
 ```text
 @MapperScan("com.soyokra.sprival.dao.*.mapper")
@@ -58,14 +55,12 @@ mybatis通过MapperScan注解扫描mapper接口，注册为bean的时候的是Fa
 => 最终通过mybatis-plus的MybatisMapperRegistry执行到MybatisMapperProxyFactory，生成了MybatisMapperProxy代理类作为Mapper接口的实现
 ```
 
-### MapperScan
+## MapperScan
 
 @MapperScan("com.soyokra.sprival.dao.*.mapper")设置了需要扫描的包basePackages为"com.soyokra.sprival.dao.*.mapper"
 
 ```java
 @MapperScan("com.soyokra.sprival.dao.*.mapper")
-
-
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
@@ -76,14 +71,11 @@ public @interface MapperScan {
 }
 ```
 
-### MapperScannerRegistrar
+## MapperScannerRegistrar
 
-MapperScan注解本身注解了@Import({MapperScannerRegistrar.class})
-
-MapperScannerRegistrar这个类实现了接口ImportBeanDefinitionRegistrar
-
-通过registerBeanDefinitions方法注册MapperScannerConfigurer这个类的BeanDefinition的时候，
-把MapperScan注解设置需要扫描的包设置到了MapperScannerConfigurer这个类的属性basePackages
+- MapperScan注解本身注解了@Import({MapperScannerRegistrar.class})
+- MapperScannerRegistrar这个类实现了接口ImportBeanDefinitionRegistrar
+- 通过registerBeanDefinitions方法注册MapperScannerConfigurer这个类的BeanDefinition的时候， 把MapperScan注解设置需要扫描的包设置到了MapperScannerConfigurer这个类的属性basePackages
 
 ```java
 public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
@@ -100,11 +92,10 @@ public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
 }
 ```
 
-### MapperScannerConfigurer
+## MapperScannerConfigurer
 
-MapperScannerConfigurer这个类实现了BeanDefinitionRegistryPostProcessor的接口
-
-在postProcessBeanDefinitionRegistry方法里实例化了ClassPathMapperScanner，通过ClassPathMapperScanner进行类文件扫描和BeanDefinition的注册
+- MapperScannerConfigurer这个类实现了BeanDefinitionRegistryPostProcessor的接口
+- 在postProcessBeanDefinitionRegistry方法里实例化了ClassPathMapperScanner，通过ClassPathMapperScanner进行类文件扫描和BeanDefinition的注册
 
 ```java
 public class MapperScannerConfigurer 
@@ -118,7 +109,7 @@ public class MapperScannerConfigurer
 }
 ```
 
-### ClassPathMapperScanner
+## ClassPathMapperScanner
 
 对basePackages下的文件进行扫描注册成BeanDefinition，并且设置了BeanDefinition的属性beanClass为MapperFactoryBean
 
@@ -142,10 +133,10 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
 }
 ```
 
-### MapperFactoryBean
+## MapperFactoryBean
 
-MapperFactoryBean实现了FactoryBean接口
-Spring将Mapper注册为Bean的时候，用的是MapperFactoryBean的getObject()，这个方法调用到了SqlSessionTemplate.getMapper()
+- MapperFactoryBean实现了FactoryBean接口
+- Spring将Mapper注册为Bean的时候，用的是MapperFactoryBean的getObject()，这个方法调用到了SqlSessionTemplate.getMapper()
 
 ```java
 public class MapperFactoryBean<T> extends SqlSessionDaoSupport implements FactoryBean<T> {
@@ -166,7 +157,7 @@ public abstract class SqlSessionDaoSupport extends DaoSupport {
 }
 ```
 
-### SqlSessionTemplate
+## SqlSessionTemplate
 
 SqlSessionTemplate调用的是 getConfiguration().getMapper(type, this)。由于这个SqlSessionTemplate是mybatis-plus注册的Bean，Configuration实际上是mybatis-plus
 实现的，最终最终通过mybatis-plus的MybatisMapperRegistry执行到MybatisMapperProxyFactory，生成了MybatisMapperProxy代理类作为Mapper接口的实现
@@ -185,18 +176,11 @@ public class SqlSessionTemplate implements SqlSession, DisposableBean {
 }
 ```
 
-### MybatisPlusAutoConfiguration
+## MybatisPlusAutoConfiguration
 
 mybatis-plus注册SqlSessionFactory 和 SqlSessionTemplate bean
 
 ```java
-@Configuration(
-    proxyBeanMethods = false
-)
-@ConditionalOnClass({SqlSessionFactory.class, SqlSessionFactoryBean.class})
-@ConditionalOnSingleCandidate(DataSource.class)
-@EnableConfigurationProperties({MybatisPlusProperties.class})
-@AutoConfigureAfter({DataSourceAutoConfiguration.class, MybatisPlusLanguageDriverAutoConfiguration.class})
 public class MybatisPlusAutoConfiguration implements InitializingBean {
 
     @Bean
