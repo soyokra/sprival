@@ -13,9 +13,9 @@ mybatis-plus查询方法有三种
 对于mybatis-plus内置查询，会通过代理的方式用mybatis的SqlSession执行SQL。
 
 执行的SQL由两部分组成，一个是预生成的MappedStatement，也就是SQL模板。一个是Wrapper对象，也就是动态参数。mybatis-plus生成的SQL模板内的占位符不仅仅有查询参数，还有查询字段，SQL片段这种占位符
-然后通过Wrapper动态生成where条件，查询字段等替换掉SQL模板的占位符，构成完整的SQL。参见SQL模板注册
+然后通过Wrapper动态生成where条件，查询字段等替换掉SQL模板的占位符，构成完整的SQL。参见[SQL模板注册](SQL模板注册.md)
 
-SqlSession使用的DataSource是mybatis-plus注入的DynamicRoutingDataSource。DynamicRoutingDataSource底层使用的数据源可以是Hikari, Druid。。。参见DataSource适配。
+SqlSession使用的DataSource是mybatis-plus注入的DynamicRoutingDataSource。DynamicRoutingDataSource底层使用的数据源可以是Hikari, Druid。。。参见[DataSource](DataSource.md)。
 
 
 ## DynamicDataSourceAutoConfiguration

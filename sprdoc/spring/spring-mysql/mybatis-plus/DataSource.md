@@ -1,24 +1,20 @@
 # DataSource
 
 - mybatis-plus的动态数据源DynamicRoutingDataSource集成了mybatis的SqlSessionFactory和hikari的HikariDataSource
-- 主要是通过mybatis-plus的DynamicDataSourceAutoConfiguration自动装配实现集成
+- mybatis-plus的DynamicDataSourceAutoConfiguration自动装配是实现集成的重要入口
 
 ![图片替代文本](DataSource-Simple.drawio.png)
-
-## 详细链路图
-
-![图片替代文本](DataSource.drawio.png)
 
 
 ## 创建DataSource
 
-主要的调用链路如下所示：
+抽象接口的链路设计：
 
 ```text
-DynamicRoutingDataSource --> YmlDynamicDataSourceProvider --> HikariDataSourceCreator
+DataSource --> DynamicDataSourceProvider -->DataSourceCreator
 ```
 
-### DynamicRoutingDataSource
+### DataSource
 
 ![图片替代文本](DynamicRoutingDataSource.png)
 
@@ -61,9 +57,7 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource implemen
 ```
 
 
-
-
-### YmlDynamicDataSourceProvider
+### DynamicDataSourceProvider
 
 ![图片替代文本](YmlDynamicDataSourceProvider.png)
 
@@ -108,7 +102,7 @@ public abstract class AbstractDataSourceProvider implements DynamicDataSourcePro
 }
 ```
 
-### HikariDataSourceCreator
+### DataSourceCreator
 
 ![图片替代文本](HikariDataSourceCreator.png)
 
