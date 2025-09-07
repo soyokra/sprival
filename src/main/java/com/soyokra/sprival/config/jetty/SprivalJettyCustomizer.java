@@ -1,0 +1,26 @@
+package com.soyokra.sprival.config.jetty;
+
+
+import org.eclipse.jetty.server.Server;
+import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+/**
+ * Sprival Jetty服务器自定义配置
+ * 
+ * @author Sprival Team
+ * @version 1.0
+ */
+@Component
+@Order(1)
+public class SprivalJettyCustomizer implements JettyServerCustomizer {
+
+
+
+    @Override
+    public void customize(Server server) {
+      // 高级配置自定义，根据需求定义，并不一定需要实现
+    }
+
+}
