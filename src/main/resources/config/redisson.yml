@@ -1,0 +1,54 @@
+# Redisson配置文件
+# 单机模式配置
+singleServerConfig:
+  # Redis服务器地址
+  address: "redis://localhost:6379"
+  # Redis密码
+  password: "workdock"
+  # 数据库索引
+  database: 0
+  
+  # 连接池配置
+  connectionPoolSize: 20
+  connectionMinimumIdleSize: 5
+  
+  # 超时配置
+  idleConnectionTimeout: 10000
+  connectTimeout: 10000
+  timeout: 3000
+  
+  # 重试配置
+  retryAttempts: 3
+  retryInterval: 1500
+  
+  # 心跳配置
+  keepAlive: true
+  tcpKeepAlive: true
+
+# 集群模式配置（可选）
+# clusterServersConfig:
+#   nodeAddresses:
+#     - "redis://127.0.0.1:7000"
+#     - "redis://127.0.0.1:7001"
+#     - "redis://127.0.0.1:7002"
+#   password: "workdock"
+#   masterConnectionPoolSize: 20
+#   slaveConnectionPoolSize: 20
+#   masterConnectionMinimumIdleSize: 5
+#   slaveConnectionMinimumIdleSize: 5
+#   idleConnectionTimeout: 10000
+#   connectTimeout: 10000
+#   timeout: 3000
+#   retryAttempts: 3
+#   retryInterval: 1500
+
+# 通用配置
+codec: !<org.redisson.codec.JsonJacksonCodec> {}
+threads: 16
+nettyThreads: 32
+
+# 传输模式
+transportMode: "NIO"
+
+# 序列化配置
+# 使用JSON序列化，便于调试和跨语言兼容

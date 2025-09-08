@@ -1,0 +1,211 @@
+{
+    "dashboard": {
+        "id": null,
+        "title": "Sprival RabbitMQ Monitoring",
+        "tags": [
+            "sprival",
+            "rabbitmq",
+            "monitoring"
+        ],
+        "timezone": "browser",
+        "panels": [
+            {
+                "id": 1,
+                "title": "RabbitMQ 连接状态",
+                "type": "stat",
+                "gridPos": {
+                    "h": 8,
+                    "w": 6,
+                    "x": 0,
+                    "y": 0
+                },
+                "targets": [
+                    {
+                        "expr": "rabbitmq_connections",
+                        "legendFormat": "连接数"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "thresholds": {
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": 0
+                                },
+                                {
+                                    "color": "yellow",
+                                    "value": 50
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 100
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 2,
+                "title": "RabbitMQ 通道数",
+                "type": "stat",
+                "gridPos": {
+                    "h": 8,
+                    "w": 6,
+                    "x": 6,
+                    "y": 0
+                },
+                "targets": [
+                    {
+                        "expr": "rabbitmq_channels",
+                        "legendFormat": "通道数"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "thresholds": {
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": 0
+                                },
+                                {
+                                    "color": "yellow",
+                                    "value": 200
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 500
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 3,
+                "title": "消息发布速率",
+                "type": "timeseries",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 0
+                },
+                "targets": [
+                    {
+                        "expr": "rate(rabbitmq_published_total[5m])",
+                        "legendFormat": "发布速率 (消息/秒)"
+                    }
+                ]
+            },
+            {
+                "id": 4,
+                "title": "消息消费速率",
+                "type": "timeseries",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 8
+                },
+                "targets": [
+                    {
+                        "expr": "rate(rabbitmq_consumed_total[5m])",
+                        "legendFormat": "消费速率 (消息/秒)"
+                    }
+                ]
+            },
+            {
+                "id": 5,
+                "title": "消息确认率",
+                "type": "timeseries",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 8
+                },
+                "targets": [
+                    {
+                        "expr": "(rate(rabbitmq_acknowledged_published_total[5m]) / rate(rabbitmq_published_total[5m])) * 100",
+                        "legendFormat": "发布确认率 (%)"
+                    },
+                    {
+                        "expr": "(rate(rabbitmq_acknowledged_total[5m]) / rate(rabbitmq_consumed_total[5m])) * 100",
+                        "legendFormat": "消费确认率 (%)"
+                    }
+                ]
+            },
+            {
+                "id": 6,
+                "title": "消息失败率",
+                "type": "timeseries",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 16
+                },
+                "targets": [
+                    {
+                        "expr": "(rate(rabbitmq_failed_to_publish_total[5m]) / rate(rabbitmq_published_total[5m])) * 100",
+                        "legendFormat": "发布失败率 (%)"
+                    },
+                    {
+                        "expr": "(rate(rabbitmq_rejected_total[5m]) / rate(rabbitmq_consumed_total[5m])) * 100",
+                        "legendFormat": "消费拒绝率 (%)"
+                    }
+                ]
+            },
+            {
+                "id": 7,
+                "title": "未路由消息",
+                "type": "timeseries",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 16
+                },
+                "targets": [
+                    {
+                        "expr": "rate(rabbitmq_unrouted_published_total[5m])",
+                        "legendFormat": "未路由消息速率 (消息/秒)"
+                    }
+                ]
+            },
+            {
+                "id": 8,
+                "title": "消息积压",
+                "type": "timeseries",
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 24
+                },
+                "targets": [
+                    {
+                        "expr": "rabbitmq_consumed_total - rabbitmq_acknowledged_total",
+                        "legendFormat": "未确认消息数"
+                    }
+                ]
+            }
+        ],
+        "time": {
+            "from": "now-1h",
+            "to": "now"
+        },
+        "refresh": "30s",
+        "schemaVersion": 27,
+        "version": 1
+    }
+}

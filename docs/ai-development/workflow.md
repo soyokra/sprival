@@ -72,37 +72,59 @@ graph TD
 
 ### 2. 上下文准备阶段
 
-#### 2.1 项目上下文收集
+#### 2.1 自动化上下文生成
+**第一步：运行上下文生成脚本**
+```powershell
+# 生成最新项目上下文
+.\scripts\generate-project-context.ps1
+
+# 查看生成的上下文文件
+Get-Content docs\ai-development\context\sprival-ai-context-latest.md
+```
+
+**第二步：使用标准上下文模板**
 ```yaml
 项目基础信息:
   - 项目名称: Sprival
   - 版本信息: 0.0.1
   - 技术栈: Spring Boot 2.7.18 + Java 8
   - 架构模式: 组件集成模板
+  - 编码规范: UTF-8
+  - 启动方式: mvn spring-boot:run 或 start-utf8.bat
 
 当前状态:
-  - 已完成组件: [组件列表]
-  - 开发中组件: [组件列表]
-  - 待开发组件: [组件列表]
-  - 已知问题: [问题列表]
+  - 已完成组件: HTTP Server, MySQL, Redis, ClickHouse, MongoDB, RabbitMQ, Kafka, HTTP Client
+  - 开发中组件: [根据实际情况更新]
+  - 待开发组件: [根据需求规划]
+  - 已知问题: [记录已知问题]
 ```
 
-#### 2.2 技术上下文收集
+#### 2.2 上下文文件说明
+- **sprival-ai-context-latest.md**: 综合项目上下文，AI编程的主要参考
+- **component-status-latest.md**: 组件状态详情，了解各组件完成情况
+- **ai-guidance-latest.md**: AI编程指导，包含开发规范和最佳实践
+- **sprival-context-latest.json**: JSON格式上下文，供AI工具解析使用
+
+#### 2.3 技术上下文收集
 ```yaml
 相关组件:
   - 组件名称: [具体组件]
   - 版本信息: [版本号]
   - 配置状态: [配置情况]
   - 依赖关系: [依赖组件]
+  - 健康检查: [健康检查实现]
+  - 监控集成: [监控指标配置]
 
 开发环境:
-  - IDE配置: [开发工具设置]
-  - 构建工具: Maven
+  - IDE配置: IntelliJ IDEA / Eclipse
+  - 构建工具: Maven 3.8.9
+  - 编码格式: UTF-8
+  - 启动脚本: start-utf8.bat / start-utf8.ps1
   - 测试环境: [测试配置]
-  - 部署环境: [部署配置]
+  - 部署环境: Docker + docker-compose
 ```
 
-#### 2.3 业务上下文收集
+#### 2.4 业务上下文收集
 ```yaml
 业务背景:
   - 业务领域: [具体领域]

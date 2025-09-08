@@ -1,0 +1,165 @@
+# RabbitMQ 监控告警规则配置
+# 用于 Prometheus AlertManager
+
+groups:
+  - name: rabbitmq-monitoring
+    rules:
+      # RabbitMQ 连接数过高告警
+      - alert: HighRabbitMQConnections
+        expr: rabbitmq_connections > 100
+        for: 2m
+        labels:
+          severity: warning
+          service: sprival
+          component: rabbitmq
+          team: backend
+        annotations:
+          summary: "RabbitMQ 连接数过高"
+          description: "当前连接数 {{ $value }} 超过100个，可能导致性能问题"
+          runbook_url: "https://wiki.company.com/sprival/rabbitmq/troubleshooting"
+          
+      # RabbitMQ 通道数过高告警
+      - alert: HighRabbitMQChannels
+        expr: rabbitmq_channels > 500
+        for: 2m
+        labels:
+          severity: warning
+          service: sprival
+          component: rabbitmq
+        annotations:
+          summary: "RabbitMQ 通道数过高"
+          description: "当前通道数 {{ $value }} 超过500个"
+          
+      # 消息发布失败率过高告警
+      - alert: HighRabbitMQPublishFailureRate
+        expr: (rabbitmq_failed_to_publish_total / rabbitmq_published_total) * 100 > 5
+        for: 1m
+        labels:
+          severity: critical
+          service: sprival
+          component: rabbitmq
+        annotations:
+          summary: "RabbitMQ 消息发布失败率过高"
+          description: "发布失败率 {{ $value }}% 超过5%阈值"
+          
+      # 消息发布未确认率过高告警
+      - alert: HighRabbitMQUnacknowledgedRate
+        expr: (rabbitmq_not_acknowledged_published_total / rabbitmq_published_total) * 100 > 10
+        for: 2m
+        labels:
+          severity: warning
+          service: sprival
+          component: rabbitmq
+        annotations:
+          summary: "RabbitMQ 消息未确认率过高"
+          description: "未确认率 {{ $value }}% 超过10%阈值"
+          
+      # 消息消费延迟告警
+      - alert: RabbitMQConsumerLag
+        expr: rabbitmq_consumed_total - rabbitmq_acknowledged_total > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: sprival
+          component: rabbitmq
+        annotations:
+          summary: "RabbitMQ 消息消费延迟"
+          description: "未确认消息数 {{ $value }} 超过1000个"
+          
+      # 消息拒绝率过高告警
+      - alert: HighRabbitMQRejectionRate
+        expr: (rabbitmq_rejected_total / rabbitmq_consumed_total) * 100 > 5
+        for: 3m
+        labels:
+          severity: warning
+          service: sprival
+          component: rabbitmq
+        annotations:
+          summary: "RabbitMQ 消息拒绝率过高"
+          description: "消息拒绝率 {{ $value }}% 超过5%阈值"
+          
+      # 未路由消息过多告警
+      - alert: HighRabbitMQUnroutedMessages
+        expr: rate(rabbitmq_unrouted_published_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          service: sprival
+          component: rabbitmq
+        annotations:
+          summary: "RabbitMQ 未路由消息过多"
+          description: "未路由消息速率 {{ $value }} 消息/秒 超过10个/秒"
+          
+      # RabbitMQ 服务不可用告警
+      - alert: RabbitMQServiceDown
+        expr: up{job="rabbitmq"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: sprival
+          component: rabbitmq
+        annotations:
+          summary: "RabbitMQ 服务不可用"
+          description: "RabbitMQ 服务已停止响应超过30秒"
+          
+      # 消息发布速率异常告警
+      - alert: RabbitMQPublishRateAnomaly
+        expr: rate(rabbitmq_published_total[5m]) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: sprival
+          component: rabbitmq
+        annotations:
+          summary: "RabbitMQ 消息发布速率异常"
+          description: "消息发布速率 {{ $value }} 消息/秒 过低，可能存在问题"
+          
+      # 消息消费速率异常告警
+      - alert: RabbitMQConsumeRateAnomaly
+        expr: rate(rabbitmq_consumed_total[5m]) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: sprival
+          component: rabbitmq
+        annotations:
+          summary: "RabbitMQ 消息消费速率异常"
+          description: "消息消费速率 {{ $value }} 消息/秒 过低，可能存在问题"
+
+  - name: rabbitmq-performance
+    rules:
+      # 连接池使用率过高告警
+      - alert: HighRabbitMQConnectionPoolUsage
+        expr: (rabbitmq_connections / 100) * 100 > 80
+        for: 3m
+        labels:
+          severity: warning
+          service: sprival
+          component: rabbitmq
+        annotations:
+          summary: "RabbitMQ 连接池使用率过高"
+          description: "连接池使用率 {{ $value }}% 超过80%阈值"
+          
+      # 消息处理时间过长告警
+      - alert: LongRabbitMQMessageProcessingTime
+        expr: histogram_quantile(0.95, rabbitmq_message_processing_duration_seconds) > 5
+        for: 2m
+        labels:
+          severity: warning
+          service: sprival
+          component: rabbitmq
+        annotations:
+          summary: "RabbitMQ 消息处理时间过长"
+          description: "95%的消息处理时间超过5秒: {{ $value }}秒"
+          
+      # 队列积压告警
+      - alert: RabbitMQQueueBacklog
+        expr: rabbitmq_queue_messages > 10000
+        for: 5m
+        labels:
+          severity: warning
+          service: sprival
+          component: rabbitmq
+        annotations:
+          summary: "RabbitMQ 队列积压"
+          description: "队列消息数 {{ $value }} 超过10000个"
