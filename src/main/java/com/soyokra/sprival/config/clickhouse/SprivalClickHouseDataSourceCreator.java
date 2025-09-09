@@ -1,13 +1,20 @@
 package com.soyokra.sprival.config.clickhouse;
 
+import javax.sql.DataSource;
+import org.springframework.beans.factory.InitializingBean;
 import com.baomidou.dynamic.datasource.creator.DataSourceCreator;
 import com.baomidou.dynamic.datasource.creator.DataSourceProperty;
-import org.springframework.beans.factory.InitializingBean;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import ru.yandex.clickhouse.ClickHouseDataSource;
 import ru.yandex.clickhouse.settings.ClickHouseProperties;
 
-import javax.sql.DataSource;
-
+/**
+ * ClickHouse 数据源创建器
+ * 
+ * @author Sprival Team
+ * @version 1.0
+ */
 public class SprivalClickHouseDataSourceCreator implements DataSourceCreator, InitializingBean {
 
     private final SprivalClickHouseProperties clickHouseProperties;
@@ -20,11 +27,32 @@ public class SprivalClickHouseDataSourceCreator implements DataSourceCreator, In
 
     @Override
     public DataSource createDataSource(DataSourceProperty dataSourceProperty) {
-        ClickHouseProperties clickHouseProperties = new ClickHouseProperties();
-        clickHouseProperties.setUser(dataSourceProperty.getUsername());
-        clickHouseProperties.setPassword(dataSourceProperty.getPassword());
-        clickHouseProperties.setDatabase(this.clickHouseProperties.getDatabase());
-        return new ClickHouseDataSource(dataSourceProperty.getUrl(), clickHouseProperties);
+        // 创建 ClickHouse 属性
+        ClickHouseProperties chProperties = new ClickHouseProperties();
+        chProperties.setUser(dataSourceProperty.getUsername());
+        chProperties.setPassword(dataSourceProperty.getPassword());
+        chProperties.setDatabase(clickHouseProperties.getDatabase());
+        chProperties.setConnectionTimeout(clickHouseProperties.getConnectTimeout());
+        chProperties.setSocketTimeout(clickHouseProperties.getReadTimeout());
+
+        // 创建 ClickHouse 数据源
+        ClickHouseDataSource clickHouseDataSource =
+                new ClickHouseDataSource(dataSourceProperty.getUrl(), chProperties);
+
+        // 使用 HikariCP 连接池包装
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setDataSource(clickHouseDataSource);
+        hikariConfig.setMaximumPoolSize(clickHouseProperties.getMaxConnections());
+        hikariConfig.setMinimumIdle(clickHouseProperties.getPool().getMinIdle());
+        hikariConfig.setMaxLifetime(clickHouseProperties.getPool().getMaxLifetime());
+        hikariConfig.setIdleTimeout(clickHouseProperties.getPool().getIdleTimeout());
+        hikariConfig.setConnectionTestQuery(clickHouseProperties.getPool().getValidationQuery());
+        hikariConfig.setPoolName("ClickHouse-HikariCP");
+        hikariConfig.setConnectionTimeout(clickHouseProperties.getConnectTimeout());
+        hikariConfig
+                .setValidationTimeout(clickHouseProperties.getMonitor().getHealthCheckTimeout());
+
+        return new HikariDataSource(hikariConfig);
     }
 
     @Override
@@ -33,9 +61,8 @@ public class SprivalClickHouseDataSourceCreator implements DataSourceCreator, In
         return CLICK_HOUSE_DATASOURCE.equals(type.getName());
     }
 
-    //  Spring 容器完成对 Bean 的属性设置之后调用
     @Override
     public void afterPropertiesSet() throws Exception {
-
+        // 初始化完成后的处理
     }
 }

@@ -1,0 +1,117 @@
+﻿{
+    "version":  "1.0",
+    "components":  {
+                       "httpClient":  {
+                                          "status":  "completed",
+                                          "technologies":  [
+                                                               "Feign",
+                                                               "OkHttp",
+                                                               "Resilience4j",
+                                                               "LoadBalancer",
+                                                               "Micrometer"
+                                                           ],
+                                          "configClasses":  [
+                                                                "SprivalHttpClientConfiguration",
+                                                                "SprivalHttpClientHealthIndicator"
+                                                            ]
+                                      },
+                       "httpServer":  {
+                                          "status":  "completed",
+                                          "technologies":  [
+                                                               "Jetty",
+                                                               "Guava RateLimiter"
+                                                           ],
+                                          "configClasses":  [
+                                                                "SprivalJettyCustomizer",
+                                                                "SprivalRateLimiterConfiguration"
+                                                            ]
+                                      },
+                       "mongodb":  {
+                                       "status":  "completed",
+                                       "technologies":  [
+                                                            "Spring Data MongoDB"
+                                                        ],
+                                       "configClasses":  [
+                                                             "SprivalMongoHealthIndicator"
+                                                         ]
+                                   },
+                       "redis":  {
+                                     "status":  "completed",
+                                     "technologies":  [
+                                                          "Spring Cache",
+                                                          "Spring Data Redis",
+                                                          "Redisson"
+                                                      ],
+                                     "configClasses":  [
+                                                           "SprivalRedisConfiguration",
+                                                           "SprivalRedisHealthIndicator"
+                                                       ]
+                                 },
+                       "rabbitmq":  {
+                                        "status":  "completed",
+                                        "technologies":  [
+                                                             "Spring AMQP"
+                                                         ],
+                                        "configClasses":  [
+                                                              "SprivalRabbitHealthIndicator"
+                                                          ]
+                                    },
+                       "kafka":  {
+                                     "status":  "completed",
+                                     "technologies":  [
+                                                          "Spring Kafka"
+                                                      ],
+                                     "configClasses":  [
+                                                           "SprivalKafkaProducerCustomizer",
+                                                           "SprivalKafkaConsumerCustomizer"
+                                                       ]
+                                 },
+                       "clickhouse":  {
+                                          "status":  "completed",
+                                          "technologies":  [
+                                                               "ClickHouse JDBC",
+                                                               "MyBatis-Plus闆嗘垚"
+                                                           ],
+                                          "configClasses":  [
+                                                                "SprivalClickHouseDataSourceCreator"
+                                                            ]
+                                      },
+                       "mysql":  {
+                                     "status":  "completed",
+                                     "technologies":  [
+                                                          "MyBatis-Plus",
+                                                          "Dynamic-Datasource",
+                                                          "HikariCP",
+                                                          "P6Spy"
+                                                      ],
+                                     "configClasses":  [
+                                                           "SprivalMybatisPlusConfiguration"
+                                                       ]
+                                 }
+                   },
+    "development":  {
+                        "configurationPattern":  "@Configuration + @Bean",
+                        "monitoringIntegration":  "Actuator + Micrometer + Prometheus",
+                        "healthCheckPattern":  "HealthIndicator瀹炵幇",
+                        "namingConvention":  "Sprival鍓嶇紑",
+                        "packageStructure":  "com.soyokra.sprival"
+                    },
+    "generatedAt":  "2025-09-09 09:55:02",
+    "endpoints":  {
+                      "prometheus":  "http://localhost:8338/api/actuator/prometheus",
+                      "health":  "http://localhost:8338/api/actuator/health",
+                      "metrics":  "http://localhost:8338/api/actuator/metrics",
+                      "application":  "http://localhost:8338/api"
+                  },
+    "project":  {
+                    "webServer":  "Jetty",
+                    "description":  "Spring Boot缁勪欢闆嗘垚妯℃澘",
+                    "version":  "0.0.1",
+                    "springCloudVersion":  "2021.0.8",
+                    "name":  "Sprival",
+                    "buildTool":  "Maven",
+                    "springBootVersion":  "2.7.18",
+                    "encoding":  "UTF-8",
+                    "javaVersion":  "1.8"
+                }
+}

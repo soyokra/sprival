@@ -21,6 +21,12 @@
 - **代码风格**: 遵循Java标准编码规范
 - **注释规范**: 使用JavaDoc标准注释格式
 
+### 4. 配置规范
+- **配置格式**: 优先使用扁平化Properties格式
+- **配置集中**: 所有配置统一放在`application.properties`中
+- **配置清晰**: 每个配置项都有明确的路径，便于查找和修改
+- **避免外部文件**: 除非特殊情况，不使用外部配置文件
+
 ## 📋 AI开发检查清单
 
 ### 开发前检查
@@ -34,12 +40,15 @@
 - [ ] 配置类使用正确的注解
 - [ ] 健康检查类实现HealthIndicator接口
 - [ ] 异常处理机制完善
+- [ ] **配置格式检查**: 使用扁平化Properties格式，避免YAML内联格式
+- [ ] **配置集中**: 所有配置都在`application.properties`中，避免外部配置文件
 
 ### 开发后检查
 - [ ] 代码能够正常编译
 - [ ] 配置文件正确且完整
 - [ ] 文档更新及时
 - [ ] 测试用例覆盖充分
+- [ ] **重启应用验证**: 每次修改代码后必须重启应用检查是否有错误
 
 ## 🔧 自动化验证工具
 
@@ -64,7 +73,19 @@ mvn checkstyle:check
 mvn jacoco:report
 ```
 
-### 3. 文档一致性检查
+### 3. 应用重启验证
+```powershell
+# 启动应用验证
+mvn spring-boot:run
+
+# 检查健康状态
+curl http://localhost:8338/api/actuator/health
+
+# 检查监控指标
+curl http://localhost:8338/api/actuator/prometheus
+```
+
+### 4. 文档一致性检查
 ```powershell
 # 检查文档链接
 .\scripts\check-documentation.ps1
@@ -127,6 +148,26 @@ public class Sprival[组件名]Properties {
     private Integer property2;
     private Boolean property3;
 }
+```
+
+### 2.1 配置格式规范
+**推荐格式（扁平化Properties）**:
+```properties
+# [组件名]配置
+sprival.[组件名].property1 = value1
+sprival.[组件名].property2 = 100
+sprival.[组件名].property3 = true
+sprival.[组件名].nested.property = nestedValue
+```
+
+**避免格式（YAML内联）**:
+```properties
+# 不推荐使用YAML内联格式
+sprival.[组件名].config = |
+  property1: value1
+  property2: 100
+  nested:
+    property: nestedValue
 ```
 
 ### 3. 健康检查模板
@@ -267,6 +308,9 @@ public class [功能]Controller {
 2. 检查代码编译是否通过
 3. 验证配置文件是否正确
 4. 确认文档更新完整
+5. **重启应用验证**: 启动应用检查是否有启动错误
+6. **健康检查验证**: 验证各组件健康状态
+7. **监控指标验证**: 检查监控端点是否正常
 ```
 
 ## 📊 质量保证机制
@@ -276,6 +320,7 @@ public class [功能]Controller {
 - **编译检查**: 确保代码能够正常编译
 - **测试验证**: 运行相关测试用例
 - **文档检查**: 验证文档一致性
+- **重启验证**: 每次代码修改后重启应用检查启动状态
 
 ### 2. 人工审查
 - **代码审查**: 检查代码质量和规范性
@@ -301,13 +346,44 @@ public class [功能]Controller {
 **问题**: 配置文件不正确或缺失
 **解决**: 检查配置文件格式和内容，确保完整性
 
+### 3.1 配置格式问题
+**问题**: 使用YAML内联格式导致配置难以维护
+**解决**: 
+- 将YAML内联格式改为扁平化Properties格式
+- 每个配置项使用完整的路径，如`spring.redis.redisson.config.singleServerConfig.address`
+- 避免使用`config = |`这种YAML内联语法
+
+**问题**: 配置文件分散在多个文件中
+**解决**: 
+- 将所有配置集中到`application.properties`中
+- 删除不必要的外部配置文件
+- 使用扁平化格式提高可读性
+
 ### 4. 依赖问题
 **问题**: 依赖关系不正确
 **解决**: 检查pom.xml中的依赖配置
 
+### 5. 应用启动问题
+**问题**: 代码修改后应用无法启动
+**解决**: 
+- 检查编译错误和警告
+- 验证配置文件格式
+- 检查依赖版本冲突
+- 查看启动日志中的错误信息
+- 确保所有组件配置正确
+
+### 6. 健康检查问题
+**问题**: 应用启动后健康检查失败
+**解决**:
+- 检查各组件连接状态
+- 验证配置文件中的连接参数
+- 确认外部服务（数据库、Redis等）是否正常运行
+- 查看健康检查端点的详细错误信息
+
 ## 📚 参考资源
 
 - **项目结构规范**: `docs/PROJECT-STRUCTURE.md`
+- **配置格式规范**: `docs/ai-development/configuration-format-standards.md`
 - **编码标准**: `docs/development/encoding-standards.md`
 - **系统环境**: `docs/development/system-environment.md`
 - **IDE配置**: `docs/development/ide-setup.md`
@@ -323,9 +399,13 @@ public class [功能]Controller {
 - 严格按照规范进行开发
 - 及时运行验证脚本
 - 保持代码和文档同步更新
+- **配置格式优先**: 优先使用扁平化Properties格式
+- **配置集中管理**: 所有配置统一放在`application.properties`中
 
 ### 3. 开发完成后
 - 运行完整的验证流程
+- **重启应用验证**: 确保应用能够正常启动
+- **健康检查验证**: 确认各组件状态正常
 - 更新相关文档
 - 提交代码前进行最终检查
 

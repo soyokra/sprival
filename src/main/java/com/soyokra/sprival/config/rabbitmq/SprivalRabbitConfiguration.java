@@ -184,6 +184,40 @@ public class SprivalRabbitConfiguration {
     }
 
     /**
+     * 配置批量消息监听器容器工厂
+     */
+    @Bean
+    public RabbitListenerContainerFactory<SimpleMessageListenerContainer> batchRabbitListenerContainerFactory(
+            ConnectionFactory connectionFactory) {
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setMessageConverter(messageConverter());
+
+        // 确认模式
+        factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
+
+        // 并发配置
+        factory.setConcurrentConsumers(1);
+        factory.setMaxConcurrentConsumers(3);
+
+        // 批量处理配置
+        factory.setBatchListener(true);
+        factory.setBatchSize(10);
+        factory.setReceiveTimeout(5000L);
+
+        // 重试配置
+        if (properties.getRetry().isEnabled()) {
+            factory.setRetryTemplate(retryTemplate());
+        }
+
+        // 预取数量
+        factory.setPrefetchCount(10);
+
+        log.info("批量消息监听器容器工厂配置完成");
+        return factory;
+    }
+
+    /**
      * 配置死信交换器
      */
     @Bean

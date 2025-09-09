@@ -1,0 +1,117 @@
+{
+  "endpoints": {
+    "metrics": "http://localhost:8338/api/actuator/metrics",
+    "health": "http://localhost:8338/api/actuator/health",
+    "prometheus": "http://localhost:8338/api/actuator/prometheus",
+    "application": "http://localhost:8338/api"
+  },
+  "components": {
+    "clickhouse": {
+      "technologies": [
+        "ClickHouse JDBC",
+        "MyBatis-Plus集成"
+      ],
+      "configClasses": [
+        "SprivalClickHouseDataSourceCreator"
+      ],
+      "status": "completed"
+    },
+    "mongodb": {
+      "technologies": [
+        "Spring Data MongoDB"
+      ],
+      "configClasses": [
+        "SprivalMongoHealthIndicator"
+      ],
+      "status": "completed"
+    },
+    "httpClient": {
+      "technologies": [
+        "Feign",
+        "OkHttp",
+        "Resilience4j",
+        "LoadBalancer",
+        "Micrometer"
+      ],
+      "configClasses": [
+        "SprivalHttpClientConfiguration",
+        "SprivalHttpClientHealthIndicator"
+      ],
+      "status": "completed"
+    },
+    "kafka": {
+      "technologies": [
+        "Spring Kafka"
+      ],
+      "configClasses": [
+        "SprivalKafkaProducerCustomizer",
+        "SprivalKafkaConsumerCustomizer"
+      ],
+      "status": "completed"
+    },
+    "httpServer": {
+      "technologies": [
+        "Jetty",
+        "Guava RateLimiter"
+      ],
+      "configClasses": [
+        "SprivalJettyCustomizer",
+        "SprivalRateLimiterConfiguration"
+      ],
+      "status": "completed"
+    },
+    "rabbitmq": {
+      "technologies": [
+        "Spring AMQP"
+      ],
+      "configClasses": [
+        "SprivalRabbitHealthIndicator"
+      ],
+      "status": "completed"
+    },
+    "redis": {
+      "technologies": [
+        "Spring Cache",
+        "Spring Data Redis",
+        "Redisson"
+      ],
+      "configClasses": [
+        "SprivalRedisConfiguration",
+        "SprivalRedisHealthIndicator"
+      ],
+      "status": "completed"
+    },
+    "mysql": {
+      "technologies": [
+        "MyBatis-Plus",
+        "Dynamic-Datasource",
+        "HikariCP",
+        "P6Spy"
+      ],
+      "configClasses": [
+        "SprivalMybatisPlusConfiguration"
+      ],
+      "status": "completed"
+    }
+  },
+  "development": {
+    "packageStructure": "com.soyokra.sprival",
+    "monitoringIntegration": "Actuator + Micrometer + Prometheus",
+    "configurationPattern": "@Configuration + @Bean",
+    "healthCheckPattern": "HealthIndicator实现",
+    "namingConvention": "Sprival前缀"
+  },
+  "project": {
+    "buildTool": "Maven",
+    "version": "0.0.1",
+    "springBootVersion": "2.7.18",
+    "webServer": "Jetty",
+    "description": "Spring Boot组件集成模板",
+    "name": "Sprival",
+    "encoding": "UTF-8",
+    "springCloudVersion": "2021.0.8",
+    "javaVersion": "1.8"
+  },
+  "version": "1.0",
+  "generatedAt": "2025-09-09 09:41:49"
+}

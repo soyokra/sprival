@@ -15,19 +15,22 @@ Sprival是Spring Boot组件集成模板，提供一份全面的pom.xml组件引�
 - [提示词模板库](ai-development/prompt-templates/) - 标准化提示词模板
 - [开发工作流程](ai-development/workflow.md) - AI辅助开发流程
 
-### 📦 组件文档
-- [Spring MySQL](spring-mysql/README.md) - 数据库集成方案
-- [Spring Redis](spring-redis/README.md) - 缓存集成方案  
-- [Spring HTTP Server](spring-http-server/README.md) - Web服务器配置
-- [Spring HTTP Client](spring-http-client/README.md) - HTTP客户端集成
-- [Spring Kafka](spring-kafka/README.md) - 消息队列集成
-- [Spring RabbitMQ](spring-rabbit/README.md) - 消息队列集成
-- [Spring MongoDB](spring-mongo/README.md) - 文档数据库集成
-- [Spring ClickHouse](spring-clickhouse/README.md) - 分析数据库集成
-- [Spring Elasticsearch](spring-elasticsearch/README.md) - 搜索引擎集成
+### 📝 文档规范
+- [技术文档规范标准](components/DOCUMENTATION-STANDARDS.md) - 组件文档编写规范
+- [文档模板](components/TEMPLATE.md) - 标准化文档模板
+- [文档改造总结](components/DOCUMENTATION-REFACTOR-SUMMARY.md) - 文档规范化改造说明
 
-### 📊 监控运维
-- [Spring监控模块](spring-monitoring/README.md) - 全栈监控解决方案
+### 📦 组件文档
+- [MySQL组件](components/mysql/README.md) - 数据库集成方案
+- [Redis组件](components/redis/README.md) - 缓存集成方案  
+- [HTTP Server组件](components/http-server/README.md) - Web服务器配置
+- [HTTP Client组件](components/http-client/README.md) - HTTP客户端集成
+- [Kafka组件](components/kafka/README.md) - 消息队列集成
+- [RabbitMQ组件](components/rabbitmq/README.md) - 消息队列集成
+- [MongoDB组件](components/mongodb/README.md) - 文档数据库集成
+- [ClickHouse组件](components/clickhouse/README.md) - 分析数据库集成
+- [Elasticsearch组件](components/elasticsearch/README.md) - 搜索引擎集成
+- [监控组件](components/monitoring/README.md) - 全栈监控解决方案
 
 ## 快速开始
 

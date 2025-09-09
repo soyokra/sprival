@@ -1,4 +1,4 @@
-# Sprival AI开发启动脚本
+﻿# Sprival AI开发启动脚本
 # 在AI编程前自动生成项目上下文
 
 param(
@@ -59,6 +59,8 @@ Write-Host "   - 启动应用(脚本): .\start-utf8.bat" -ForegroundColor White
 Write-Host "   - 健康检查: http://localhost:8338/api/actuator/health" -ForegroundColor White
 Write-Host "   - 监控指标: http://localhost:8338/api/actuator/metrics" -ForegroundColor White
 Write-Host "   - 重新生成上下文: .\scripts\generate-project-context.ps1" -ForegroundColor White
+Write-Host "   - **代码验证**: .\scripts\verify-code-changes.ps1" -ForegroundColor Yellow
+Write-Host "   - **日志清理**: .\scripts\cleanup-logs.ps1" -ForegroundColor Yellow
 
 # 5. 显示AI编程指导
 Write-Host "`n🤖 AI编程指导:" -ForegroundColor Cyan
@@ -67,7 +69,10 @@ Write-Host "   2. 查看组件状态: Get-Content docs\ai-development\context\co
 Write-Host "   3. 查看AI指导: Get-Content docs\ai-development\context\ai-guidance-latest.md" -ForegroundColor White
 Write-Host "   4. 使用上下文模板: docs\ai-development\project-context-template.md" -ForegroundColor White
 Write-Host "   5. 查看开发规范: docs\ai-development\development-standards.md" -ForegroundColor White
-Write-Host "   6. 查看项目结构: docs\PROJECT-STRUCTURE.md" -ForegroundColor White
+Write-Host "   6. 查看配置格式规范: docs\ai-development\configuration-format-standards.md" -ForegroundColor White
+Write-Host "   7. 查看项目结构: docs\PROJECT-STRUCTURE.md" -ForegroundColor White
+Write-Host "   8. 查看验证规范: docs\ai-development\code-modification-verification.md" -ForegroundColor Yellow
+Write-Host "   9. 查看日志管理: docs\components\jetty\log-management.md" -ForegroundColor Yellow
 
 # 6. 可选：打开上下文文件
 if ($OpenContext) {
@@ -88,6 +93,7 @@ Write-Host "   3. 根据需求选择合适的组件" -ForegroundColor White
 Write-Host "   4. 使用标准模板与AI交互" -ForegroundColor White
 Write-Host "   5. 遵循项目开发规范" -ForegroundColor White
 Write-Host "   6. 运行结构验证确保规范性" -ForegroundColor White
+Write-Host "   7. **重要**: 每次修改代码后运行验证脚本" -ForegroundColor Yellow
 
 Write-Host "`n✅ AI开发环境准备完成！" -ForegroundColor Green
 Write-Host "💡 提示: 使用 -OpenContext 参数可以自动打开上下文文件" -ForegroundColor Yellow
