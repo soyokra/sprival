@@ -20,8 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @ConditionalOnClass(RabbitTemplate.class)
-@ConditionalOnProperty(name = "sprival.rabbitmq.enabled", havingValue = "true",
-        matchIfMissing = true)
 @ConditionalOnProperty(prefix = "sprival.rabbitmq.monitor", name = "health-check-enabled",
         havingValue = "true", matchIfMissing = true)
 public class SprivalRabbitHealthIndicator implements HealthIndicator {
