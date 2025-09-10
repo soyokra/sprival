@@ -12,6 +12,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
+
+import com.soyokra.sprival.app.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import com.soyokra.sprival.client.UserServiceClient;
+import com.soyokra.sprival.app.client.UserServiceClient;
 import com.soyokra.sprival.util.TestConstants;
 import com.soyokra.sprival.util.TestDataBuilder;
 

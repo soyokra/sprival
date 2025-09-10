@@ -3,6 +3,7 @@
 ## 概述
 
 本文档定义了Sprival项目的标准文件目录结构，确保项目组织清晰、易于维护，并为AI开发提供明确的规范指导。
+AI写文档必须在docs目录框架下
 
 ## 📁 标准目录结构
 
@@ -61,15 +62,29 @@ sprival/
 │   │   │       │   ├── 📁 jetty/     # Jetty配置
 │   │   │       │   ├── 📁 ratelimiter/ # 限流器配置
 │   │   │       │   └── 📁 monitoring/ # 监控配置
-│   │   │       ├── 📁 client/        # 外部服务客户端
-│   │   │       ├── 📁 controller/    # 控制器
-│   │   │       ├── 📁 service/       # 业务服务
-│   │   │       ├── 📁 repository/    # 数据访问层
-│   │   │       ├── 📁 entity/        # 实体类
-│   │   │       ├── 📁 dto/           # 数据传输对象
-│   │   │       ├── 📁 exception/     # 异常类
-│   │   │       ├── 📁 util/          # 工具类
-│   │   │       └── 📁 aspect/        # 切面类
+│   │   │       ├── 📁 app/           # 应用业务代码
+│   │   │       │   ├── 📁 http/      # HTTP请求相关
+│   │   │       │   │   ├── 📁 controller/ # 控制器
+│   │   │       │   │   ├── 📁 request/ # 请求体
+│   │   │       │   │   ├── 📁 response/ # 响应体
+│   │   │       │   │   └── 📁 middleware/ # 过滤器、拦截器
+│   │   │       │   ├── 📁 model/     # 实体类
+│   │   │       │   ├── 📁 service/   # 业务服务
+│   │   │       │   ├── 📁 repository/ # 数据仓库
+│   │   │       │   │   ├── 📁 db/    # 数据库相关
+│   │   │       │   │   │   └── 📁 dbname/ # 数据库名称
+│   │   │       │   │   │       ├── 📁 mapper/ # 数据库映射类
+│   │   │       │   │   │       ├── 📁 entity/ # 数据库表实体类
+│   │   │       │   │   │       └── 📁 service/ # 数据库操作服务类
+│   │   │       │   │   └── 📁 es/    # Elasticsearch相关
+│   │   │       │   ├── 📁 exception/ # 异常处理
+│   │   │       │   ├── 📁 aspect/    # 切面类
+│   │   │       │   └── 📁 client/    # HTTP请求客户端类
+│   │   │       └── 📁 support/       # 支持类
+│   │   │           ├── 📁 util/      # 工具类
+│   │   │           ├── 📁 health/    # 健康检查基础类
+│   │   │           ├── 📁 monitor/   # 监控基础类
+│   │   │           └── 📁 logging/   # 日志基础类
 │   │   └── 📁 resources/             # 资源文件
 │   │       ├── application.properties # 主配置文件
 │   │       ├── 📁 config/            # 配置文件目录
@@ -161,15 +176,29 @@ com.soyokra.sprival
 │   ├── redis       # Redis配置
 │   ├── mysql       # MySQL配置
 │   └── ...
-├── client          # 外部服务客户端
-├── controller      # 控制器
-├── service         # 业务服务
-├── repository      # 数据访问层
-├── entity          # 实体类
-├── dto             # 数据传输对象
-├── exception       # 异常类
-├── util            # 工具类
-└── aspect          # 切面类
+├── app             # 应用业务代码
+│   ├── http        # HTTP请求相关
+│   │   ├── controller    # 控制器
+│   │   ├── request      # 请求体
+│   │   ├── response     # 响应体
+│   │   └── middleware   # 过滤器、拦截器
+│   ├── model       # 实体类
+│   ├── service     # 业务服务
+│   ├── repository  # 数据仓库
+│   │   ├── db      # 数据库相关
+│   │   │   └── dbname  # 数据库名称
+│   │   │       ├── mapper   # 数据库映射类
+│   │   │       ├── entity  # 数据库表实体类
+│   │   │       └── service # 数据库操作服务类
+│   │   └── es      # Elasticsearch相关
+│   ├── exception   # 异常处理
+│   ├── aspect      # 切面类
+│   └── client      # HTTP请求客户端类
+└── support         # 支持类
+    ├── util        # 工具类
+    ├── health      # 健康检查基础类
+    ├── monitor     # 监控基础类
+    └── logging     # 日志基础类
 ```
 
 ### 配置文件组织规范
@@ -195,6 +224,13 @@ src/main/resources/
 - **属性类**: `Sprival + 组件名 + Properties`
 - **健康检查**: `Sprival + 组件名 + HealthIndicator`
 - **自动配置**: `Sprival + 组件名 + AutoConfiguration`
+- **控制器**: `功能名 + Controller`
+- **请求体**: `功能名 + Request`
+- **响应体**: `功能名 + Response`
+- **服务类**: `功能名 + Service`
+- **实体类**: `功能名 + Entity` 或 `功能名 + Model`
+- **映射类**: `功能名 + Mapper`
+- **异常类**: `功能名 + Exception`
 
 ### 2. 配置文件命名
 - **主配置**: `application.properties`
@@ -206,11 +242,42 @@ src/main/resources/
 - **配置文档**: `配置名.md`
 - **部署文档**: `部署方式.md`
 
+## 🎯 新目录结构优势
+
+### 1. 业务代码集中管理
+- **app/ 目录**: 所有业务相关代码统一管理
+- **清晰分层**: HTTP层、业务层、数据层分离明确
+- **模块化**: 按功能模块组织，便于维护和扩展
+
+### 2. HTTP请求处理优化
+- **request/**: 统一管理请求体，便于参数验证
+- **response/**: 统一管理响应体，便于数据格式化
+- **middleware/**: 过滤器、拦截器集中管理
+
+### 3. 数据访问层细化
+- **按数据库类型组织**: `db/` 和 `es/` 分离
+- **按数据库实例组织**: `dbname/` 便于多数据源管理
+- **职责明确**: mapper、entity、service 各司其职
+
+### 4. 基础功能模块化
+- **support/ 目录**: 基础功能模块统一管理
+- **可复用性**: 工具类、监控、日志等基础功能
+- **扩展性**: 便于添加新的基础功能模块
+
 ## 🔧 实施指南
 
 ### 1. 迁移步骤
-1. 创建新的目录结构
-2. 移动现有文件到对应位置
+1. 创建新的目录结构（app/ 和 support/ 目录）
+2. 移动现有文件到对应位置：
+   - `controller/` → `app/http/controller/`
+   - `service/` → `app/service/`
+   - `repository/` → `app/repository/db/`
+   - `entity/` → `app/model/` 或 `app/repository/db/dbname/entity/`
+   - `dto/` → `app/http/request/` 和 `app/http/response/`
+   - `exception/` → `app/exception/`
+   - `aspect/` → `app/aspect/`
+   - `client/` → `app/client/`
+   - `support/` 目录保持不变
 3. 更新import路径和配置引用
 4. 更新文档中的路径引用
 5. 测试确保功能正常

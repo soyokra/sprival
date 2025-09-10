@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
-import com.soyokra.sprival.client.UserServiceClient;
+import com.soyokra.sprival.app.client.UserServiceClient;
 
 /**
  * HTTP客户端健康检查指示器 监控Feign客户端的健康状态

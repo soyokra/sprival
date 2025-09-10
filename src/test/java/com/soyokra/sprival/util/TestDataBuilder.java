@@ -3,7 +3,7 @@ package com.soyokra.sprival.util;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import com.soyokra.sprival.client.UserServiceClient;
+import com.soyokra.sprival.app.client.UserServiceClient;
 
 /**
  * 测试数据构建器 提供测试数据的快速构建方法

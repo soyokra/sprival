@@ -20,6 +20,9 @@ Sprival是Spring Boot组件集成模板，提供一份全面的pom.xml组件引�
 - [文档模板](components/TEMPLATE.md) - 标准化文档模板
 - [文档改造总结](components/DOCUMENTATION-REFACTOR-SUMMARY.md) - 文档规范化改造说明
 
+## 目录规范
+- [项目目录规范](PROJECT-STRUCTURE.md)
+
 ### 📦 组件文档
 - [MySQL组件](components/mysql/README.md) - 数据库集成方案
 - [Redis组件](components/redis/README.md) - 缓存集成方案  

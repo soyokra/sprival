@@ -18,8 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import com.soyokra.sprival.client.UserServiceClient;
-import com.soyokra.sprival.service.UserService;
+import com.soyokra.sprival.app.client.UserServiceClient;
+import com.soyokra.sprival.app.service.UserService;
 import com.soyokra.sprival.util.TestConstants;
 import com.soyokra.sprival.util.TestDataBuilder;
 
