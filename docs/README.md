@@ -39,3 +39,17 @@ Sprival是Spring Boot组件集成模板，提供一份全面的pom.xml组件引�
 3. **运行项目**: `mvn spring-boot:run`
 4. **查看监控**: http://localhost:8338/api/actuator
 
+### Linux环境快速启动
+```bash
+# 检查环境
+java -version
+mvn -version
+
+# 构建并运行
+mvn clean compile
+mvn spring-boot:run
+
+# 或者使用项目提供的启动脚本
+./scripts/ai-dev-start.sh
+```
+

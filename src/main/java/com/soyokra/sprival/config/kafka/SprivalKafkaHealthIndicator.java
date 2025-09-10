@@ -13,10 +13,12 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import com.soyokra.sprival.support.health.SprivalHealthManager;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Sprival Kafka 健康检查指示器
+ * 支持强依赖和弱依赖模式配置
  * 
  * @author Sprival Team
  * @version 1.0
@@ -32,9 +34,25 @@ public class SprivalKafkaHealthIndicator implements HealthIndicator {
 
     @Autowired
     private SprivalKafkaProperties kafkaProperties;
+    
+    @Autowired(required = false)
+    private SprivalHealthManager healthManager;
 
     @Override
     public Health health() {
+        // 如果启用了健康管理器，使用强依赖/弱依赖模式
+        if (healthManager != null) {
+            return healthManager.checkComponentHealth("kafka", this::performKafkaHealthCheck);
+        }
+        
+        // 否则使用默认的健康检查逻辑
+        return performKafkaHealthCheck();
+    }
+    
+    /**
+     * 执行Kafka健康检查
+     */
+    private Health performKafkaHealthCheck() {
         try {
             // 检查Kafka连接状态
             if (kafkaTemplate == null) {

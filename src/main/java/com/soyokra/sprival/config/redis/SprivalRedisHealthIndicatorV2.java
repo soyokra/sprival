@@ -1,14 +1,13 @@
 package com.soyokra.sprival.config.redis;
 
 import java.time.Duration;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Map;
 import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-import com.soyokra.sprival.support.health.SprivalHealthManager;
+import com.soyokra.sprival.support.health.SprivalBaseHealthIndicator;
 
 /**
  * Redis健康检查指示器
@@ -19,34 +18,23 @@ import com.soyokra.sprival.support.health.SprivalHealthManager;
  */
 @Component
 @ConditionalOnProperty(name = "spring.redis.host", matchIfMissing = false)
-public class SprivalRedisHealthIndicator implements HealthIndicator {
+public class SprivalRedisHealthIndicatorV2 extends SprivalBaseHealthIndicator {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final StringRedisTemplate stringRedisTemplate;
-    
-    @Autowired(required = false)
-    private SprivalHealthManager healthManager;
 
-    public SprivalRedisHealthIndicator(RedisTemplate<String, Object> redisTemplate) {
+    public SprivalRedisHealthIndicatorV2(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
         this.stringRedisTemplate = null; // 暂时设为null，避免依赖注入问题
     }
-
+    
     @Override
-    public Health health() {
-        // 如果启用了健康管理器，使用强依赖/弱依赖模式
-        if (healthManager != null) {
-            return healthManager.checkComponentHealth("redis", this::performRedisHealthCheck);
-        }
-        
-        // 否则使用默认的健康检查逻辑
-        return performRedisHealthCheck();
+    protected String getComponentName() {
+        return "redis";
     }
     
-    /**
-     * 执行Redis健康检查
-     */
-    private Health performRedisHealthCheck() {
+    @Override
+    protected Health doHealthCheck() {
         try {
             // 执行简单的Redis操作来检查连接
             String testKey = "health:check:" + System.currentTimeMillis();
@@ -59,10 +47,12 @@ public class SprivalRedisHealthIndicator implements HealthIndicator {
 
             // 验证RedisTemplate结果
             if (!testValue.equals(retrievedValue)) {
-                return Health.down().withDetail("redis", "Unavailable")
-                        .withDetail("error", "Health check failed - value mismatch")
-                        .withDetail("expected", testValue)
-                        .withDetail("redisTemplateResult", retrievedValue).build();
+                Map<String, Object> details = getHealthCheckDetails();
+                details.put("redis", "Unavailable");
+                details.put("error", "Health check failed - value mismatch");
+                details.put("expected", testValue);
+                details.put("redisTemplateResult", retrievedValue);
+                return createDownHealth(details);
             }
 
             // 测试StringRedisTemplate（如果可用）
@@ -86,17 +76,37 @@ public class SprivalRedisHealthIndicator implements HealthIndicator {
                 }
             }
 
-            return Health.up().withDetail("redis", "Available")
-                    .withDetail("redisTemplate", "Working")
-                    .withDetail("stringRedisTemplate", stringRedisTemplateStatus)
-                    .withDetail("timestamp", System.currentTimeMillis())
-                    .withDetail("testKey", testKey).build();
+            Map<String, Object> details = getHealthCheckDetails();
+            details.put("redis", "Available");
+            details.put("redisTemplate", "Working");
+            details.put("stringRedisTemplate", stringRedisTemplateStatus);
+            details.put("testKey", testKey);
+            
+            return createUpHealth(details);
 
         } catch (Exception e) {
-            return Health.down().withDetail("redis", "Unavailable")
-                    .withDetail("error", e.getMessage())
-                    .withDetail("exception", e.getClass().getSimpleName())
-                    .withDetail("timestamp", System.currentTimeMillis()).build();
+            return handleHealthCheckException(e);
+        }
+    }
+    
+    @Override
+    protected Map<String, Object> getHealthCheckDetails() {
+        Map<String, Object> details = super.getHealthCheckDetails();
+        details.put("redisTemplate", "Available");
+        return details;
+    }
+    
+    @Override
+    protected void beforeHealthCheck() {
+        logHealthCheck("DEBUG", "开始执行Redis健康检查");
+    }
+    
+    @Override
+    protected void afterHealthCheck(Health health) {
+        if (health.getStatus().equals(org.springframework.boot.actuate.health.Status.UP)) {
+            logHealthCheck("DEBUG", "Redis健康检查完成，状态正常");
+        } else {
+            logHealthCheck("WARN", "Redis健康检查完成，状态异常: {}", health.getDetails());
         }
     }
 }

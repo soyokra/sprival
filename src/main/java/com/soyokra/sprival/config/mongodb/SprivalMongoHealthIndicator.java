@@ -10,10 +10,12 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
+import com.soyokra.sprival.support.health.SprivalHealthManager;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * MongoDB健康检查指示器
+ * 支持强依赖和弱依赖模式配置
  * 
  * @author Sprival Team
  * @version 1.0
@@ -32,9 +34,25 @@ public class SprivalMongoHealthIndicator implements HealthIndicator {
 
         @Autowired
         private SprivalMongoProperties mongoProperties;
+        
+        @Autowired(required = false)
+        private SprivalHealthManager healthManager;
 
         @Override
         public Health health() {
+                // 如果启用了健康管理器，使用强依赖/弱依赖模式
+                if (healthManager != null) {
+                        return healthManager.checkComponentHealth("mongodb", this::performMongoHealthCheck);
+                }
+                
+                // 否则使用默认的健康检查逻辑
+                return performMongoHealthCheck();
+        }
+        
+        /**
+         * 执行MongoDB健康检查
+         */
+        private Health performMongoHealthCheck() {
                 try {
                         // 执行ping命令检查连接
                         MongoDatabase database =

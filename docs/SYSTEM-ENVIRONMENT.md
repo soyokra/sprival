@@ -7,52 +7,53 @@
 ## 系统基本信息
 
 ### 操作系统
-- **系统**: Windows 11
-- **版本**: 10.0 (build 26100)
-- **架构**: amd64 (64位)
-- **编码**: GBK (中文环境)
-- **时区**: 中国标准时间 (GMT+8)
+- **系统**: Linux Ubuntu 24.04 LTS
+- **内核版本**: 6.14.0-29-generic
+- **架构**: x86_64 (64位)
+- **编码**: UTF-8 (统一编码)
+- **时区**: UTC (可通过TZ环境变量调整)
 
 ### 硬件架构
-- **处理器架构**: x64
+- **处理器架构**: x86_64
 - **系统类型**: 64位操作系统
+- **虚拟化**: VMware Virtual Platform
 
 ## Java开发环境
 
 ### JDK配置
-- **JDK版本**: 1.8.0_333
-- **JDK安装路径**: `C:\Program Files\Java\jdk1.8.0_333`
-- **JRE版本**: 1.8.0_341
-- **JRE路径**: `C:\Program Files\Java\jre1.8.0_341`
-- **供应商**: Oracle Corporation
-- **虚拟机**: Java HotSpot(TM) 64-Bit Server VM
+- **JDK版本**: 1.8.0_462
+- **JDK安装路径**: `/usr/lib/jvm/temurin-8-jdk-amd64`
+- **JRE版本**: 1.8.0_462
+- **JRE路径**: `/usr/lib/jvm/temurin-8-jdk-amd64/jre`
+- **供应商**: Eclipse Temurin (AdoptOpenJDK)
+- **虚拟机**: OpenJDK 64-Bit Server VM
 
 ### 环境变量配置
 ```bash
 # 系统环境变量
-JAVA_HOME = C:\Program Files\Java\jdk1.8.0_333
-MAVEN_HOME = C:\Program Files\Java\apache-maven-3.8.9
+JAVA_HOME = /usr/lib/jvm/temurin-8-jdk-amd64
+MAVEN_HOME = /usr/share/maven
 
-# PATH中的Java路径（按优先级排序）
-PATH = %JAVA_HOME%\bin;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;...
+# PATH中的Java路径
+PATH = $JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH
 ```
 
 ### Java工具路径
-- **java.exe**: `C:\Program Files\Java\jdk1.8.0_333\bin\java.exe`
-- **javac.exe**: `C:\Program Files\Java\jdk1.8.0_333\bin\javac.exe`
-- **jar.exe**: `C:\Program Files\Java\jdk1.8.0_333\bin\jar.exe`
+- **java**: `/usr/lib/jvm/temurin-8-jdk-amd64/bin/java`
+- **javac**: `/usr/lib/jvm/temurin-8-jdk-amd64/bin/javac`
+- **jar**: `/usr/lib/jvm/temurin-8-jdk-amd64/bin/jar`
 
 ## Maven构建环境
 
 ### Maven配置
-- **Maven版本**: Apache Maven 3.8.9
-- **Maven安装路径**: `C:\Program Files\Java\apache-maven-3.8.9`
-- **构建工具ID**: e26b057cc3a17459358ef53e4d0e2e381bf08a1c
-- **使用的Java**: 1.8.0_333 (JDK)
+- **Maven版本**: Apache Maven 3.8.7
+- **Maven安装路径**: `/usr/share/maven`
+- **使用的Java**: 1.8.0_462 (JDK)
 - **默认编码**: UTF-8
+- **平台**: Linux x86_64
 
 ### Maven仓库
-- **本地仓库**: `C:\Users\soyok\.m2\repository`
+- **本地仓库**: `~/.m2/repository`
 - **中央仓库**: https://repo.maven.apache.org/maven2
 
 ## 项目兼容性配置
@@ -96,10 +97,11 @@ PATH = %JAVA_HOME%\bin;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;
 
 ## 开发工具配置
 
-### PowerShell环境
-- **Shell**: PowerShell 7.x
-- **执行路径**: `C:\Program Files\PowerShell\7\pwsh.exe`
+### Shell环境
+- **Shell**: Bash 5.x
+- **执行路径**: `/usr/bin/bash`
 - **编码**: UTF-8
+- **终端**: Linux Terminal
 
 ### IDE建议配置
 ```properties
@@ -115,12 +117,12 @@ maven.compiler.target=1.8
 ### 环境验证脚本
 ```bash
 # 验证Java环境
-echo "JAVA_HOME: $env:JAVA_HOME"
+echo "JAVA_HOME: $JAVA_HOME"
 java -version
 javac -version
 
 # 验证Maven环境  
-echo "MAVEN_HOME: $env:MAVEN_HOME"
+echo "MAVEN_HOME: $MAVEN_HOME"
 mvn -version
 
 # 验证项目编译
@@ -130,17 +132,19 @@ mvn clean compile
 ### 预期输出
 ```bash
 # Java版本输出
-java version "1.8.0_333"
-Java(TM) SE Runtime Environment (build 1.8.0_333-b02)
-Java HotSpot(TM) 64-Bit Server VM (build 25.333-b02, mixed mode)
+openjdk version "1.8.0_462"
+OpenJDK Runtime Environment (Temurin)(build 1.8.0_462-b08)
+OpenJDK 64-Bit Server VM (Temurin)(build 25.462-b08, mixed mode)
 
 # javac版本输出
-javac 1.8.0_333
+javac 1.8.0_462
 
 # Maven版本输出
-Apache Maven 3.8.9 (e26b057cc3a17459358ef53e4d0e2e381bf08a1c)
-Maven home: C:\Program Files\Java\apache-maven-3.8.9
-Java version: 1.8.0_333, vendor: Oracle Corporation, runtime: C:\Program Files\Java\jdk1.8.0_333\jre
+Apache Maven 3.8.7
+Maven home: /usr/share/maven
+Java version: 1.8.0_462, vendor: Temurin, runtime: /usr/lib/jvm/temurin-8-jdk-amd64/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "6.14.0-29-generic", arch: "amd64", family: "unix"
 ```
 
 ## 常见问题和解决方案
@@ -151,17 +155,18 @@ Java version: 1.8.0_333, vendor: Oracle Corporation, runtime: C:\Program Files\J
 
 ### Q2: Maven提示"No compiler is provided"
 **原因**: JAVA_HOME指向JRE而非JDK
-**解决**: 确保JAVA_HOME指向JDK路径：`C:\Program Files\Java\jdk1.8.0_333`
+**解决**: 确保JAVA_HOME指向JDK路径：`/usr/lib/jvm/temurin-8-jdk-amd64`
 
 ### Q3: 字符编码问题
-**原因**: Windows默认使用GBK编码
-**解决**: 在Maven配置中强制使用UTF-8编码
+**原因**: Linux默认使用UTF-8编码，通常不会有编码问题
+**解决**: 如遇编码问题，检查系统locale设置：`locale` 命令
 
 ## 更新历史
 
 | 日期 | 版本 | 更新内容 | 更新人 |
 |------|------|----------|--------|
 | 2025-01-08 | 1.0 | 初始创建，记录Java 8 + Maven 3.8.9环境 | AI Assistant |
+| 2025-01-08 | 2.0 | 更新为Linux Ubuntu环境，OpenJDK 1.8.0_462 + Maven 3.8.7 | AI Assistant |
 
 ## 注意事项
 
