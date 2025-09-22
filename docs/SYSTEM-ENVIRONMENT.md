@@ -7,11 +7,12 @@
 ## 系统基本信息
 
 ### 操作系统
-- **系统**: Linux Ubuntu 24.04 LTS
+- **系统**: Linux Ubuntu 24.04.3 LTS
 - **内核版本**: 6.14.0-29-generic
 - **架构**: x86_64 (64位)
 - **编码**: UTF-8 (统一编码)
 - **时区**: UTC (可通过TZ环境变量调整)
+- **主机名**: worktable
 
 ### 硬件架构
 - **处理器架构**: x86_64
@@ -22,16 +23,16 @@
 
 ### JDK配置
 - **JDK版本**: 1.8.0_462
-- **JDK安装路径**: `/usr/lib/jvm/temurin-8-jdk-amd64`
+- **JDK安装路径**: `/usr/lib/jvm/java-8-openjdk-amd64`
 - **JRE版本**: 1.8.0_462
-- **JRE路径**: `/usr/lib/jvm/temurin-8-jdk-amd64/jre`
-- **供应商**: Eclipse Temurin (AdoptOpenJDK)
+- **JRE路径**: `/usr/lib/jvm/java-8-openjdk-amd64/jre`
+- **供应商**: Private Build (Ubuntu)
 - **虚拟机**: OpenJDK 64-Bit Server VM
 
 ### 环境变量配置
 ```bash
 # 系统环境变量
-JAVA_HOME = /usr/lib/jvm/temurin-8-jdk-amd64
+JAVA_HOME = /usr/lib/jvm/java-8-openjdk-amd64
 MAVEN_HOME = /usr/share/maven
 
 # PATH中的Java路径
@@ -39,9 +40,9 @@ PATH = $JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH
 ```
 
 ### Java工具路径
-- **java**: `/usr/lib/jvm/temurin-8-jdk-amd64/bin/java`
-- **javac**: `/usr/lib/jvm/temurin-8-jdk-amd64/bin/javac`
-- **jar**: `/usr/lib/jvm/temurin-8-jdk-amd64/bin/jar`
+- **java**: `/usr/lib/jvm/java-8-openjdk-amd64/bin/java`
+- **javac**: `/usr/lib/jvm/java-8-openjdk-amd64/bin/javac`
+- **jar**: `/usr/lib/jvm/java-8-openjdk-amd64/bin/jar`
 
 ## Maven构建环境
 
@@ -103,6 +104,11 @@ PATH = $JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH
 - **编码**: UTF-8
 - **终端**: Linux Terminal
 
+### Docker环境
+- **Docker**: 用户自行安装
+- **Docker Compose**: 用户自行安装
+- **状态**: 待安装（用于运行中间件服务）
+
 ### IDE建议配置
 ```properties
 # 推荐的IDE设置
@@ -133,8 +139,8 @@ mvn clean compile
 ```bash
 # Java版本输出
 openjdk version "1.8.0_462"
-OpenJDK Runtime Environment (Temurin)(build 1.8.0_462-b08)
-OpenJDK 64-Bit Server VM (Temurin)(build 25.462-b08, mixed mode)
+OpenJDK Runtime Environment (build 1.8.0_462-8u462-ga~us1-0ubuntu2~24.04.2-b08)
+OpenJDK 64-Bit Server VM (build 25.462-b08, mixed mode)
 
 # javac版本输出
 javac 1.8.0_462
@@ -142,7 +148,7 @@ javac 1.8.0_462
 # Maven版本输出
 Apache Maven 3.8.7
 Maven home: /usr/share/maven
-Java version: 1.8.0_462, vendor: Temurin, runtime: /usr/lib/jvm/temurin-8-jdk-amd64/jre
+Java version: 1.8.0_462, vendor: Private Build, runtime: /usr/lib/jvm/java-8-openjdk-amd64/jre
 Default locale: en_US, platform encoding: UTF-8
 OS name: "linux", version: "6.14.0-29-generic", arch: "amd64", family: "unix"
 ```
@@ -155,7 +161,7 @@ OS name: "linux", version: "6.14.0-29-generic", arch: "amd64", family: "unix"
 
 ### Q2: Maven提示"No compiler is provided"
 **原因**: JAVA_HOME指向JRE而非JDK
-**解决**: 确保JAVA_HOME指向JDK路径：`/usr/lib/jvm/temurin-8-jdk-amd64`
+**解决**: 确保JAVA_HOME指向JDK路径：`/usr/lib/jvm/java-8-openjdk-amd64`
 
 ### Q3: 字符编码问题
 **原因**: Linux默认使用UTF-8编码，通常不会有编码问题
@@ -167,6 +173,7 @@ OS name: "linux", version: "6.14.0-29-generic", arch: "amd64", family: "unix"
 |------|------|----------|--------|
 | 2025-01-08 | 1.0 | 初始创建，记录Java 8 + Maven 3.8.9环境 | AI Assistant |
 | 2025-01-08 | 2.0 | 更新为Linux Ubuntu环境，OpenJDK 1.8.0_462 + Maven 3.8.7 | AI Assistant |
+| 2025-09-15 | 3.0 | 更新为实际系统环境：Ubuntu 24.04.3 LTS，OpenJDK 1.8.0_462，Maven 3.8.7 | AI Assistant |
 
 ## 注意事项
 

@@ -148,3 +148,23 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+  ### MySQL ##
+  mysql:
+    build:
+      context: ./mysql
+      args:
+        - MYSQL_VERSION=5.7.24
+    environment:
+      - MYSQL_DATABASE=sprival
+      - MYSQL_USER=workdock
+      - MYSQL_PASSWORD=workdock
+      - MYSQL_ROOT_PASSWORD=workdock
+      - TZ=UTC
+    volumes:
+      - ./mysql/volumes/data:/var/lib/mysql
+      - ./mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
