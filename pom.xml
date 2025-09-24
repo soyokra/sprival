@@ -215,6 +215,12 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
+        
+        <!-- Kafka客户端依赖（用于KafkaAppender） -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+        </dependency>
 
         <!-- Elasticsearch（使用 Boot Starter） -->
         <dependency>
