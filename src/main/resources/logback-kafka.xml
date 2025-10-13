@@ -90,3 +90,4 @@
     <logger name="redis.embedded" level="WARN" />
     <logger name="de.flapdoodle.embed" level="WARN" />
 </configuration>
+

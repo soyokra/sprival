@@ -83,3 +83,4 @@ public class KafkaAppenderTest {
         logger.info("发送1000条日志消息耗时: {}ms", endTime - startTime);
     }
 }
+
