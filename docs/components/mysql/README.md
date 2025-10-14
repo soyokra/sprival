@@ -1,10 +1,10 @@
-# MySQL 组件
+# Spring MySQL 模块
 
-## 简介
+## 概述
 
-MySQL组件为Sprival项目提供完整的数据库集成解决方案，基于MyBatis-Plus和Dynamic-Datasource实现多数据源管理、高性能连接池、SQL监控等功能。
+Spring MySQL 模块为Sprival项目提供完整的数据库集成解决方案，基于MyBatis-Plus和Dynamic-Datasource实现多数据源管理、高性能连接池、SQL监控等功能。
 
-## 功能特性
+## 核心特性
 
 - **多数据源支持**: 基于Dynamic-Datasource实现主从库动态切换
 - **高性能连接池**: 使用HikariCP提供最佳性能的数据库连接池
@@ -13,20 +13,17 @@ MySQL组件为Sprival项目提供完整的数据库集成解决方案，基于My
 - **事务管理**: 支持声明式和编程式事务管理
 - **监控集成**: 与Prometheus + Grafana无缝集成
 
-## 环境要求
+## 组件清单
 
-- **Java版本**: 1.8+
-- **Spring Boot版本**: 2.7.18
-- **MySQL版本**: 5.7+ 或 8.0+
-- **Maven版本**: 3.6+
+### 核心组件
+- [spring-kafka](https://spring.io/projects/spring-kafka) - Spring Kafka 集成框架
+- [kafka-clients](https://kafka.apache.org/documentation/) - Kafka Java 客户端（通过 spring-kafka 引入）
+- [spring-kafka-test](https://spring.io/projects/spring-kafka) - Kafka 测试支持
 
-## 快速开始
+### 功能组件
 
-### 安装步骤
-1. 项目已配置所需依赖，无需额外添加
-2. 创建MySQL数据库和用户
-3. 配置application.properties中的数据库连接信息
-4. 启动Spring Boot应用
+## 配置说明
+
 
 ### 基础配置
 ```properties
@@ -49,59 +46,6 @@ spring.datasource.dynamic.datasource.slave.url = jdbc:mysql://localhost:3306/spr
 spring.datasource.dynamic.datasource.slave.driver-class-name = com.mysql.cj.jdbc.Driver
 spring.datasource.dynamic.datasource.slave.type = com.zaxxer.hikari.HikariDataSource
 ```
-
-### 基础使用
-```java
-// 实体类示例
-@Data
-@TableName("sys_user")
-public class User {
-    @TableId(type = IdType.AUTO)
-    private Long id;
-    
-    private String username;
-    private String password;
-    
-    @TableLogic // 逻辑删除字段
-    private Integer deleted;
-    
-    @TableField(fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
-}
-
-// Mapper接口示例
-@Mapper
-public interface UserMapper extends BaseMapper<User> {
-    // 继承BaseMapper，自动获得CRUD方法
-}
-
-// Service示例
-@Service
-public class UserService extends ServiceImpl<UserMapper, User> {
-    
-    // 分页查询示例
-    public IPage<User> getUserPage(int current, int size) {
-        Page<User> page = new Page<>(current, size);
-        return this.page(page, Wrappers.<User>lambdaQuery()
-            .eq(User::getDeleted, 0)
-            .orderByDesc(User::getCreateTime));
-    }
-}
-```
-
-## 配置说明
-
-### 配置参数
-| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `spring.datasource.dynamic.primary` | String | master | 默认数据源名称 |
-| `spring.datasource.dynamic.p6spy` | Boolean | false | 是否启用P6Spy监控 |
-| `hikari.max_pool_size` | Integer | 10 | 连接池最大连接数 |
-| `hikari.min_idle` | Integer | 5 | 连接池最小空闲连接数 |
-| `hikari.max_lifetime` | Long | 1800000 | 连接最大存活时间(毫秒) |
-| `hikari.idle_timeout` | Long | 600000 | 空闲连接超时时间(毫秒) |
-| `hikari.connection_timeout` | Long | 30000 | 连接获取超时时间(毫秒) |
-| `hikari.leak_detection_threshold` | Long | 0 | 连接泄漏检测阈值(毫秒) |
 
 ### 高级配置
 ```properties

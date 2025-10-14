@@ -1,0 +1,30 @@
+CREATE TABLE `order`
+(
+    `order_id`        varchar(22)          NOT NULL DEFAULT '' COMMENT '订单id',
+    `trade_id`        varchar(20)          NOT NULL DEFAULT '' COMMENT '合并支付id',
+    `parent_order_id` varchar(22)          NOT NULL DEFAULT '' COMMENT '父订单id',
+    `order_type`      varchar(50)          NOT NULL DEFAULT '' COMMENT '订单类型',
+    `user_id`         varchar(20)          NOT NULL DEFAULT '' COMMENT '用户id',
+    `partner_id`      varchar(50)          NOT NULL DEFAULT '' COMMENT '分销商id',
+    `supplier_id`     varchar(64)          NOT NULL DEFAULT '' COMMENT '供应商id',
+    `idempotent_id`   varchar(50)          NOT NULL DEFAULT '' COMMENT '幂等Id',
+    `status_no`       tinyint(11) unsigned NOT NULL DEFAULT '0' COMMENT '订单状态',
+    `business_status` int(11) unsigned     NOT NULL DEFAULT '0' COMMENT '业务订单状态',
+    `start_time`      datetime             NOT NULL COMMENT '订单开始时间',
+    `end_time`        datetime             NOT NULL COMMENT '订单结束时间',
+    `create_time`     datetime             NOT NULL COMMENT '添加时间',
+    `update_time`     datetime             NOT NULL COMMENT '修改时间',
+    PRIMARY KEY (`order_id`),
+    KEY `idx_create_time` (`create_time`),
+    KEY `idx_parent_order_id` (`parent_order_id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_trade_id` (`trade_id`),
+    KEY `idx_order_type` (`order_type`, `business_status`),
+    KEY `idx_partner_id` (`partner_id`),
+    KEY `idx_idempotent_id` (`idempotent_id`),
+    KEY `idx_supplier_id` (`supplier_id`),
+    KEY `idx_start_time` (`start_time`),
+    KEY `idx_end_time` (`end_time`),
+    KEY `idx_status_no` (`status_no`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='订单表'
