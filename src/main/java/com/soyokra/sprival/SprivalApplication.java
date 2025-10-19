@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @EnableCaching
 @EnableFeignClients
-@MapperScan("com.soyokra.sprival.dao.*.mapper")
+@MapperScan("com.soyokra.sprival.app.repository.db.*.mapper")
 @EnableAspectJAutoProxy(exposeProxy = true, proxyTargetClass = true)
 @EnableAsync(proxyTargetClass = true)
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class,
