@@ -1,7 +1,27 @@
 # Sprival 项目文档
 
 ## 项目概述
-Sprival是Spring Boot组件集成模板，提供一份全面的pom.xml组件引入，各个组件配置使用说明，监控指标方案，以及后续k8s部署方案。
+Sprival是Spring Boot组件集成模板，提供一份全面的pom.xml组件引入，各个组件配置说明，监控指标，以及后续k8s部署方案。 
+- 组件集成 
+  - Http Server
+  - Http Client
+  - MySQL
+  - Redis
+  - RabbitMQ/Kafka
+  - Mongodb
+  - Clickhouse
+  - ElasticSearch
+- 日志 
+  - KafkaAppender
+  - ELK
+- 监控
+  - Spring Actuator Prometheus
+  - Grafana
+  - Prometheus
+- 云原生部署
+  - gitlab, gitlab-ci
+  - docker, docker-hub
+  - k8s
 
 ## 文档结构
 

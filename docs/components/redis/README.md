@@ -1,103 +1,49 @@
-# Redis 组件
+# Redis模块
 
-## 简介
+## 概述
 
-Redis组件为Sprival项目提供完整的缓存和分布式数据存储解决方案，基于Spring Cache、Lettuce和Redisson实现声明式缓存、分布式锁、会话管理等功能。
+Sprival Redis模块，基于Spring Cache，Spring Data Redis, Redisson实现声明式缓存, Redis操作，分布式锁等功能。
 
-## 功能特性
+## 核心特性
 
 - **声明式缓存**: 基于Spring Cache的注解式缓存管理
-- **多客户端支持**: 支持Lettuce、Redisson等多种客户端
+- **Redis操作**: 基于Spring Data Redis操作集成
 - **分布式锁**: 基于Redisson的分布式锁实现
 - **连接池管理**: 高性能连接池配置和监控
 - **序列化支持**: 多种序列化方案支持（JSON、JDK、Kryo）
 - **监控集成**: 与Prometheus + Grafana无缝集成
 - **集群支持**: 支持Redis单机、哨兵、集群模式
 
-## 环境要求
 
-- **Java版本**: 1.8+
-- **Spring Boot版本**: 2.7.18
-- **Redis版本**: 5.0+ 或 6.0+
-- **Maven版本**: 3.6+
+## 组件清单
+- [Spring Cache](https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#io.caching) - 声明式缓存
+- [Spring Data Redis](https://docs.spring.io/spring-data/redis/docs/2.7.18/reference/html/) - Redis操作集成
+- [Redisson](https://redisson.pro/docs/overview/) - Redis操作增强，支持分布式锁，原子操作
 
-## 快速开始
 
-### 安装步骤
-1. 项目已配置所需依赖，无需额外添加
-2. 启动Redis服务器
-3. 配置application.properties中的Redis连接信息
-4. 启动Spring Boot应用
-
-### 基础配置
+## 配置说明
 ```properties
-# Redis连接配置
 spring.redis.host = localhost
 spring.redis.port = 6379
 spring.redis.password = workdock
 spring.redis.database = 0
 spring.redis.timeout = 2000ms
 spring.redis.connect-timeout = 2000ms
-
-# 连接池配置
+# Lettuce连接池配置
 spring.redis.lettuce.pool.max-active = 20
 spring.redis.lettuce.pool.max-idle = 10
 spring.redis.lettuce.pool.min-idle = 5
 spring.redis.lettuce.pool.max-wait = 2000ms
-
-# 缓存配置
+spring.redis.lettuce.pool.time-between-eviction-runs = 30s
+spring.redis.lettuce.shutdown-timeout = 100ms
+# Spring Cache配置
 spring.cache.type = redis
 spring.cache.redis.time-to-live = 600000
 spring.cache.redis.cache-null-values = false
 spring.cache.redis.key-prefix = sprival:
 spring.cache.redis.use-key-prefix = true
-```
-
-### 基础使用
-```java
-// 缓存使用示例
-@Service
-@EnableCaching
-public class UserService {
-    
-    @Autowired
-    private UserMapper userMapper;
-    
-    /**
-     * 缓存用户信息
-     */
-    @Cacheable(value = "user", key = "#userId")
-    public User findById(Long userId) {
-        return userMapper.selectById(userId);
-    }
-    
-    /**
-     * 更新用户信息并清除缓存
-     */
-    @CacheEvict(value = "user", key = "#user.id")
-    public void updateUser(User user) {
-        userMapper.updateById(user);
-    }
-}
-```
-
-## 配置说明
-
-### 配置参数
-| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `spring.redis.host` | String | localhost | Redis服务器地址 |
-| `spring.redis.port` | Integer | 6379 | Redis服务器端口 |
-| `spring.redis.password` | String | - | Redis密码 |
-| `spring.redis.database` | Integer | 0 | 数据库索引 |
-| `spring.redis.timeout` | Duration | 2000ms | 连接超时时间 |
-| `lettuce.pool.max-active` | Integer | 8 | 连接池最大连接数 |
-| `lettuce.pool.max-idle` | Integer | 8 | 连接池最大空闲连接数 |
-| `lettuce.pool.min-idle` | Integer | 0 | 连接池最小空闲连接数 |
-| `cache.redis.time-to-live` | Duration | 600000ms | 缓存过期时间 |
-
-### 高级配置
-```properties
+spring.cache.redis.enable-statistics = true
+spring.cache.cache-names = user,product,order,session
 # Redisson配置
 spring.redis.redisson.config.singleServerConfig.address = redis://localhost:6379
 spring.redis.redisson.config.singleServerConfig.password = workdock
@@ -109,178 +55,34 @@ spring.redis.redisson.config.singleServerConfig.connectTimeout = 10000
 spring.redis.redisson.config.singleServerConfig.timeout = 3000
 spring.redis.redisson.config.singleServerConfig.retryAttempts = 3
 spring.redis.redisson.config.singleServerConfig.retryInterval = 1500
+spring.redis.redisson.config.singleServerConfig.keepAlive = true
+spring.redis.redisson.config.singleServerConfig.tcpKeepAlive = true
+spring.redis.redisson.config.threads = 16
+spring.redis.redisson.config.nettyThreads = 32
+spring.redis.redisson.config.transportMode = NIO
 ```
 
-## 使用示例
+## 监控指标
 
-### 基本用法
-```java
-@Service
-public class RedisService {
-    
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-    
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
-    
-    /**
-     * 字符串操作
-     */
-    public void stringOperations() {
-        // 设置值
-        stringRedisTemplate.opsForValue().set("key1", "value1");
-        stringRedisTemplate.opsForValue().set("key2", "value2", Duration.ofMinutes(10));
-        
-        // 获取值
-        String value = stringRedisTemplate.opsForValue().get("key1");
-        
-        // 原子操作
-        Long increment = stringRedisTemplate.opsForValue().increment("counter");
-    }
-    
-    /**
-     * 哈希操作
-     */
-    public void hashOperations() {
-        String hashKey = "user:1001";
-        
-        // 设置哈希字段
-        redisTemplate.opsForHash().put(hashKey, "name", "张三");
-        redisTemplate.opsForHash().put(hashKey, "age", 25);
-        
-        // 获取哈希字段
-        String name = (String) redisTemplate.opsForHash().get(hashKey, "name");
-        Map<Object, Object> userMap = redisTemplate.opsForHash().entries(hashKey);
-    }
-}
-```
+### spring cache指标
+|指标名称|类型|描述|监控建议|
+|-------|---|------|------|
+|cache_gets_total|Counter|缓存查找操作的总次数，包括命中（hit，返回缓存值）和未命中（miss，新加载或 null 值）。这是一个累积计数器，可用于计算命中率（hit / total）。|监控缓存效率：查询 rate(cache_gets_total{result="hit"}[5m]) / rate(cache_gets_total[5m]) 计算 5 分钟命中率。如果 miss 率 > 20%，考虑优化缓存策略。|
+|cache_puts_total|Counter|向缓存中添加条目的总次数，包括新插入或覆盖现有值。|跟踪缓存填充速率：高 put 率可能表示数据频繁更新，结合 gets 分析负载。|
+|cache_removals_total|Counter|从缓存中移除条目的总次数，包括手动 evict 或过期清除。|监控缓存清理：如果 removals 率高，检查 TTL 或最大大小设置，避免内存泄漏。|
+|cache_lock_duration_seconds|Counter|缓存等待锁的时间（秒），反映并发访问时的锁竞争开销。主要在 Caffeine 等支持锁的实现中出现。如果无竞争，则值为 0。|诊断并发瓶颈：如果值持续 > 0.1s，优化锁粒度或使用读写锁。适用于高并发场景。|
 
-### 高级用法
-```java
-// Redisson分布式锁
-@Service
-public class DistributedLockService {
-    
-    @Autowired
-    private RedissonClient redissonClient;
-    
-    /**
-     * 基础分布式锁
-     */
-    public void basicLock() {
-        RLock lock = redissonClient.getLock("myLock");
-        
-        try {
-            // 尝试获取锁，最多等待10秒，锁定时间30秒
-            boolean isLocked = lock.tryLock(10, 30, TimeUnit.SECONDS);
-            
-            if (isLocked) {
-                try {
-                    // 执行业务逻辑
-                    doBusinessLogic();
-                } finally {
-                    // 释放锁
-                    lock.unlock();
-                }
-            } else {
-                throw new RuntimeException("获取锁失败");
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("锁等待被中断", e);
-        }
-    }
-}
 
-// 自定义缓存配置
-@Configuration
-@EnableCaching
-public class RedisCacheConfiguration {
-    
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-        
-        // 设置序列化器
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
-        
-        template.afterPropertiesSet();
-        return template;
-    }
-}
-```
-
-## 监控
-
-### 健康检查
-```bash
-# 查看Redis健康状态
-curl http://localhost:8338/api/actuator/health
-
-# 查看连接池指标
-curl http://localhost:8338/api/actuator/metrics/lettuce.pool.active.connections
-
-# 查看缓存指标
-curl http://localhost:8338/api/actuator/metrics/cache.hits
-
-# 查看所有Prometheus指标
-curl http://localhost:8338/api/actuator/prometheus | grep redis
-```
-
-### 监控指标
-| 指标名称 | 类型 | 说明 |
-|----------|------|------|
-| `lettuce.pool.active.connections` | Gauge | 活跃连接数 |
-| `lettuce.pool.idle.connections` | Gauge | 空闲连接数 |
-| `lettuce.pool.max.connections` | Gauge | 最大连接数 |
-| `redis.commands.duration` | Timer | Redis命令执行时间 |
-| `cache.gets` | Counter | 缓存获取次数 |
-| `cache.hits` | Counter | 缓存命中次数 |
-| `cache.misses` | Counter | 缓存未命中次数 |
-
-## 常见问题
-
-**Q: 如何选择Redis客户端？**
-A: 项目推荐使用Lettuce + Redisson组合：
-- **Lettuce**: 异步非阻塞，性能更好，适合高并发场景
-- **Redisson**: 功能丰富，提供分布式锁、分布式集合等高级功能
-- **Jedis**: 同步阻塞，连接池管理复杂，不推荐使用
-
-**Q: 缓存穿透、缓存击穿、缓存雪崩如何解决？**
-A: 
-- **缓存穿透**: 使用布隆过滤器或缓存空值
-- **缓存击穿**: 使用分布式锁或设置热点数据永不过期
-- **缓存雪崩**: 设置随机过期时间或使用多级缓存
-
-**Q: 如何优化Redis性能？**
-A: 
-- 合理设置连接池大小
-- 使用Pipeline批量操作
-- 选择合适的序列化方式
-- 避免大key和热key
-
-**Q: 分布式锁的注意事项？**
-A: 
-- 设置合理的锁超时时间
-- 确保业务逻辑在锁超时前完成
-- 使用try-finally确保锁释放
-- 避免锁重入问题
-
-**Q: 如何监控Redis性能？**
-A: 
-- 监控连接池使用率
-- 监控命令执行时间
-- 监控内存使用情况
-- 监控缓存命中率
-
-## 参考文档
-
-- [Spring Data Redis官方文档](https://spring.io/projects/spring-data-redis)
-- [Redisson官方文档](https://github.com/redisson/redisson)
-- [Spring Cache官方文档](https://spring.io/guides/gs/caching/)
-- [Redis官方文档](https://redis.io/documentation)
+### Spring Data Redis指标
+|指标名称|类型|描述|监控建议|
+|-------|---|------|------|
+|lettuce_command_completion_seconds|Histogram|Redis命令的完整执行延迟（秒），从发送到完全完成的总时间。按命令类型、本地套接字和远程端点跟踪每个完成的命令。|监控命令性能：使用histogram分位数计算p99延迟，如histogram_quantile(0.99, rate(lettuce_command_completion_seconds_bucket[5m]))。如果p99 > 1s，检查网络延迟或Redis负载。|
+|lettuce_command_completion_seconds_bucket|Histogram|命令完成延迟的累积分布函数（CDF）桶，用于生成可聚合的分位数近似。仅在启用histogram时可用，默认桶从1ms到5分钟。|启用histogram以支持分位数查询：监控高分位数桶的增长率，识别尾部延迟问题。结合_count分析命令量。|
+|lettuce_command_completion_seconds_count|Counter|记录的Redis命令完成次数的总计数，按命令类型、本地和远程端点分组。|跟踪命令吞吐量：查询rate(lettuce_command_completion_seconds_count[5m])计算每秒完成率。如果率突然下降，调查连接中断或错误。|
+|lettuce_command_completion_seconds_max|Gauge|观察到的最大命令完成延迟（秒）。受maxLatency设置影响，当启用histogram时。|警报峰值延迟：如果max > 10s，触发警报检查异常，如Redis节点故障或网络分区。定期重置以避免旧峰值影响。|
+|lettuce_command_completion_seconds_sum|Counter|所有记录的命令完成延迟的总和（秒）。用于计算平均延迟（sum / count）。|计算平均完成时间：rate(lettuce_command_completion_seconds_sum[5m]) / rate(lettuce_command_completion_seconds_count[5m])。如果平均 > 0.1s，优化命令批处理或连接池大小。|
+|lettuce_command_firstresponse_seconds|Histogram|Redis命令的首次响应延迟（秒），从发送到第一个字节响应的时间。按命令类型、本地套接字和远程端点跟踪。|监控响应性：使用p95分位数如histogram_quantile(0.95, rate(lettuce_command_firstresponse_seconds_bucket[5m]))。如果p95 > 0.5s，检查Redis查询复杂性或CPU使用。|
+|lettuce_command_firstresponse_seconds_bucket|Histogram|首次响应延迟的累积分布函数（CDF）桶，用于分位数近似。仅在启用histogram时可用，默认范围1ms到5分钟。|利用桶数据分析延迟分布：监控桶填充以检测延迟抖动。启用localDistinction以细粒度跟踪连接。|
+|lettuce_command_firstresponse_seconds_count|Counter|记录的Redis命令首次响应次数的总计数，按命令类型分组。|评估系统响应率：rate(lettuce_command_firstresponse_seconds_count[5m])表示每秒首次响应数。高率结合低延迟表示健康系统。|
+|lettuce_command_firstresponse_seconds_max|Gauge|观察到的最大首次响应延迟（秒）。histogram启用时受maxLatency限制。|检测最坏情况：如果max > 5s，调查阻塞命令或慢查询。设置警报阈值以捕获间歇性问题。|
+|lettuce_command_firstresponse_seconds_sum|Counter|所有记录的首次响应延迟的总和（秒）。用于平均响应时间计算。|监控平均首次响应：rate(lettuce_command_firstresponse_seconds_sum[5m]) / rate(lettuce_command_firstresponse_seconds_count[5m])。如果平均 > 0.05s，考虑增加连接池或优化网络。|
