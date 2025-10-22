@@ -4,7 +4,7 @@ import com.soyokra.sprival.app.http.request.OrderInsertRequest;
 import com.soyokra.sprival.app.repository.db.shop.model.OrderTbl;
 import com.soyokra.sprival.app.repository.db.shop.provider.OrderTblProvider;
 import com.soyokra.sprival.app.service.OrderService;
-import com.soyokra.sprival.util.ResponseUtils;
+import com.soyokra.sprival.app.util.ResponseUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;

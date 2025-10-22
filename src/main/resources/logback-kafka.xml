@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <!-- 从Spring Environment读取配置属性 -->
+    <springProperty scope="context" name="kafkaBootstrapServers" source="sprival.logging.application.bootstrap-servers" defaultValue="localhost:9092"/>
+    <springProperty scope="context" name="kafkaTopic" source="sprival.logging.application.topic" defaultValue="application-logs"/>
+    <springProperty scope="context" name="kafkaClientId" source="sprival.logging.application.client-id" defaultValue="application-log-producer"/>
+    <springProperty scope="context" name="kafkaAcks" source="sprival.logging.application.acks" defaultValue="1"/>
+    <springProperty scope="context" name="kafkaRetries" source="sprival.logging.application.retries" defaultValue="3"/>
+    <springProperty scope="context" name="kafkaBatchSize" source="sprival.logging.application.batch-size" defaultValue="16384"/>
+    <springProperty scope="context" name="kafkaLingerMs" source="sprival.logging.application.linger-ms" defaultValue="1"/>
+    <springProperty scope="context" name="kafkaBufferMemory" source="sprival.logging.application.buffer-memory" defaultValue="33554432"/>
+    <springProperty scope="context" name="kafkaCompressionType" source="sprival.logging.application.compression-type" defaultValue="none"/>
+    <springProperty scope="context" name="kafkaEnableIdempotence" source="sprival.logging.application.enable-idempotence" defaultValue="false"/>
+    <springProperty scope="context" name="kafkaRequestTimeoutMs" source="sprival.logging.application.request-timeout-ms" defaultValue="30000"/>
+    <springProperty scope="context" name="kafkaDeliveryTimeoutMs" source="sprival.logging.application.delivery-timeout-ms" defaultValue="120000"/>
+    <springProperty scope="context" name="kafkaMaxBlockMs" source="sprival.logging.application.max-block-ms" defaultValue="60000"/>
+    <springProperty scope="context" name="loggingOutputTarget" source="sprival.logging.application.output-target" defaultValue="file"/>
+    
     <!-- 控制台输出 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -10,9 +26,15 @@
     <!-- 文件输出 -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/application.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/application.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>7</maxHistory>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 按日期和大小滚动：logs/application-2025-10-21.0.log -->
+            <fileNamePattern>logs/application-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 单个文件最大100MB -->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- 保留30天 -->
+            <maxHistory>30</maxHistory>
+            <!-- 总大小限制5GB -->
+            <totalSizeCap>5GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
@@ -22,27 +44,27 @@
     <!-- Kafka日志输出 -->
     <appender name="KAFKA" class="com.soyokra.sprival.support.logging.KafkaAppender">
         <!-- Kafka服务器配置 -->
-        <bootstrapServers>${sprival.logging.kafka.bootstrap-servers:localhost:9092}</bootstrapServers>
-        <topic>${sprival.logging.kafka.topic:application-logs}</topic>
-        <clientId>${sprival.logging.kafka.client-id:kafka-appender}</clientId>
+        <bootstrapServers>${kafkaBootstrapServers}</bootstrapServers>
+        <topic>${kafkaTopic}</topic>
+        <clientId>${kafkaClientId}</clientId>
         
         <!-- 生产者配置 -->
-        <acks>${sprival.logging.kafka.acks:1}</acks>
-        <retries>${sprival.logging.kafka.retries:3}</retries>
-        <batchSize>${sprival.logging.kafka.batch-size:16384}</batchSize>
-        <lingerMs>${sprival.logging.kafka.linger-ms:1}</lingerMs>
-        <bufferMemory>${sprival.logging.kafka.buffer-memory:33554432}</bufferMemory>
-        <compressionType>${sprival.logging.kafka.compression-type:none}</compressionType>
-        <enableIdempotence>${sprival.logging.kafka.enable-idempotence:false}</enableIdempotence>
+        <acks>${kafkaAcks}</acks>
+        <retries>${kafkaRetries}</retries>
+        <batchSize>${kafkaBatchSize}</batchSize>
+        <lingerMs>${kafkaLingerMs}</lingerMs>
+        <bufferMemory>${kafkaBufferMemory}</bufferMemory>
+        <compressionType>${kafkaCompressionType}</compressionType>
+        <enableIdempotence>${kafkaEnableIdempotence}</enableIdempotence>
         
         <!-- 超时配置 -->
-        <requestTimeoutMs>${sprival.logging.kafka.request-timeout-ms:30000}</requestTimeoutMs>
-        <deliveryTimeoutMs>${sprival.logging.kafka.delivery-timeout-ms:120000}</deliveryTimeoutMs>
-        <maxBlockMs>${sprival.logging.kafka.max-block-ms:60000}</maxBlockMs>
+        <requestTimeoutMs>${kafkaRequestTimeoutMs}</requestTimeoutMs>
+        <deliveryTimeoutMs>${kafkaDeliveryTimeoutMs}</deliveryTimeoutMs>
+        <maxBlockMs>${kafkaMaxBlockMs}</maxBlockMs>
         
         <!-- 序列化器配置 -->
-        <keySerializer>${sprival.logging.kafka.key-serializer:org.apache.kafka.common.serialization.StringSerializer}</keySerializer>
-        <valueSerializer>${sprival.logging.kafka.value-serializer:org.apache.kafka.common.serialization.StringSerializer}</valueSerializer>
+        <keySerializer>org.apache.kafka.common.serialization.StringSerializer</keySerializer>
+        <valueSerializer>org.apache.kafka.common.serialization.StringSerializer</valueSerializer>
     </appender>
 
     <!-- 异步Kafka日志输出（推荐用于生产环境） -->
@@ -56,9 +78,16 @@
     <!-- 根日志配置 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
+        
+        <!-- 根据配置决定是否启用FILE日志 -->
+        <if condition='property("loggingOutputTarget").contains("file") || property("loggingOutputTarget").equals("both") || property("loggingOutputTarget").isEmpty()'>
+            <then>
+                <appender-ref ref="FILE" />
+            </then>
+        </if>
+        
         <!-- 根据配置决定是否启用Kafka日志 -->
-        <if condition='property("sprival.logging.kafka.enabled").equals("true")'>
+        <if condition='property("loggingOutputTarget").contains("kafka") || property("loggingOutputTarget").equals("both")'>
             <then>
                 <appender-ref ref="ASYNC_KAFKA" />
             </then>

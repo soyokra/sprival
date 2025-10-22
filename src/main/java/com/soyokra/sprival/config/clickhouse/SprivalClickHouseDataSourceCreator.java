@@ -15,26 +15,22 @@ import ru.yandex.clickhouse.settings.ClickHouseProperties;
  */
 public class SprivalClickHouseDataSourceCreator implements DataSourceCreator, InitializingBean {
 
-    private final SprivalClickHouseProperties clickHouseProperties;
 
     public static final String CLICK_HOUSE_DATASOURCE = "ru.yandex.clickhouse.ClickHouseDataSource";
 
-    public SprivalClickHouseDataSourceCreator(SprivalClickHouseProperties clickHouseProperties) {
-        this.clickHouseProperties = clickHouseProperties;
+    public SprivalClickHouseDataSourceCreator() {
+
     }
 
     @Override
     public DataSource createDataSource(DataSourceProperty dataSourceProperty) {
-        // 创建 ClickHouse 属性
-        ClickHouseProperties chProperties = new ClickHouseProperties();
-        chProperties.setUser(dataSourceProperty.getUsername());
-        chProperties.setPassword(dataSourceProperty.getPassword());
-        chProperties.setDatabase(clickHouseProperties.getDatabase());
-        chProperties.setConnectionTimeout(clickHouseProperties.getConnectTimeout());
-        chProperties.setSocketTimeout(clickHouseProperties.getReadTimeout());
+        // 使用转换器创建 ClickHouse 属性
+        ClickHouseProperties clickHouseProperties =
+                ClickHousePropertiesConverter.builder().user(dataSourceProperty.getUsername())
+                        .password(dataSourceProperty.getPassword()).build();
 
         // 创建 ClickHouse 数据源
-        return new ClickHouseDataSource(dataSourceProperty.getUrl(), chProperties);
+        return new ClickHouseDataSource(dataSourceProperty.getUrl(), clickHouseProperties);
     }
 
     @Override

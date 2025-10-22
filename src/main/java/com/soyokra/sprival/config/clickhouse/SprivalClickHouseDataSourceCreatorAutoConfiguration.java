@@ -15,8 +15,8 @@ public class SprivalClickHouseDataSourceCreatorAutoConfiguration {
     static class ClickHouseDataSourceCreatorConfiguration {
         @Bean
         @Order(DynamicDataSourceCreatorAutoConfiguration.DEFAULT_ORDER-1)
-        public SprivalClickHouseDataSourceCreator clickHouseDataSourceCreator(SprivalClickHouseProperties clickHouseProperties) {
-            return new SprivalClickHouseDataSourceCreator(clickHouseProperties);
+        public SprivalClickHouseDataSourceCreator clickHouseDataSourceCreator() {
+            return new SprivalClickHouseDataSourceCreator();
         }
     }
 }

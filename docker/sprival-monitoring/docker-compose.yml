@@ -1,0 +1,37 @@
+version: '3'
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+
+services:
+  ### Grafana ###################################################
+  grafana:
+    build:
+      context: ./grafana
+    volumes:
+      - ./grafana/volumes/data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=workdock
+    ports:
+      - "3000:3000"
+    networks:
+      - frontend
+      - backend
+    links:
+      - prometheus
+
+  ### Prometheus ###################################################
+  prometheus:
+    build:
+      context: ./prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/volumes/data:/prometheus/prom/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - frontend
+      - backend
