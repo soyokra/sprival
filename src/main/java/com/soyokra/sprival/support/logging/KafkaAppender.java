@@ -164,7 +164,10 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
         logMessage.setLoggerName(event.getLoggerName());
         logMessage.setThreadName(event.getThreadName());
         logMessage.setMessage(event.getFormattedMessage());
-        logMessage.setThrowable(event.getThrowableProxy());
+        // 处理异常信息
+        if (event.getThrowableProxy() != null) {
+            logMessage.setThrowable(event.getThrowableProxy().toString());
+        }
 
         // 添加MDC信息
         if (event.getMDCPropertyMap() != null && !event.getMDCPropertyMap().isEmpty()) {

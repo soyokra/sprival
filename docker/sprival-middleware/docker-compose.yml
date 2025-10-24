@@ -30,8 +30,8 @@ services:
         soft: 65536
         hard: 65536
     ports:
-      - "9201:9200"
-      - "9301:9300"
+      - "8200:9200"
+      - "8300:9300"
     networks:
       - backend
 
@@ -102,7 +102,7 @@ services:
     volumes:
       - ./kafka/volumes/data:/var/lib/kafka/data
     ports:
-      - "9092:9092"
+      - "8092:9092"
     networks:
       - frontend
       - backend
@@ -136,6 +136,6 @@ services:
       - ./mysql/volumes/data:/var/lib/mysql
       - ./mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
-      - "3336:3306"
+      - "2306:3306"
     networks:
       - backend

@@ -3,7 +3,6 @@ package com.soyokra.sprival.support.logging;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import ch.qos.logback.classic.spi.IThrowableProxy;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -51,7 +50,8 @@ public class LogMessage {
     /**
      * 异常信息
      */
-    private IThrowableProxy throwable;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String throwable;
 
     /**
      * MDC上下文信息
