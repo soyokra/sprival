@@ -47,6 +47,10 @@
         <!-- 工具库 -->
         <guava.version>31.1-jre</guava.version>
         
+        <!-- 验证框架 -->
+        <validation-api.version>2.0.1.Final</validation-api.version>
+        <hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
+        
         <!-- 测试框架 -->
         <testcontainers.version>1.17.6</testcontainers.version>
         <jacoco.version>0.8.8</jacoco.version>
@@ -245,6 +249,18 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
+        </dependency>
+        
+        <!-- 验证框架 -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${validation-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator.version}</version>
         </dependency>
 
         <!-- 配置元数据（可选） -->

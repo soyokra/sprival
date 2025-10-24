@@ -77,6 +77,11 @@ public abstract class BaseKafkaLogConfig {
     private int maxBlockMs = 60000;
 
     /**
+     * 关闭超时时间（秒）
+     */
+    private int shutdownTimeoutSeconds = 5;
+
+    /**
      * 设置输出目标（支持字符串类型）
      */
     public void setOutputTarget(String outputTarget) {

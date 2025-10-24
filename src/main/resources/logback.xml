@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration debug="true">
     <!-- 从Spring Environment读取配置属性 -->
     <springProperty scope="context" name="kafkaBootstrapServers" source="sprival.logging.application.bootstrap-servers" defaultValue="localhost:9092"/>
     <springProperty scope="context" name="kafkaTopic" source="sprival.logging.application.topic" defaultValue="application-logs"/>
@@ -78,21 +78,10 @@
     <!-- 根日志配置 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
-        
-        <!-- 根据配置决定是否启用FILE日志 -->
-        <if condition='property("loggingOutputTarget").contains("file") || property("loggingOutputTarget").equals("both") || property("loggingOutputTarget").isEmpty()'>
-            <then>
-                <appender-ref ref="FILE" />
-            </then>
-        </if>
-        
-        <!-- 根据配置决定是否启用Kafka日志 -->
-        <if condition='property("loggingOutputTarget").contains("kafka") || property("loggingOutputTarget").equals("both")'>
-            <then>
-                <appender-ref ref="ASYNC_KAFKA" />
-            </then>
-        </if>
+        <appender-ref ref="FILE" />
+        <appender-ref ref="KAFKA" />
     </root>
+    
 
     <!-- 应用日志级别 -->
     <logger name="com.soyokra.sprival" level="DEBUG" />

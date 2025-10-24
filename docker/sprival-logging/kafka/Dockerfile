@@ -1,3 +1,3 @@
-FROM apache/kafka:latest
+FROM apache/kafka:3.7.1
 
 EXPOSE 9092 29092

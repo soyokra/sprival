@@ -1,6 +1,10 @@
 package com.soyokra.sprival.support.logging;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -12,11 +16,7 @@ import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Jetty访问日志Kafka输出器 将Jetty访问日志发送到Kafka
@@ -32,6 +32,7 @@ public class KafkaRequestLog extends AbstractLifeCycle implements RequestLog {
     private Producer<String, String> producer;
     private ObjectMapper objectMapper;
     private Set<String> ignorePaths;
+    private int shutdownTimeoutSeconds = 5;
 
     public KafkaRequestLog(SprivalLoggingProperties properties, Set<String> ignorePaths) {
         this.properties = properties;
@@ -66,7 +67,7 @@ public class KafkaRequestLog extends AbstractLifeCycle implements RequestLog {
 
         try {
             if (producer != null) {
-                producer.close();
+                producer.close(Duration.ofSeconds(shutdownTimeoutSeconds));
                 producer = null;
             }
             log.info("KafkaRequestLog stopped successfully");
@@ -107,8 +108,12 @@ public class KafkaRequestLog extends AbstractLifeCycle implements RequestLog {
                 }
             });
 
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            log.error("Failed to serialize access log message", e);
+        } catch (org.apache.kafka.common.KafkaException e) {
+            log.error("Kafka producer error when logging request", e);
         } catch (Exception e) {
-            log.error("Error logging request to Kafka", e);
+            log.error("Unexpected error logging request to Kafka", e);
         }
     }
 
@@ -177,6 +182,33 @@ public class KafkaRequestLog extends AbstractLifeCycle implements RequestLog {
         props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, config.getMaxBlockMs());
 
         return props;
+    }
+
+    /**
+     * 设置关闭超时时间（秒）
+     * 
+     * @param shutdownTimeoutSeconds 关闭超时时间
+     */
+    public void setShutdownTimeoutSeconds(int shutdownTimeoutSeconds) {
+        this.shutdownTimeoutSeconds = shutdownTimeoutSeconds;
+    }
+
+    /**
+     * 获取关闭超时时间（秒）
+     * 
+     * @return 关闭超时时间
+     */
+    public int getShutdownTimeoutSeconds() {
+        return shutdownTimeoutSeconds;
+    }
+
+    /**
+     * 检查KafkaRequestLog是否健康运行
+     * 
+     * @return true如果已启动且生产者可用，否则false
+     */
+    public boolean isHealthy() {
+        return isStarted() && producer != null;
     }
 }
 

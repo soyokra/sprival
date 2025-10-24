@@ -122,6 +122,9 @@ src/main/java/com/soyokra/sprival/database/
 | `DEVELOPMENT-CHECKLIST.md` | 开发检查清单 |
 | `SYSTEM-ENVIRONMENT.md` | 系统环境配置 |
 | `ENCODING-STANDARDS.md` | 编码标准 |
+| `test_kafka_logging.py` | Kafka 日志测试脚本 ⭐ |
+| `quick_kafka_test.py` | 快速 Kafka 测试脚本 |
+| `README-KAFKA-TEST.md` | Kafka 测试使用说明 |
 
 ## 使用说明
 
