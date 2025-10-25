@@ -113,7 +113,6 @@ class KafkaAppenderEnhancedTest {
         assertTrue(stats.containsKey("queueCapacity"));
         assertTrue(stats.containsKey("asyncMode"));
         assertTrue(stats.containsKey("workerThreadCount"));
-        assertTrue(stats.containsKey("aliveWorkerThreads"));
         assertTrue(stats.containsKey("workerThreadAlive"));
         assertTrue(stats.containsKey("isHealthy"));
         assertTrue(stats.containsKey("successRate"));

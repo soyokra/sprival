@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,11 +41,11 @@ class KafkaAppenderTest {
 
     @Test
     void testConfigurationValidation() {
-        // 测试必需配置验证
-        assertThrows(Exception.class, () -> {
-            KafkaAppender appender = new KafkaAppender();
-            appender.start(); // 应该失败，因为缺少必需配置
-        });
+        // 测试配置验证 - 现在会自动创建默认配置，所以能正常启动
+        KafkaAppender appender = new KafkaAppender();
+        appender.start(); // 会自动使用默认配置
+        assertTrue(appender.isStarted());
+        appender.stop();
     }
 
     @Test
