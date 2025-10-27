@@ -1,0 +1,52 @@
+# Git 相关
+.git
+.gitignore
+.github
+
+# IDE 文件
+.idea
+.vscode
+*.iml
+*.swp
+*.swo
+*~
+
+# Maven 相关
+.mvn
+mvnw
+mvnw.cmd
+
+# 构建输出
+target
+!target/*.jar
+
+# 日志文件
+logs
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# Docker 相关
+Dockerfile
+.dockerignore
+docker-compose*.yml
+docker/
+
+# 文档
+docs/
+*.md
+!README.md
+
+# 测试相关
+*.tape
+
+# 临时文件
+*.tmp
+*.bak
+*.cache
+
+# AI 工作区
+ai-home/
+

@@ -1,0 +1,48 @@
+version: '3'
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+
+volumes:
+  registry-data:
+    driver: local
+
+services:
+  ### registry ###################################################
+  registry:
+    build:
+      context: ./registry
+    container_name: sprival-registry
+    restart: unless-stopped
+    expose:
+      - "5000"
+    environment:
+      # Registry 存储路径
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /var/lib/registry
+      # 启用删除功能
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+    volumes:
+      # 持久化存储
+      - registry-data:/var/lib/registry
+      # 配置文件（可选）
+      - ./registry/config.yml:/etc/docker/registry/config.yml:ro
+    networks:
+      - frontend
+      - backend
+
+  ### registry UI ###################################################
+  registry-ui:
+    image: joxit/docker-registry-ui:2.5.7
+    container_name: sprival-registry-ui
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - REGISTRY_URL=http://localhost:5000  # 内部网络使用服务名
+    networks:
+      - backend
+    depends_on:
+      - registry

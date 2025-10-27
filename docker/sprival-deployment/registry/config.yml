@@ -1,0 +1,30 @@
+# Docker Registry 配置文件
+
+version: 0.1
+
+# 日志配置
+log:
+  fields:
+    service: registry
+  # 可选日志级别：panic, fatal, error, warn, info, debug, trace
+  level: info
+
+# 存储配置
+storage:
+  filesystem:
+    rootdirectory: /var/lib/registry
+    maxthreads: 100
+  delete:
+    enabled: true
+
+# HTTP 配置
+http:
+  addr: :5000
+  headers:
+    X-Content-Type-Options: [nosniff]
+    Access-Control-Allow-Origin: ['http://localhost:8080']  # 替换为你的 UI 地址；用 ['*'] 测试（不推荐生产环境）
+    Access-Control-Allow-Methods: ['HEAD', 'GET', 'OPTIONS', 'DELETE']
+    Access-Control-Allow-Headers: ['Authorization', 'Accept']
+    Access-Control-Max-Age: [1728000]
+    Access-Control-Allow-Credentials: [true]
+    Access-Control-Expose-Headers: ['Docker-Content-Digest']
