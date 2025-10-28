@@ -41,7 +41,7 @@ services:
     ports:
       - "8080:80"
     environment:
-      - REGISTRY_URL=http://localhost:5000  # 内部网络使用服务名
+      - REGISTRY_URL=http://registry:5000 # 内部网络使用服务名
     networks:
       - backend
     depends_on:
