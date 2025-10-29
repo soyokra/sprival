@@ -111,24 +111,16 @@ docker-build:
     - echo "推送镜像到 Registry..."
     - docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG"
     - echo "镜像推送完成"
-    # 拆分多行命令，避免单行多命令导致的格式错误
-    - if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
-      echo "为主分支打 latest 标签...";
-      docker tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG" "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest";
-      docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest";
-      echo "latest 标签推送完成";
-      fi
+    - echo "为主分支打 latest 标签..."
+    - docker tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG" "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
+    - docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
+    - echo "latest 标签推送完成"
     - docker rmi "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG" || true
-    # 拆分多行命令，避免单行多命令导致的格式错误
-    - if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
-      docker rmi "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" || true;
-      fi
+    - docker rmi "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" || true
   after_script:
     - echo "Docker 构建和推送流程完成"
   only:
     - main
-    - develop
-    - tags
   when: manual
   allow_failure: false
 
