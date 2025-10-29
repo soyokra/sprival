@@ -39,10 +39,31 @@ services:
     container_name: sprival-registry-ui
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "8388:80"
     environment:
-      - REGISTRY_URL=http://registry:5000 # 内部网络使用服务名
+      - REGISTRY_URL=http://localhost:5000 # 内部网络使用服务名
     networks:
-      - backend
+      - frontend
     depends_on:
       - registry
+
+  ### gitlab ###################################################
+  gitlab:
+    image: gitlab/gitlab-ee:18.2.7-ee.0
+    container_name: gitlab
+    restart: always
+    hostname: 'localhost.com'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost'
+    ports:
+      - '8386:80'
+      - '4443:443'
+      - '222:22'
+    volumes:
+      - './gitlab/volumes/config:/etc/gitlab'
+      - './gitlab/volumes/logs:/var/log/gitlab'
+      - './gitlab/volumes/data:/var/opt/gitlab'
+    shm_size: '256m'
+    networks:
+      - frontend

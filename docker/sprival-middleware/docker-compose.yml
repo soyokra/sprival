@@ -136,6 +136,6 @@ services:
       - ./mysql/volumes/data:/var/lib/mysql
       - ./mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
-      - "2306:3306"
+      - "33306:3306"
     networks:
       - backend
