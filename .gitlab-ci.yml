@@ -105,7 +105,7 @@ docker-build:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$DOCKER_REGISTRY"
   script:
     - echo "开始构建 Docker 镜像..."
-    - echo "镜像标签: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG"
+    - 'echo "镜像标签: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG"'
     - docker build -t "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG" .
     - echo "Docker 镜像构建完成"
     - echo "推送镜像到 Registry..."
@@ -115,8 +115,8 @@ docker-build:
     - docker tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG" "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
     - docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
     - echo "latest 标签推送完成"
-    - "docker rmi \"$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG\" || true"
-    - "docker rmi \"$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest\" || true"
+    - docker rmi "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG" || true
+    - docker rmi "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" || true
   after_script:
     - echo "Docker 构建和推送流程完成"
   only:
@@ -132,10 +132,10 @@ deploy-production:
     - apk add --no-cache curl
   script:
     - echo "开始生产环境部署..."
-    - echo "部署镜像: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG"
-    - echo "部署时间: $(date)"
-    - echo "部署分支: $CI_COMMIT_REF_NAME"
-    - echo "提交信息: $CI_COMMIT_MESSAGE"
+    - 'echo "部署镜像: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG"'
+    - 'echo "部署时间: $(date)"'
+    - 'echo "部署分支: $CI_COMMIT_REF_NAME"'
+    - 'echo "提交信息: $CI_COMMIT_MESSAGE"'
     # 这里可以添加实际的部署脚本
     # 例如：调用部署 API、更新 Kubernetes 配置等
     - echo "生产环境部署完成"
