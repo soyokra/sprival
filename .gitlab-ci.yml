@@ -8,15 +8,12 @@ variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
   
   # Docker 配置
-  DOCKER_REGISTRY: "${CI_REGISTRY}"
+  DOCKER_REGISTRY: "registry:5000"
   DOCKER_IMAGE_NAME: "sprival"
   DOCKER_TAG: "${CI_COMMIT_SHORT_SHA}"
   
   # Java 配置
   JAVA_VERSION: "1.8"
-  
-  # 构建配置
-  MAVEN_CLI_OPTS_CLEAN: "--batch-mode --errors --fail-at-end --show-version -Dmaven.test.skip=false"
 
 # 定义构建阶段
 stages:
@@ -104,12 +101,6 @@ docker-build:
   before_script:
     - echo "准备 Docker 环境..."
     - docker info
-    - echo "验证必要的环境变量..."
-    - |
-      if [ -z "$CI_REGISTRY_PASSWORD" ] || [ -z "$CI_REGISTRY_USER" ]; then
-        echo "错误: CI_REGISTRY_PASSWORD 或 CI_REGISTRY_USER 未设置"
-        exit 1
-      fi
     - echo "登录到 Docker Registry..."
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$DOCKER_REGISTRY"
   script:
@@ -120,20 +111,9 @@ docker-build:
     - echo "推送镜像到 Registry..."
     - docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG"
     - echo "镜像推送完成"
-    # 为主分支打 latest 标签
-    - |
-      if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
-        echo "为主分支打 latest 标签...";
-        docker tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG" "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest";
-        docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest";
-        echo "latest 标签推送完成";
-      fi
-    # 清理本地镜像
+    - if [ "$CI_COMMIT_REF_NAME" = "main" ]; then echo "为主分支打 latest 标签..."; docker tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG" "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"; docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"; echo "latest 标签推送完成"; fi
     - docker rmi "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG" || true
-    - |
-      if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
-        docker rmi "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" || true
-      fi
+    - if [ "$CI_COMMIT_REF_NAME" = "main" ]; then docker rmi "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" || true; fi
   after_script:
     - echo "Docker 构建和推送流程完成"
   only:
