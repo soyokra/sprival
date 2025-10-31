@@ -1,471 +1,122 @@
 package com.soyokra.sprival.support.logging;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.kafka.common.errors.InterruptException;
+import org.apache.kafka.common.errors.RetriableException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.Layout;
+import ch.qos.logback.core.encoder.Encoder;
+import ch.qos.logback.core.layout.EchoLayout;
+import ch.qos.logback.core.util.OptionHelper;
 
 /**
- * Kafka日志追加器 - 优化版本
+ * Logback Appender 实现，将日志事件发送到 Kafka。
  * 
- * 基于Logback框架最佳实践设计的Kafka日志追加器，提供： - 异步处理和批处理机制 - 完善的异常处理和状态管理 - 性能监控和健康检查 - 遵循Logback框架规范
+ * <p>
+ * 支持通过 logback.xml 配置 Kafka Producer 的所有主要参数，包括：
+ * <ul>
+ * <li>基本配置：bootstrapServers、topic、clientId</li>
+ * <li>生产者配置：acks、retries、batchSize、lingerMs、bufferMemory、compressionType、enableIdempotence</li>
+ * <li>超时配置：requestTimeoutMs、deliveryTimeoutMs、maxBlockMs</li>
+ * <li>序列化器配置：keySerializer、valueSerializer</li>
+ * </ul>
  * 
- * @author sprival
- * @since 2.0.0
+ * <p>
+ * 日志格式化支持 Encoder 或 Layout，默认使用 EchoLayout。
+ * 
+ * <p>
+ * 异常处理：发送失败时仅记录错误日志，不会影响应用运行。
+ * 
+ * @author Sprival Team
+ * @version 1.0
  */
 public class KafkaAppender extends AppenderBase<ILoggingEvent> {
 
-    // 异步处理相关
-    private BlockingQueue<ILoggingEvent> eventQueue;
-    private ExecutorService workerExecutor;
-    private final AtomicBoolean workerRunning = new AtomicBoolean(false);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaAppender.class);
 
-    // 统计信息
-    private final AtomicLong totalEvents = new AtomicLong(0);
-    private final AtomicLong successfulEvents = new AtomicLong(0);
-    private final AtomicLong failedEvents = new AtomicLong(0);
-    private final AtomicLong droppedEvents = new AtomicLong(0);
+    // 基本配置
+    private String bootstrapServers;
+    private String topic;
+    private String clientId;
 
-    // 批处理相关
-    private final java.util.List<ILoggingEvent> batchBuffer = new java.util.ArrayList<>();
-    private final Object batchLock = new Object();
-    private long lastBatchTime = 0;
+    // 生产者配置
+    private String acks;
+    private Integer retries;
+    private Integer batchSize;
+    private Long lingerMs;
+    private Long bufferMemory;
+    private String compressionType;
+    private Boolean enableIdempotence;
 
-    // 统一配置管理
-    private KafkaAppenderConfiguration configuration;
+    // 超时配置
+    private Integer requestTimeoutMs;
+    private Integer deliveryTimeoutMs;
+    private Long maxBlockMs;
 
-    // 内部组件
-    private Producer<String, String> producer;
+    // 序列化器配置
+    private String keySerializer;
+    private String valueSerializer;
+
+    // 日志格式化
+    private Encoder<ILoggingEvent> encoder;
     private Layout<ILoggingEvent> layout;
-    private ObjectMapper objectMapper;
-    private Validator validator;
-    private KafkaAppenderMetrics metrics;
-    private KafkaConnectionManager connectionManager;
 
-    // 缓存常用字段，避免重复获取（使用类级缓存，因为hostname和application在整个应用生命周期中不变）
-    private static volatile String cachedHostname;
-    private static volatile String cachedAppName;
+    // Kafka Producer 实例
+    private Producer<String, String> producer;
 
     @Override
     public void start() {
-        addInfo("KafkaAppender.start() called");
-
-        if (isStarted()) {
-            addWarn("KafkaAppender already started, skipping");
+        if (!checkPrerequisites()) {
             return;
         }
 
         try {
-            // 初始化验证器（必须在验证配置之前）
-            if (validator == null) {
-                try {
-                    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-                    validator = factory.getValidator();
-                    // 注意：使用默认工厂时不需要关闭，但如果使用自定义工厂则需要关闭
-                    addInfo("Initialized Validator");
-                } catch (Throwable e) {
-                    // 在某些测试环境中，Hibernate Validator 可能无法初始化（如 logback.xml 配置问题）
-                    // 这种情况下使用 null validator，让配置验证跳过 JSR-303 验证
-                    addWarn("Failed to initialize Validator: " + e.getMessage()
-                            + ". Configuration validation will be skipped.");
-                    validator = null;
-                }
-            }
-
-            // 验证配置参数
-            if (!validateConfiguration()) {
-                addError("Configuration validation failed");
-                return;
-            }
-
-            // 创建Kafka生产者配置
-            Properties props = createProducerProperties();
-            addInfo("Created producer properties with " + props.size() + " configurations");
-
-            // 创建Kafka生产者
+            Properties props = buildProducerProperties();
             producer = new KafkaProducer<>(props);
-            addInfo("Created KafkaProducer instance");
-
-            // 初始化JSON序列化器
-            objectMapper = new ObjectMapper();
-            addInfo("Initialized ObjectMapper");
-
-            // 初始化监控指标
-            metrics =
-                    new KafkaAppenderMetrics(getName() != null ? getName() : "KafkaAppender", null);
-            addInfo("Initialized Metrics");
-
-            // 初始化连接管理器
-            Properties connectionConfig = new Properties();
-            connectionConfig.putAll(props);
-            connectionConfig.setProperty("connection.maxRetryAttempts",
-                    String.valueOf(configuration.getMaxConnectionRetries()));
-            connectionConfig.setProperty("connection.retryIntervalMs",
-                    String.valueOf(configuration.getConnectionRetryIntervalMs()));
-            connectionConfig.setProperty("connection.timeoutMs",
-                    String.valueOf(configuration.getRequestTimeoutMs()));
-            connectionConfig.setProperty("connection.topic", configuration.getTopic());
-
-            connectionManager = new KafkaConnectionManager(connectionConfig,
-                    configuration.isEnableConnectionFallback(),
-                    configuration.getFallbackFilePath());
-            addInfo("Initialized Connection Manager");
-
-            // 启动异步处理（如果启用）
-            if (configuration.isAsyncMode()) {
-                startAsyncWorker();
-            }
-
-            // 调用父类start方法，设置started状态
             super.start();
-            addInfo("KafkaAppender started successfully with bootstrapServers: "
-                    + configuration.getBootstrapServers() + ", topic: " + configuration.getTopic()
-                    + ", asyncMode: " + configuration.isAsyncMode());
-
+            LOGGER.info("KafkaAppender started successfully, topic: {}, bootstrapServers: {}",
+                    topic, bootstrapServers);
         } catch (Exception e) {
             addError("Failed to start KafkaAppender", e);
-            // 清理已初始化的资源
-            cleanup();
+            LOGGER.error("Failed to start KafkaAppender", e);
         }
     }
 
-    /**
-     * 启动异步工作线程
-     */
-    private void startAsyncWorker() {
-        eventQueue = new LinkedBlockingQueue<>(configuration.getQueueCapacity());
-        final long threadId = System.currentTimeMillis();
-        workerExecutor = Executors.newFixedThreadPool(configuration.getWorkerThreadCount(), r -> {
-            Thread t = new Thread(r, "KafkaAppender-Worker-" + threadId + "-" + System.nanoTime());
-            t.setDaemon(true);
-            return t;
-        });
-        workerRunning.set(true);
-
-        for (int i = 0; i < configuration.getWorkerThreadCount(); i++) {
-            workerExecutor.submit(this::asyncWorkerLoop);
+    @Override
+    protected void append(ILoggingEvent eventObject) {
+        if (!isStarted() || producer == null) {
+            return;
         }
 
-        addInfo("Async worker threads started - count: " + configuration.getWorkerThreadCount()
-                + ", queue capacity: " + configuration.getQueueCapacity());
-    }
-
-    /**
-     * 异步工作线程主循环
-     */
-    private void asyncWorkerLoop() {
-        addInfo("Async worker thread started");
-
-        while (workerRunning.get() && isStarted()) {
-            try {
-                // 从队列中获取事件，支持超时
-                ILoggingEvent event =
-                        eventQueue.poll(100, java.util.concurrent.TimeUnit.MILLISECONDS);
-                if (event != null) {
-                    processEvent(event);
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                addWarn("Async worker thread interrupted");
-                break;
-            } catch (Exception e) {
-                addError("Error in async worker thread", e);
-            }
-        }
-
-        addInfo("Async worker thread stopped");
-    }
-
-    /**
-     * 处理单个日志事件
-     */
-    private void processEvent(ILoggingEvent event) {
-        io.micrometer.core.instrument.Timer.Sample sample = null;
-        if (metrics != null) {
-            sample = metrics.startEventProcessingTimer();
-        }
         try {
-            totalEvents.incrementAndGet();
-            if (metrics != null) {
-                metrics.incrementTotalEvents();
-            }
-
-            if (configuration != null && configuration.isEnableBatching()) {
-                addToBatch(event);
-            } else {
-                sendSingleEvent(event);
-            }
-
-        } catch (Exception e) {
-            failedEvents.incrementAndGet();
-            if (metrics != null) {
-                metrics.incrementFailedEvents();
-            }
-            addError("Unexpected error processing log event", e);
-        } finally {
-            if (metrics != null && sample != null) {
-                metrics.stopEventProcessingTimer(sample);
-            }
-        }
-    }
-
-    /**
-     * 添加事件到批处理缓冲区
-     */
-    private void addToBatch(ILoggingEvent event) {
-        synchronized (batchLock) {
-            if (configuration == null) {
+            String logMessage = formatLogEvent(eventObject);
+            if (logMessage == null || logMessage.isEmpty()) {
                 return;
             }
 
-            // 首次添加事件时，初始化时间戳
-            if (lastBatchTime == 0) {
-                lastBatchTime = System.currentTimeMillis();
-            }
-
-            batchBuffer.add(event);
-            if (metrics != null) {
-                metrics.updateBatchBufferSize(batchBuffer.size());
-            }
-
-            // 检查是否需要发送批次
-            boolean shouldSend = false;
-
-            // 检查是否达到批次大小
-            if (batchBuffer.size() >= configuration.getMaxBatchSize()) {
-                shouldSend = true;
-                addInfo("Batch size reached, sending batch of " + batchBuffer.size() + " events");
-            }
-            // 检查是否超时（只有当有事件时才检查超时）
-            else if (configuration.getBatchTimeoutMs() > 0 && !batchBuffer.isEmpty()) {
-                long currentTime = System.currentTimeMillis();
-                long timeSinceLastBatch = currentTime - lastBatchTime;
-                if (timeSinceLastBatch >= configuration.getBatchTimeoutMs()) {
-                    shouldSend = true;
-                    addInfo("Batch timeout reached, sending batch of " + batchBuffer.size()
-                            + " events");
+            ProducerRecord<String, String> record = new ProducerRecord<>(topic, null, logMessage);
+            producer.send(record, (metadata, exception) -> {
+                if (exception != null) {
+                    handleSendException(exception, logMessage);
                 }
-            }
+            });
 
-            if (shouldSend) {
-                sendBatch();
-            }
-        }
-    }
-
-    /**
-     * 发送单个事件
-     */
-    private void sendSingleEvent(ILoggingEvent event) {
-        if (configuration == null || objectMapper == null || connectionManager == null) {
-            return;
-        }
-
-        try {
-            LogMessage logMessage = createLogMessage(event);
-            String messageJson = objectMapper.writeValueAsString(logMessage);
-            ProducerRecord<String, String> record = new ProducerRecord<>(configuration.getTopic(),
-                    logMessage.getThreadName(), messageJson);
-
-            if (connectionManager.sendMessage(record)) {
-                successfulEvents.incrementAndGet();
-                if (metrics != null) {
-                    metrics.incrementSuccessfulEvents();
-                }
-            } else {
-                failedEvents.incrementAndGet();
-                if (metrics != null) {
-                    metrics.incrementFailedEvents();
-                }
-                addError("Failed to send log to Kafka");
-            }
+            // 非阻塞调用，避免影响主线程
+        } catch (InterruptException e) {
+            Thread.currentThread().interrupt();
+            addError("Interrupted while sending log to Kafka", e);
         } catch (Exception e) {
-            failedEvents.incrementAndGet();
-            addError("Error sending single event", e);
-        }
-    }
-
-    /**
-     * 发送批次事件
-     */
-    private void sendBatch() {
-        if (batchBuffer.isEmpty() || configuration == null || objectMapper == null
-                || connectionManager == null) {
-            return;
-        }
-
-        io.micrometer.core.instrument.Timer.Sample sample = null;
-        if (metrics != null) {
-            sample = metrics.startBatchProcessingTimer();
-        }
-        java.util.List<ILoggingEvent> eventsToSend = null;
-        int alreadyCountedFailed = 0;
-        try {
-            eventsToSend = new java.util.ArrayList<>(batchBuffer);
-            batchBuffer.clear();
-            if (metrics != null) {
-                metrics.updateBatchBufferSize(0);
-            }
-            lastBatchTime = System.currentTimeMillis();
-
-            addInfo("Sending batch of " + eventsToSend.size() + " events to Kafka");
-
-            // 为批次中的每个事件创建记录
-            for (ILoggingEvent event : eventsToSend) {
-                try {
-                    LogMessage logMessage = createLogMessage(event);
-                    String messageJson = objectMapper.writeValueAsString(logMessage);
-                    ProducerRecord<String, String> record = new ProducerRecord<>(
-                            configuration.getTopic(), logMessage.getThreadName(), messageJson);
-
-                    if (connectionManager.sendMessage(record)) {
-                        successfulEvents.incrementAndGet();
-                        if (metrics != null) {
-                            metrics.incrementSuccessfulEvents();
-                        }
-                    } else {
-                        failedEvents.incrementAndGet();
-                        if (metrics != null) {
-                            metrics.incrementFailedEvents();
-                        }
-                        alreadyCountedFailed++;
-                        addError("Failed to send batch event to Kafka");
-                    }
-                } catch (Exception e) {
-                    failedEvents.incrementAndGet();
-                    if (metrics != null) {
-                        metrics.incrementFailedEvents();
-                    }
-                    alreadyCountedFailed++;
-                    addError("Error sending batch event", e);
-                }
-            }
-
-        } catch (Exception e) {
-            // 只有未在循环中计数的失败事件才需要补充计数
-            int totalEvents = eventsToSend != null ? eventsToSend.size() : 0;
-            int uncountedFailed = totalEvents - alreadyCountedFailed;
-            if (uncountedFailed > 0) {
-                failedEvents.addAndGet(uncountedFailed);
-                if (metrics != null) {
-                    metrics.incrementFailedEvents();
-                }
-            }
-            addError("Error sending batch", e);
-        } finally {
-            if (metrics != null && sample != null) {
-                metrics.stopBatchProcessingTimer(sample);
-            }
-        }
-    }
-
-    /**
-     * 清理资源
-     */
-    private void cleanup() {
-        // 1. 清理 Kafka Producer
-        cleanupProducer();
-
-        // 2. 清理连接管理器
-        cleanupConnectionManager();
-
-        // 3. 清理工作线程
-        cleanupWorkerThreads();
-
-        // 4. 清理其他资源
-        cleanupOtherResources();
-    }
-
-    /**
-     * 清理 Kafka Producer
-     */
-    private void cleanupProducer() {
-        if (producer != null) {
-            try {
-                int timeoutSeconds =
-                        configuration != null ? configuration.getShutdownTimeoutSeconds() : 5;
-                producer.close(Duration.ofSeconds(timeoutSeconds));
-                addInfo("Kafka Producer closed successfully");
-            } catch (Exception e) {
-                addError("Error closing Kafka producer", e);
-            } finally {
-                producer = null;
-            }
-        }
-    }
-
-    /**
-     * 清理连接管理器
-     */
-    private void cleanupConnectionManager() {
-        if (connectionManager != null) {
-            try {
-                connectionManager.close();
-                addInfo("Connection Manager closed successfully");
-            } catch (Exception e) {
-                addError("Error closing Connection Manager", e);
-            } finally {
-                connectionManager = null;
-            }
-        }
-    }
-
-    /**
-     * 清理工作线程 注意：此方法在stop()中通过stopAsyncWorker()调用，这里只做最终清理
-     */
-    private void cleanupWorkerThreads() {
-        if (workerExecutor != null) {
-            // workerRunning已在stopAsyncWorker()中设置为false，这里不需要重复设置
-            try {
-                // 如果线程池还没关闭，强制关闭
-                if (!workerExecutor.isShutdown()) {
-                    workerExecutor.shutdownNow();
-                }
-            } catch (Exception e) {
-                addError("Error shutting down worker executor", e);
-            } finally {
-                workerExecutor = null;
-            }
-        }
-    }
-
-    /**
-     * 清理其他资源
-     */
-    private void cleanupOtherResources() {
-        // 清理批处理缓冲区
-        synchronized (batchLock) {
-            if (!batchBuffer.isEmpty()) {
-                addWarn("Clearing " + batchBuffer.size() + " remaining events in batch buffer");
-                batchBuffer.clear();
-            }
-        }
-
-        // 清理事件队列
-        if (eventQueue != null && !eventQueue.isEmpty()) {
-            int remainingEvents = eventQueue.size();
-            eventQueue.clear();
-            addWarn("Cleared " + remainingEvents + " remaining events from queue");
+            addError("Failed to send log to Kafka", e);
+            LOGGER.error("Failed to send log to Kafka", e);
         }
     }
 
@@ -475,792 +126,369 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
             return;
         }
 
-        try {
-            // 停止异步工作线程
-            if (configuration != null && configuration.isAsyncMode() && workerExecutor != null) {
-                stopAsyncWorker();
-            }
-
-            // 发送剩余的批次
-            if (configuration != null && configuration.isEnableBatching()) {
-                sendRemainingBatch();
-            }
-
-            // 关闭连接管理器
-            if (connectionManager != null) {
-                connectionManager.close();
-                addInfo("Connection Manager closed successfully");
-            }
-
-            // 关闭Kafka Producer
-            if (producer != null) {
-                int timeoutSeconds =
-                        configuration != null ? configuration.getShutdownTimeoutSeconds() : 5;
-                producer.close(Duration.ofSeconds(timeoutSeconds));
-                addInfo("KafkaProducer closed successfully");
-            }
-
-            addInfo("KafkaAppender stopped successfully");
-
-        } catch (Exception e) {
-            addError("Error stopping KafkaAppender", e);
-        } finally {
-            // 确保资源被清理
-            cleanup();
-            // 调用父类stop方法，设置started状态为false
-            super.stop();
-        }
-    }
-
-    /**
-     * 发送剩余的批次
-     */
-    private void sendRemainingBatch() {
-        synchronized (batchLock) {
-            if (!batchBuffer.isEmpty()) {
-                addInfo("Sending remaining batch of " + batchBuffer.size()
-                        + " events before shutdown");
-                sendBatch();
-            }
-        }
-    }
-
-    /**
-     * 停止异步工作线程
-     */
-    private void stopAsyncWorker() {
-        if (workerExecutor != null) {
-            workerRunning.set(false);
-
+        if (producer != null) {
             try {
-                // 优雅关闭：停止接受新任务，等待现有任务完成
-                workerExecutor.shutdown();
-
-                // 等待所有任务完成，最多等待3秒
-                if (!workerExecutor.awaitTermination(3, TimeUnit.SECONDS)) {
-                    addWarn("Worker threads did not terminate gracefully, forcing shutdown");
-                    // 强制关闭
-                    workerExecutor.shutdownNow();
-
-                    // 再次等待强制关闭完成，总共不超过5秒
-                    if (!workerExecutor.awaitTermination(2, TimeUnit.SECONDS)) {
-                        addError("Worker threads did not terminate after forced shutdown");
-                    }
-                } else {
-                    addInfo("All async worker threads stopped gracefully");
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                addWarn("Interrupted while waiting for worker threads to stop");
-                // 强制关闭
-                workerExecutor.shutdownNow();
+                producer.flush();
+                producer.close(Duration.ofSeconds(30));
+                LOGGER.info("KafkaAppender stopped successfully");
+            } catch (Exception e) {
+                addError("Error closing Kafka producer", e);
+                LOGGER.error("Error closing Kafka producer", e);
             } finally {
-                workerExecutor = null;
+                producer = null;
             }
         }
-    }
 
-    @Override
-    protected void append(ILoggingEvent event) {
-        if (!isStarted() || configuration == null) {
-            return;
-        }
-
-        try {
-            if (configuration.isAsyncMode()) {
-                // 异步模式：将事件放入队列
-                if (eventQueue != null && !eventQueue.offer(event)) {
-                    // 队列满了，丢弃事件
-                    droppedEvents.incrementAndGet();
-                    if (metrics != null) {
-                        metrics.incrementDroppedEvents();
-                    }
-                    addWarn("Event queue is full, dropping event. Queue size: "
-                            + eventQueue.size());
-                }
-                if (eventQueue != null && metrics != null) {
-                    metrics.updateQueueSize(eventQueue.size());
-                }
-            } else {
-                // 同步模式：直接处理事件
-                processEvent(event);
-            }
-
-        } catch (Exception e) {
-            failedEvents.incrementAndGet();
-            addError("Error in KafkaAppender.append(): " + e.getMessage(), e);
-        }
+        super.stop();
     }
 
     /**
-     * 创建生产者配置
+     * 检查启动前置条件
+     * 
+     * @return 如果满足所有前置条件返回 true，否则返回 false
      */
-    private Properties createProducerProperties() {
+    private boolean checkPrerequisites() {
+        if (OptionHelper.isEmpty(bootstrapServers)) {
+            addError("bootstrapServers is required");
+            return false;
+        }
+
+        if (OptionHelper.isEmpty(topic)) {
+            addError("topic is required");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 构建 Kafka Producer 配置 Properties
+     * 
+     * @return Kafka Producer 配置
+     */
+    private Properties buildProducerProperties() {
         Properties props = new Properties();
 
-        // 使用统一配置
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, configuration.getBootstrapServers());
-        props.put(ProducerConfig.CLIENT_ID_CONFIG,
-                configuration.getClientId() != null ? configuration.getClientId()
-                        : "kafka-appender");
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, configuration.getKeySerializer());
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, configuration.getValueSerializer());
-        props.put(ProducerConfig.ACKS_CONFIG, configuration.getAcks());
-        props.put(ProducerConfig.RETRIES_CONFIG, configuration.getRetries());
-        props.put(ProducerConfig.BATCH_SIZE_CONFIG, configuration.getKafkaBatchSize());
-        props.put(ProducerConfig.LINGER_MS_CONFIG, configuration.getLingerMs());
-        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, configuration.getBufferMemory());
-        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, configuration.getCompressionType());
-        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, configuration.isEnableIdempotence());
-        props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, configuration.getRequestTimeoutMs());
-        props.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, configuration.getDeliveryTimeoutMs());
-        props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, configuration.getMaxBlockMs());
+        // 必需配置
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer != null ? keySerializer
+                : "org.apache.kafka.common.serialization.StringSerializer");
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                valueSerializer != null ? valueSerializer
+                        : "org.apache.kafka.common.serialization.StringSerializer");
+
+        // 客户端 ID
+        if (clientId != null && !clientId.isEmpty()) {
+            props.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
+        }
+
+        // 生产者配置
+        if (acks != null && !acks.isEmpty()) {
+            props.put(ProducerConfig.ACKS_CONFIG, acks);
+        }
+        if (retries != null) {
+            props.put(ProducerConfig.RETRIES_CONFIG, retries);
+        }
+        if (batchSize != null) {
+            props.put(ProducerConfig.BATCH_SIZE_CONFIG, batchSize);
+        }
+        if (lingerMs != null) {
+            props.put(ProducerConfig.LINGER_MS_CONFIG, lingerMs);
+        }
+        if (bufferMemory != null) {
+            props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, bufferMemory);
+        }
+        if (compressionType != null && !compressionType.isEmpty()) {
+            props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, compressionType);
+        }
+        if (enableIdempotence != null) {
+            props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, enableIdempotence);
+        }
+
+        // 超时配置
+        if (requestTimeoutMs != null) {
+            props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, requestTimeoutMs);
+        }
+        if (deliveryTimeoutMs != null) {
+            props.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, deliveryTimeoutMs);
+        }
+        if (maxBlockMs != null) {
+            props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, maxBlockMs);
+        }
 
         return props;
     }
 
     /**
-     * 创建日志消息对象
+     * 格式化日志事件为字符串
+     * 
+     * @param event 日志事件
+     * @return 格式化后的日志字符串
      */
-    private LogMessage createLogMessage(ILoggingEvent event) {
-        LogMessage logMessage = new LogMessage();
-
-        logMessage.setTimestamp(event.getTimeStamp());
-        logMessage.setLevel(event.getLevel().toString());
-        logMessage.setLoggerName(event.getLoggerName());
-        logMessage.setThreadName(event.getThreadName());
-        logMessage.setMessage(event.getFormattedMessage());
-        // 处理异常信息
-        if (event.getThrowableProxy() != null) {
-            logMessage.setThrowable(event.getThrowableProxy().toString());
+    private String formatLogEvent(ILoggingEvent event) {
+        try {
+            if (encoder != null) {
+                byte[] bytes = encoder.encode(event);
+                return new String(bytes, StandardCharsets.UTF_8);
+            } else if (layout != null) {
+                return layout.doLayout(event);
+            } else {
+                // 默认格式化
+                return new EchoLayout<ILoggingEvent>().doLayout(event);
+            }
+        } catch (Exception e) {
+            addError("Failed to format log event", e);
+            return null;
         }
-
-        // 添加MDC信息
-        if (event.getMDCPropertyMap() != null && !event.getMDCPropertyMap().isEmpty()) {
-            logMessage.setMdc(event.getMDCPropertyMap());
-        }
-
-        // 添加自定义字段
-        Map<String, Object> customFields = new HashMap<>();
-        customFields.put("hostname", getCachedHostname());
-        customFields.put("application", getCachedAppName());
-        logMessage.setCustomFields(customFields);
-
-        return logMessage;
     }
 
     /**
-     * 获取缓存的主机名
+     * 处理发送异常
+     * 
+     * @param exception 异常信息
+     * @param logMessage 日志消息
      */
-    private String getCachedHostname() {
-        if (cachedHostname == null) {
-            synchronized (KafkaAppender.class) {
-                if (cachedHostname == null) {
-                    cachedHostname = LoggingUtils.getHostname();
-                }
-            }
+    private void handleSendException(Exception exception, String logMessage) {
+        if (exception instanceof RetriableException) {
+            // 可重试异常，记录警告
+            addWarn("Retriable exception while sending log to Kafka", exception);
+            LOGGER.warn("Retriable exception while sending log to Kafka: {}",
+                    exception.getMessage());
+        } else {
+            // 不可重试异常，记录错误
+            addError("Failed to send log to Kafka", exception);
+            LOGGER.error("Failed to send log to Kafka: {}", logMessage, exception);
         }
-        return cachedHostname;
     }
 
     /**
-     * 获取缓存的应用名称
+     * 判断字符串是否是未定义的值（格式：xxx_IS_UNDEFINED）
+     * 
+     * @param value 待判断的字符串
+     * @return 如果是未定义的值返回 true，否则返回 false
      */
-    private String getCachedAppName() {
-        if (cachedAppName == null) {
-            synchronized (KafkaAppender.class) {
-                if (cachedAppName == null) {
-                    cachedAppName = LoggingUtils.getApplicationName();
-                }
-            }
-        }
-        return cachedAppName;
+    private boolean isUndefined(String value) {
+        return value != null && value.endsWith("_IS_UNDEFINED");
     }
 
-    // Layout 相关方法
+    // ========== Getter 和 Setter 方法 ==========
+
+    public String getBootstrapServers() {
+        return bootstrapServers;
+    }
+
+    public void setBootstrapServers(String bootstrapServers) {
+        this.bootstrapServers = isUndefined(bootstrapServers) ? null : bootstrapServers;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = isUndefined(topic) ? null : topic;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = isUndefined(clientId) ? null : clientId;
+    }
+
+    public String getAcks() {
+        return acks;
+    }
+
+    public void setAcks(String acks) {
+        this.acks = isUndefined(acks) ? null : acks;
+    }
+
+    public Integer getRetries() {
+        return retries;
+    }
+
+    public void setRetries(String retries) {
+        if (isUndefined(retries)) {
+            this.retries = null;
+            return;
+        }
+        try {
+            this.retries = retries != null && !retries.isEmpty() ? Integer.parseInt(retries) : null;
+        } catch (NumberFormatException e) {
+            addWarn("Invalid retries value: " + retries + ", using default", e);
+            this.retries = null;
+        }
+    }
+
+    public Integer getBatchSize() {
+        return batchSize;
+    }
+
+    public void setBatchSize(String batchSize) {
+        if (isUndefined(batchSize)) {
+            this.batchSize = null;
+            return;
+        }
+        try {
+            this.batchSize =
+                    batchSize != null && !batchSize.isEmpty() ? Integer.parseInt(batchSize) : null;
+        } catch (NumberFormatException e) {
+            addWarn("Invalid batchSize value: " + batchSize + ", using default", e);
+            this.batchSize = null;
+        }
+    }
+
+    public Long getLingerMs() {
+        return lingerMs;
+    }
+
+    public void setLingerMs(String lingerMs) {
+        if (isUndefined(lingerMs)) {
+            this.lingerMs = null;
+            return;
+        }
+        try {
+            this.lingerMs =
+                    lingerMs != null && !lingerMs.isEmpty() ? Long.parseLong(lingerMs) : null;
+        } catch (NumberFormatException e) {
+            addWarn("Invalid lingerMs value: " + lingerMs + ", using default", e);
+            this.lingerMs = null;
+        }
+    }
+
+    public Long getBufferMemory() {
+        return bufferMemory;
+    }
+
+    public void setBufferMemory(String bufferMemory) {
+        if (isUndefined(bufferMemory)) {
+            this.bufferMemory = null;
+            return;
+        }
+        try {
+            this.bufferMemory =
+                    bufferMemory != null && !bufferMemory.isEmpty() ? Long.parseLong(bufferMemory)
+                            : null;
+        } catch (NumberFormatException e) {
+            addWarn("Invalid bufferMemory value: " + bufferMemory + ", using default", e);
+            this.bufferMemory = null;
+        }
+    }
+
+    public String getCompressionType() {
+        return compressionType;
+    }
+
+    public void setCompressionType(String compressionType) {
+        this.compressionType = isUndefined(compressionType) ? null : compressionType;
+    }
+
+    public Boolean getEnableIdempotence() {
+        return enableIdempotence;
+    }
+
+    public void setEnableIdempotence(String enableIdempotence) {
+        if (isUndefined(enableIdempotence)) {
+            this.enableIdempotence = null;
+            return;
+        }
+        try {
+            this.enableIdempotence = enableIdempotence != null && !enableIdempotence.isEmpty()
+                    ? Boolean.parseBoolean(enableIdempotence)
+                    : null;
+        } catch (Exception e) {
+            addWarn("Invalid enableIdempotence value: " + enableIdempotence + ", using default", e);
+            this.enableIdempotence = null;
+        }
+    }
+
+    public Integer getRequestTimeoutMs() {
+        return requestTimeoutMs;
+    }
+
+    public void setRequestTimeoutMs(String requestTimeoutMs) {
+        if (isUndefined(requestTimeoutMs)) {
+            this.requestTimeoutMs = null;
+            return;
+        }
+        try {
+            this.requestTimeoutMs = requestTimeoutMs != null && !requestTimeoutMs.isEmpty()
+                    ? Integer.parseInt(requestTimeoutMs)
+                    : null;
+        } catch (NumberFormatException e) {
+            addWarn("Invalid requestTimeoutMs value: " + requestTimeoutMs + ", using default", e);
+            this.requestTimeoutMs = null;
+        }
+    }
+
+    public Integer getDeliveryTimeoutMs() {
+        return deliveryTimeoutMs;
+    }
+
+    public void setDeliveryTimeoutMs(String deliveryTimeoutMs) {
+        if (isUndefined(deliveryTimeoutMs)) {
+            this.deliveryTimeoutMs = null;
+            return;
+        }
+        try {
+            this.deliveryTimeoutMs = deliveryTimeoutMs != null && !deliveryTimeoutMs.isEmpty()
+                    ? Integer.parseInt(deliveryTimeoutMs)
+                    : null;
+        } catch (NumberFormatException e) {
+            addWarn("Invalid deliveryTimeoutMs value: " + deliveryTimeoutMs + ", using default", e);
+            this.deliveryTimeoutMs = null;
+        }
+    }
+
+    public Long getMaxBlockMs() {
+        return maxBlockMs;
+    }
+
+    public void setMaxBlockMs(String maxBlockMs) {
+        if (isUndefined(maxBlockMs)) {
+            this.maxBlockMs = null;
+            return;
+        }
+        try {
+            this.maxBlockMs =
+                    maxBlockMs != null && !maxBlockMs.isEmpty() ? Long.parseLong(maxBlockMs) : null;
+        } catch (NumberFormatException e) {
+            addWarn("Invalid maxBlockMs value: " + maxBlockMs + ", using default", e);
+            this.maxBlockMs = null;
+        }
+    }
+
+    public String getKeySerializer() {
+        return keySerializer;
+    }
+
+    public void setKeySerializer(String keySerializer) {
+        this.keySerializer = isUndefined(keySerializer) ? null : keySerializer;
+    }
+
+    public String getValueSerializer() {
+        return valueSerializer;
+    }
+
+    public void setValueSerializer(String valueSerializer) {
+        this.valueSerializer = isUndefined(valueSerializer) ? null : valueSerializer;
+    }
+
+    public Encoder<ILoggingEvent> getEncoder() {
+        return encoder;
+    }
+
+    public void setEncoder(Encoder<ILoggingEvent> encoder) {
+        this.encoder = encoder;
+    }
+
     public Layout<ILoggingEvent> getLayout() {
         return layout;
     }
 
     public void setLayout(Layout<ILoggingEvent> layout) {
         this.layout = layout;
-    }
-
-    /**
-     * 检查KafkaAppender是否健康
-     * 
-     * @return true如果已启动且生产者可用，否则false
-     */
-    public boolean isHealthy() {
-        if (!isStarted() || producer == null) {
-            return false;
-        }
-
-        if (configuration != null && configuration.isAsyncMode() && workerExecutor != null) {
-            // 检查 ExecutorService 是否关闭
-            return !workerExecutor.isShutdown() && !workerExecutor.isTerminated();
-        }
-
-        return true; // 同步模式或异步模式但工作线程正常
-    }
-
-    /**
-     * 验证配置参数
-     */
-    private boolean validateConfiguration() {
-        try {
-            // 如果配置对象为空，创建默认配置
-            if (configuration == null) {
-                configuration = createDefaultConfiguration();
-            }
-
-            // 执行 JSR-303 验证（如果 validator 可用）
-            if (validator != null) {
-                Set<ConstraintViolation<KafkaAppenderConfiguration>> violations =
-                        validator.validate(configuration);
-
-                if (!violations.isEmpty()) {
-                    for (ConstraintViolation<KafkaAppenderConfiguration> violation : violations) {
-                        addError("Configuration validation failed: " + violation.getPropertyPath()
-                                + " " + violation.getMessage() + " (value: "
-                                + violation.getInvalidValue() + ")");
-                    }
-                    return false;
-                }
-                addInfo("Configuration validation passed: "
-                        + configuration.getConfigurationSummary());
-            } else {
-                // validator 不可用时，只进行基本检查
-                if (configuration.getBootstrapServers() == null
-                        || configuration.getBootstrapServers().isEmpty()) {
-                    addError("Bootstrap servers cannot be empty");
-                    return false;
-                }
-                if (configuration.getTopic() == null || configuration.getTopic().isEmpty()) {
-                    addError("Topic cannot be empty");
-                    return false;
-                }
-                addInfo("Basic configuration validation passed (JSR-303 validation skipped)");
-            }
-
-            return true;
-
-        } catch (Exception e) {
-            addError("Configuration validation error", e);
-            return false;
-        }
-    }
-
-    /**
-     * 创建默认配置
-     */
-    private KafkaAppenderConfiguration createDefaultConfiguration() {
-        return KafkaAppenderConfiguration.builder().bootstrapServers("localhost:9092")
-                .topic("default-topic").clientId("kafka-appender").asyncMode(true)
-                .workerThreadCount(1).queueCapacity(10000).enableBatching(true).maxBatchSize(100)
-                .batchTimeoutMs(1000).enableConnectionFallback(true)
-                .fallbackFilePath("logs/kafka-fallback.log").build();
-    }
-
-    /**
-     * 获取统计信息
-     */
-    public Map<String, Object> getStatistics() {
-        Map<String, Object> stats = new HashMap<>();
-        stats.put("totalEvents", totalEvents.get());
-        stats.put("successfulEvents", successfulEvents.get());
-        stats.put("failedEvents", failedEvents.get());
-        stats.put("droppedEvents", droppedEvents.get());
-
-        // 安全获取队列大小，避免NPE
-        int queueSize = 0;
-        if (configuration != null && configuration.isAsyncMode() && eventQueue != null) {
-            queueSize = eventQueue.size();
-        }
-        stats.put("queueSize", queueSize);
-
-        stats.put("queueCapacity", configuration != null ? configuration.getQueueCapacity() : 0);
-        stats.put("asyncMode", configuration != null ? configuration.isAsyncMode() : false);
-
-        // 检查工作线程状态
-        boolean workerThreadsAlive = false;
-        if (configuration != null && configuration.isAsyncMode() && workerExecutor != null) {
-            workerThreadsAlive = !workerExecutor.isShutdown() && !workerExecutor.isTerminated();
-        }
-        stats.put("workerThreadCount",
-                configuration != null ? configuration.getWorkerThreadCount() : 0);
-        stats.put("workerThreadAlive", workerThreadsAlive);
-        stats.put("isHealthy", isHealthy());
-
-        // 计算成功率
-        long total = totalEvents.get();
-        if (total > 0) {
-            stats.put("successRate", (double) successfulEvents.get() / total * 100);
-        } else {
-            stats.put("successRate", 0.0);
-        }
-
-        return stats;
-    }
-
-    /**
-     * 重置统计信息
-     */
-    public void resetStatistics() {
-        totalEvents.set(0);
-        successfulEvents.set(0);
-        failedEvents.set(0);
-        droppedEvents.set(0);
-        addInfo("Statistics reset");
-    }
-
-    // 异步处理配置的getter和setter
-    public int getQueueCapacity() {
-        return configuration != null ? configuration.getQueueCapacity() : 10000;
-    }
-
-    public void setQueueCapacity(int queueCapacity) {
-        if (configuration != null) {
-            configuration.setQueueCapacity(queueCapacity);
-        }
-    }
-
-    public boolean isAsyncMode() {
-        return configuration != null ? configuration.isAsyncMode() : true;
-    }
-
-    public void setAsyncMode(boolean asyncMode) {
-        if (configuration != null) {
-            configuration.setAsyncMode(asyncMode);
-        }
-    }
-
-    public int getWorkerThreadCount() {
-        return configuration != null ? configuration.getWorkerThreadCount() : 1;
-    }
-
-    public void setWorkerThreadCount(int workerThreadCount) {
-        if (configuration != null) {
-            configuration.setWorkerThreadCount(workerThreadCount);
-        }
-    }
-
-    // 批处理配置的getter和setter
-    public int getMaxBatchSize() {
-        return configuration != null ? configuration.getMaxBatchSize() : 100;
-    }
-
-    public void setMaxBatchSize(int maxBatchSize) {
-        if (configuration != null) {
-            configuration.setMaxBatchSize(maxBatchSize);
-        }
-    }
-
-    public long getBatchTimeoutMs() {
-        return configuration != null ? configuration.getBatchTimeoutMs() : 1000;
-    }
-
-    public void setBatchTimeoutMs(long batchTimeoutMs) {
-        if (configuration != null) {
-            configuration.setBatchTimeoutMs(batchTimeoutMs);
-        }
-    }
-
-    public boolean isEnableBatching() {
-        return configuration != null ? configuration.isEnableBatching() : true;
-    }
-
-    public void setEnableBatching(boolean enableBatching) {
-        if (configuration != null) {
-            configuration.setEnableBatching(enableBatching);
-        }
-    }
-
-    // 连接容错配置的getter和setter
-    public boolean isEnableConnectionFallback() {
-        return configuration != null ? configuration.isEnableConnectionFallback() : true;
-    }
-
-    public void setEnableConnectionFallback(boolean enableConnectionFallback) {
-        if (configuration != null) {
-            configuration.setEnableConnectionFallback(enableConnectionFallback);
-        }
-    }
-
-    public String getFallbackFilePath() {
-        return configuration != null ? configuration.getFallbackFilePath()
-                : "logs/kafka-fallback.log";
-    }
-
-    public void setFallbackFilePath(String fallbackFilePath) {
-        if (configuration != null) {
-            configuration.setFallbackFilePath(fallbackFilePath);
-        }
-    }
-
-    public int getMaxConnectionRetries() {
-        return configuration != null ? configuration.getMaxConnectionRetries() : 5;
-    }
-
-    public void setMaxConnectionRetries(int maxConnectionRetries) {
-        if (configuration != null) {
-            configuration.setMaxConnectionRetries(maxConnectionRetries);
-        }
-    }
-
-    public long getConnectionRetryIntervalMs() {
-        return configuration != null ? configuration.getConnectionRetryIntervalMs() : 5000;
-    }
-
-    public void setConnectionRetryIntervalMs(long connectionRetryIntervalMs) {
-        if (configuration != null) {
-            configuration.setConnectionRetryIntervalMs(connectionRetryIntervalMs);
-        }
-    }
-
-    /**
-     * 重放降级文件中的消息
-     */
-    public int replayFallbackMessages() {
-        if (connectionManager != null) {
-            return connectionManager.replayFallbackMessages();
-        }
-        return 0;
-    }
-
-    /**
-     * 检查连接状态
-     */
-    public boolean isKafkaConnected() {
-        return connectionManager != null && connectionManager.isConnected();
-    }
-
-    /**
-     * 设置统一配置
-     */
-    public void setConfiguration(KafkaAppenderConfiguration configuration) {
-        this.configuration = configuration;
-    }
-
-    /**
-     * 获取统一配置
-     */
-    public KafkaAppenderConfiguration getConfiguration() {
-        return configuration;
-    }
-
-    // ========== 基础配置的getter和setter（向后兼容） ==========
-
-    /**
-     * 获取Bootstrap服务器地址
-     */
-    public String getBootstrapServers() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getBootstrapServers() : "localhost:9092";
-    }
-
-    /**
-     * 设置Bootstrap服务器地址
-     */
-    public void setBootstrapServers(String bootstrapServers) {
-        ensureConfiguration();
-        configuration.setBootstrapServers(bootstrapServers);
-    }
-
-    /**
-     * 获取Topic名称
-     */
-    public String getTopic() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getTopic() : "default-topic";
-    }
-
-    /**
-     * 设置Topic名称
-     */
-    public void setTopic(String topic) {
-        ensureConfiguration();
-        configuration.setTopic(topic);
-    }
-
-    /**
-     * 获取客户端ID
-     */
-    public String getClientId() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getClientId() : "kafka-appender";
-    }
-
-    /**
-     * 设置客户端ID
-     */
-    public void setClientId(String clientId) {
-        ensureConfiguration();
-        configuration.setClientId(clientId);
-    }
-
-    /**
-     * 获取Key序列化器
-     */
-    public String getKeySerializer() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getKeySerializer()
-                : "org.apache.kafka.common.serialization.StringSerializer";
-    }
-
-    /**
-     * 设置Key序列化器
-     */
-    public void setKeySerializer(String keySerializer) {
-        ensureConfiguration();
-        configuration.setKeySerializer(keySerializer);
-    }
-
-    /**
-     * 获取Value序列化器
-     */
-    public String getValueSerializer() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getValueSerializer()
-                : "org.apache.kafka.common.serialization.StringSerializer";
-    }
-
-    /**
-     * 设置Value序列化器
-     */
-    public void setValueSerializer(String valueSerializer) {
-        ensureConfiguration();
-        configuration.setValueSerializer(valueSerializer);
-    }
-
-    /**
-     * 获取Acks配置
-     */
-    public String getAcks() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getAcks() : "1";
-    }
-
-    /**
-     * 设置Acks配置
-     */
-    public void setAcks(String acks) {
-        ensureConfiguration();
-        configuration.setAcks(acks);
-    }
-
-    /**
-     * 获取重试次数
-     */
-    public int getRetries() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getRetries() : 3;
-    }
-
-    /**
-     * 设置重试次数
-     */
-    public void setRetries(int retries) {
-        ensureConfiguration();
-        configuration.setRetries(retries);
-    }
-
-    /**
-     * 获取Kafka批处理大小
-     */
-    public int getKafkaBatchSize() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getKafkaBatchSize() : 16384;
-    }
-
-    /**
-     * 设置Kafka批处理大小
-     */
-    public void setKafkaBatchSize(int kafkaBatchSize) {
-        ensureConfiguration();
-        configuration.setKafkaBatchSize(kafkaBatchSize);
-    }
-
-    /**
-     * 获取Linger时间（ms）
-     */
-    public int getLingerMs() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getLingerMs() : 1;
-    }
-
-    /**
-     * 设置Linger时间（ms）
-     */
-    public void setLingerMs(int lingerMs) {
-        ensureConfiguration();
-        configuration.setLingerMs(lingerMs);
-    }
-
-    /**
-     * 获取缓冲区内存大小
-     */
-    public long getBufferMemory() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getBufferMemory() : 33554432L;
-    }
-
-    /**
-     * 设置缓冲区内存大小
-     */
-    public void setBufferMemory(long bufferMemory) {
-        ensureConfiguration();
-        configuration.setBufferMemory(bufferMemory);
-    }
-
-    /**
-     * 获取压缩类型
-     */
-    public String getCompressionType() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getCompressionType() : "none";
-    }
-
-    /**
-     * 设置压缩类型
-     */
-    public void setCompressionType(String compressionType) {
-        ensureConfiguration();
-        configuration.setCompressionType(compressionType);
-    }
-
-    /**
-     * 是否启用幂等性
-     */
-    public boolean isEnableIdempotence() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.isEnableIdempotence() : false;
-    }
-
-    /**
-     * 设置是否启用幂等性
-     */
-    public void setEnableIdempotence(boolean enableIdempotence) {
-        ensureConfiguration();
-        configuration.setEnableIdempotence(enableIdempotence);
-    }
-
-    /**
-     * 获取请求超时时间（ms）
-     */
-    public int getRequestTimeoutMs() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getRequestTimeoutMs() : 30000;
-    }
-
-    /**
-     * 设置请求超时时间（ms）
-     */
-    public void setRequestTimeoutMs(int requestTimeoutMs) {
-        ensureConfiguration();
-        configuration.setRequestTimeoutMs(requestTimeoutMs);
-    }
-
-    /**
-     * 获取交付超时时间（ms）
-     */
-    public int getDeliveryTimeoutMs() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getDeliveryTimeoutMs() : 120000;
-    }
-
-    /**
-     * 设置交付超时时间（ms）
-     */
-    public void setDeliveryTimeoutMs(int deliveryTimeoutMs) {
-        ensureConfiguration();
-        configuration.setDeliveryTimeoutMs(deliveryTimeoutMs);
-    }
-
-    /**
-     * 获取最大阻塞时间（ms）
-     */
-    public int getMaxBlockMs() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getMaxBlockMs() : 60000;
-    }
-
-    /**
-     * 设置最大阻塞时间（ms）
-     */
-    public void setMaxBlockMs(int maxBlockMs) {
-        ensureConfiguration();
-        configuration.setMaxBlockMs(maxBlockMs);
-    }
-
-    /**
-     * 获取关闭超时时间（秒）
-     */
-    public int getShutdownTimeoutSeconds() {
-        if (configuration == null) {
-            ensureConfiguration();
-        }
-        return configuration != null ? configuration.getShutdownTimeoutSeconds() : 5;
-    }
-
-    /**
-     * 设置关闭超时时间（秒）
-     */
-    public void setShutdownTimeoutSeconds(int shutdownTimeoutSeconds) {
-        ensureConfiguration();
-        configuration.setShutdownTimeoutSeconds(shutdownTimeoutSeconds);
-    }
-
-    /**
-     * 获取批处理大小（兼容旧方法名）
-     */
-    public int getBatchSize() {
-        return getKafkaBatchSize();
-    }
-
-    /**
-     * 设置批处理大小（兼容旧方法名）
-     */
-    public void setBatchSize(int batchSize) {
-        setKafkaBatchSize(batchSize);
-    }
-
-    /**
-     * 确保配置对象已初始化
-     */
-    private void ensureConfiguration() {
-        if (configuration == null) {
-            configuration = new KafkaAppenderConfiguration();
-        }
     }
 }

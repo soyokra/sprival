@@ -1,10 +1,17 @@
-version: '3'
-
 networks:
   frontend:
     driver: bridge
   backend:
     driver: bridge
+volumes:
+  mysql:
+  redis_data:
+  redis_logs:
+  rabbitmq:
+  kafka:
+  elasticsearch:
+  mongodb:
+  clickhouse:
 
 services:
   ### elasticsearch ################################################
@@ -12,8 +19,7 @@ services:
     build:
       context: ./elasticsearch
     volumes:
-      - ./elasticsearch/volumes/data:/usr/share/elasticsearch/data
-      - ./elasticsearch/volumes/logs:/usr/share/elasticsearch/logs
+      - elasticsearch:/usr/share/elasticsearch
     environment:
       - node.name=es-node-1
       - cluster.name=docker-elastic-cluster
@@ -45,8 +51,8 @@ services:
       - frontend
       - backend
     volumes:
-      - ./redis/volumes/data:/data
-      - ./redis/volumes/logs:/logs
+      - redis_data:/data
+      - redis_logs:/logs
     environment:
       - TZ=Asia/Shanghai
     restart: unless-stopped
@@ -69,7 +75,7 @@ services:
       - RABBITMQ_DEFAULT_PASS=guest
     hostname: workdock-rabbitmq
     volumes:
-      - ./rabbitmq/volumes/data:/var/lib/rabbitmq
+      - rabbitmq:/var/lib/rabbitmq
     networks:
       - backend
 
@@ -82,8 +88,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./mongodb/volumes/data/db:/data/db
-      - ./mongodb/volumes/data/configdb:/data/configdb
+      - mongodb:/data
     networks:
       - backend
 
@@ -100,7 +105,7 @@ services:
     build:
       context: ./kafka
     volumes:
-      - ./kafka/volumes/data:/var/lib/kafka/data
+      - kafka:/var/lib/kafka/data
     ports:
       - "8092:9092"
     networks:
@@ -133,7 +138,7 @@ services:
       - MYSQL_ROOT_PASSWORD=workdock
       - TZ=UTC
     volumes:
-      - ./mysql/volumes/data:/var/lib/mysql
+      - mysql:/var/lib/mysql
       - ./mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
       - "33306:3306"

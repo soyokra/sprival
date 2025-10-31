@@ -121,11 +121,12 @@ services:
     depends_on:
       - elasticsearch
     restart: unless-stopped
+
   kafka:
     build:
       context: ./kafka
     volumes:
-      - ./kafka/volumes/data:/var/lib/kafka/data
+      - kafka:/var/lib/kafka/data
     ports:
       - "9092:9092"
     networks:
@@ -143,9 +144,11 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
 networks:
   elk:
     driver: bridge
 
 volumes:
   elasticsearch:
+  kafka:

@@ -5,7 +5,7 @@ CREATE TABLE `order_cancel`
     `cancel_no`     int(11) unsigned NOT NULL DEFAULT '0' COMMENT '取消原因类型',
     `cancel_reason` text COMMENT '取消原因',
     `create_time`   datetime    NOT NULL COMMENT '创建时间',
-    `update_time`   datetime    NOT NULL COMMENT '更新时间'
+    `update_time`   datetime    NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`order_id`),
     KEY             `cancel_no` (`cancel_no`),
     KEY             `create_time` (`create_time`)

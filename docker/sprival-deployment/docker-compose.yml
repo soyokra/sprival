@@ -17,6 +17,8 @@ services:
       context: ./registry
     container_name: sprival-registry
     restart: unless-stopped
+    ports:
+      - "5000:5000"
     expose:
       - "5000"
     environment:
@@ -49,13 +51,14 @@ services:
 
   ### gitlab ###################################################
   gitlab:
-    image: gitlab/gitlab-ce:nightly
+    image: gitlab/gitlab-ce:18.3.5-ce.0
     container_name: gitlab
     restart: always
-    hostname: 'localhost.com'
+    hostname: 'localhost'
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://localhost'
+        external_url 'http://localhost:8386'
+        gitlab_rails['gitlab_shell_ssh_port'] = 222
     ports:
       - '8386:80'
       - '4443:443'
@@ -73,10 +76,37 @@ services:
     restart: always
     privileged: true
     volumes:
-      - './gitlab-runner/volumes/config:/etc/gitlab-runner'  # 持久化配置
-      - '/var/run/docker.sock:/var/run/docker.sock'  # 访问主机 Docker
-      - './gitlab-runner/volumes/cache:/cache'  # 缓存
+      - './gitlab-runner/volumes/config:/etc/gitlab-runner' # 持久化配置
+      - '/var/run/docker.sock:/var/run/docker.sock' # 访问主机 Docker
+      - './gitlab-runner/volumes/cache:/cache' # 缓存
     networks:
-      - frontend  # 同一网络
+      - frontend # 同一网络
     depends_on:
       - gitlab
+
+  ### devops ###################################################
+  devops:
+    build:
+      context: ./devops
+    container_name: sprival-devops
+    restart: unless-stopped
+    working_dir: /workspace
+    environment:
+      # 镜像仓库与命名空间（可按需覆盖）
+      REGISTRY_HOST: localhost:5000
+      IMAGE_NAMESPACE: sprival
+      KUBECONFIG: /root/.kube-w/config
+    volumes:
+      # 项目根目录（用于 docker build 上下文）
+      - '../../:/workspace/project'
+      # devops 脚本目录
+      - './devops:/workspace/devops'
+      # 访问宿主机的 Docker 守护进程
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      # 宿主机 kubeconfig（Windows 路径）
+      - 'C:\\Users\\soyok\\.kube\\config:/root/.kube/config:ro'
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - registry

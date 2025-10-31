@@ -1,20 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="true">
-    <!-- 从Spring Environment读取配置属性 -->
-    <springProperty scope="context" name="kafkaBootstrapServers" source="sprival.logging.application.bootstrap-servers" defaultValue="localhost:9092"/>
-    <springProperty scope="context" name="kafkaTopic" source="sprival.logging.application.topic" defaultValue="application-logs"/>
-    <springProperty scope="context" name="kafkaClientId" source="sprival.logging.application.client-id" defaultValue="application-log-producer"/>
-    <springProperty scope="context" name="kafkaAcks" source="sprival.logging.application.acks" defaultValue="1"/>
-    <springProperty scope="context" name="kafkaRetries" source="sprival.logging.application.retries" defaultValue="3"/>
-    <springProperty scope="context" name="kafkaBatchSize" source="sprival.logging.application.batch-size" defaultValue="16384"/>
-    <springProperty scope="context" name="kafkaLingerMs" source="sprival.logging.application.linger-ms" defaultValue="1"/>
-    <springProperty scope="context" name="kafkaBufferMemory" source="sprival.logging.application.buffer-memory" defaultValue="33554432"/>
-    <springProperty scope="context" name="kafkaCompressionType" source="sprival.logging.application.compression-type" defaultValue="none"/>
-    <springProperty scope="context" name="kafkaEnableIdempotence" source="sprival.logging.application.enable-idempotence" defaultValue="false"/>
-    <springProperty scope="context" name="kafkaRequestTimeoutMs" source="sprival.logging.application.request-timeout-ms" defaultValue="30000"/>
-    <springProperty scope="context" name="kafkaDeliveryTimeoutMs" source="sprival.logging.application.delivery-timeout-ms" defaultValue="120000"/>
-    <springProperty scope="context" name="kafkaMaxBlockMs" source="sprival.logging.application.max-block-ms" defaultValue="60000"/>
-    <springProperty scope="context" name="loggingOutputTarget" source="sprival.logging.application.output-target" defaultValue="file"/>
+    <springProperty scope="context" name="kafkaBootstrapServers" source="sprival.logging.kafka.bootstrap-servers" defaultValue="localhost:9092"/>
+    <springProperty scope="context" name="kafkaTopic" source="sprival.logging.kafka.topic" defaultValue="application-logs"/>
     
     <!-- 控制台输出 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -67,21 +54,12 @@
         <valueSerializer>org.apache.kafka.common.serialization.StringSerializer</valueSerializer>
     </appender>
 
-    <!-- 异步Kafka日志输出（推荐用于生产环境） -->
-    <appender name="ASYNC_KAFKA" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="KAFKA"/>
-        <queueSize>1024</queueSize>
-        <discardingThreshold>0</discardingThreshold>
-        <includeCallerData>false</includeCallerData>
-    </appender>
-
     <!-- 根日志配置 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
         <appender-ref ref="KAFKA" />
     </root>
-    
 
     <!-- 应用日志级别 -->
     <logger name="com.soyokra.sprival" level="DEBUG" />

@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Config
+preferences: {}
+
+# 使用说明：
+# 1) 将本文件复制为同目录下的 "config" 文件名：
+#    cp config.sample config
+# 2) 如果你使用 docker-desktop/kind/minikube，请按需修改 clusters[].cluster.server 为你的 API 地址
+# 3) 如需使用证书或 token，请在 users[].user 中补充相应字段（见注释）
+
+clusters:
+  - name: local-cluster
+    cluster:
+      # 示例：docker-desktop 通常可用 https://127.0.0.1:<port>
+      # 可通过 `kubectl cluster-info` 查看实际地址
+      server: https://127.0.0.1:6443
+      # 如为自签名证书，可选择关闭校验（不安全，仅本地用）：
+      insecure-skip-tls-verify: true
+
+contexts:
+  - name: local-context
+    context:
+      cluster: local-cluster
+      user: local-user
+      namespace: default
+
+current-context: local-context
+
+users:
+  - name: local-user
+    user:
+      # 方式一：本地无认证（搭配 insecure-skip-tls-verify，仅测试用途）
+      # 留空即可
+
+      # 方式二：使用 Bearer Token（建议在 CI 或受控环境使用）
+      # token: "REPLACE_WITH_YOUR_TOKEN"
+
+      # 方式三：使用客户端证书（常见于 minikube/kind 等）
+      # client-certificate-data: "BASE64_CERT"
+      # client-key-data: "BASE64_KEY"
+
+
