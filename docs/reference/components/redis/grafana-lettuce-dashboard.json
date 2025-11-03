@@ -30,7 +30,7 @@
             },
             "id": 100,
             "panels": [],
-            "title": "健康状态总览",
+            "title": "Redis 客户端健康状态总览",
             "type": "row"
         },
         {
@@ -38,11 +38,11 @@
                 "type": "prometheus",
                 "uid": "${datasource}"
             },
-            "description": "连接池整体健康度：(活动连接数 + 空闲连接数) / 最大连接数。\n- 绿色 (<70%)：连接池健康\n- 黄色 (70-90%)：连接池压力较大\n- 红色 (>90%)：连接池接近饱和，需要关注",
+            "description": "Redis 命令执行吞吐量（每秒完成的命令数）。高吞吐量表示 Redis 使用频繁。",
             "fieldConfig": {
                 "defaults": {
                     "color": {
-                        "mode": "thresholds"
+                        "mode": "palette-classic"
                     },
                     "mappings": [],
                     "thresholds": {
@@ -51,18 +51,10 @@
                             {
                                 "color": "green",
                                 "value": null
-                            },
-                            {
-                                "color": "yellow",
-                                "value": 70
-                            },
-                            {
-                                "color": "red",
-                                "value": 90
                             }
                         ]
                     },
-                    "unit": "percent"
+                    "unit": "ops"
                 },
                 "overrides": []
             },
@@ -89,11 +81,11 @@
             },
             "targets": [
                 {
-                    "expr": "((hikaricp_connections_active{instance=~\"$instance\", pool=~\"$pool\"} + hikaricp_connections_idle{instance=~\"$instance\", pool=~\"$pool\"}) / clamp_min(hikaricp_connections_max{instance=~\"$instance\", pool=~\"$pool\"}, 1)) * 100",
+                    "expr": "sum(rate(lettuce_command_completion_seconds_count{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[1m]))",
                     "refId": "A"
                 }
             ],
-            "title": "连接池健康度",
+            "title": "命令吞吐量",
             "type": "stat"
         },
         {
@@ -101,180 +93,7 @@
                 "type": "prometheus",
                 "uid": "${datasource}"
             },
-            "description": "当前正在使用的活动连接数。趋势线帮助观察连接使用模式。",
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "palette-classic"
-                    },
-                    "mappings": [],
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                            {
-                                "color": "green",
-                                "value": null
-                            }
-                        ]
-                    },
-                    "unit": "short"
-                },
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 5,
-                "w": 5,
-                "x": 5,
-                "y": 1
-            },
-            "id": 102,
-            "options": {
-                "colorMode": "value",
-                "graphMode": "area",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "reduceOptions": {
-                    "calcs": [
-                        "lastNotNull"
-                    ],
-                    "fields": "",
-                    "values": false
-                },
-                "textMode": "auto"
-            },
-            "targets": [
-                {
-                    "expr": "hikaricp_connections_active{instance=~\"$instance\", pool=~\"$pool\"}",
-                    "refId": "A"
-                }
-            ],
-            "title": "当前活动连接数",
-            "type": "stat"
-        },
-        {
-            "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-            },
-            "description": "等待获取连接的线程数。\n- 绿色 (0)：无等待\n- 红色 (>0)：有线程在等待，连接池可能不足",
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "thresholds"
-                    },
-                    "mappings": [],
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                            {
-                                "color": "green",
-                                "value": null
-                            },
-                            {
-                                "color": "red",
-                                "value": 1
-                            }
-                        ]
-                    },
-                    "unit": "short"
-                },
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 5,
-                "w": 4,
-                "x": 10,
-                "y": 1
-            },
-            "id": 103,
-            "options": {
-                "colorMode": "value",
-                "graphMode": "area",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "reduceOptions": {
-                    "calcs": [
-                        "lastNotNull"
-                    ],
-                    "fields": "",
-                    "values": false
-                },
-                "textMode": "auto"
-            },
-            "targets": [
-                {
-                    "expr": "hikaricp_connections_pending{instance=~\"$instance\", pool=~\"$pool\"}",
-                    "refId": "A"
-                }
-            ],
-            "title": "等待线程数",
-            "type": "stat"
-        },
-        {
-            "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-            },
-            "description": "最近 5 分钟内连接获取超时的次数。\n- 绿色 (0)：无超时\n- 红色 (>0)：发生超时，需要排查原因",
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "thresholds"
-                    },
-                    "mappings": [],
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                            {
-                                "color": "green",
-                                "value": null
-                            },
-                            {
-                                "color": "red",
-                                "value": 1
-                            }
-                        ]
-                    },
-                    "unit": "short"
-                },
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 5,
-                "w": 5,
-                "x": 14,
-                "y": 1
-            },
-            "id": 104,
-            "options": {
-                "colorMode": "value",
-                "graphMode": "area",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "reduceOptions": {
-                    "calcs": [
-                        "lastNotNull"
-                    ],
-                    "fields": "",
-                    "values": false
-                },
-                "textMode": "auto"
-            },
-            "targets": [
-                {
-                    "expr": "increase(hikaricp_connections_timeout_total{instance=~\"$instance\", pool=~\"$pool\"}[5m])",
-                    "refId": "A"
-                }
-            ],
-            "title": "5分钟超时次数",
-            "type": "stat"
-        },
-        {
-            "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-            },
-            "description": "平均连接获取延迟（5分钟窗口）。\n- 绿色 (<10ms)：性能良好\n- 黄色 (10-50ms)：性能一般\n- 红色 (>50ms)：性能较差，需要优化",
+            "description": "Redis 命令平均完成延迟。\n- 绿色 (<10ms)：性能优秀\n- 黄色 (10-50ms)：性能一般\n- 红色 (>50ms)：性能较差，需要优化",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -305,6 +124,179 @@
             "gridPos": {
                 "h": 5,
                 "w": 5,
+                "x": 5,
+                "y": 1
+            },
+            "id": 102,
+            "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "targets": [
+                {
+                    "expr": "(sum(rate(lettuce_command_completion_seconds_sum{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])) / clamp_min(sum(rate(lettuce_command_completion_seconds_count{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])), 0.001)) * 1000",
+                    "refId": "A"
+                }
+            ],
+            "title": "平均命令延迟",
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+            },
+            "description": "最大 Redis 命令完成延迟。用于识别性能尖刺和异常慢查询。",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "ms"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 5,
+                "w": 5,
+                "x": 10,
+                "y": 1
+            },
+            "id": 103,
+            "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "targets": [
+                {
+                    "expr": "max(lettuce_command_completion_seconds_max{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}) * 1000",
+                    "refId": "A"
+                }
+            ],
+            "title": "最大命令延迟",
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+            },
+            "description": "Spring Cache 缓存命中率。\n- 绿色 (>80%)：命中率优秀\n- 黄色 (60-80%)：命中率一般\n- 红色 (<60%)：命中率较低，需要优化缓存策略",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "red",
+                                "value": null
+                            },
+                            {
+                                "color": "yellow",
+                                "value": 60
+                            },
+                            {
+                                "color": "green",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "percent"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 5,
+                "w": 4,
+                "x": 15,
+                "y": 1
+            },
+            "id": 104,
+            "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "targets": [
+                {
+                    "expr": "(sum(rate(cache_gets_total{instance=~\"$instance\", job=~\"$job\", cache_name=~\"$cache_name\", result=\"hit\"}[5m])) / clamp_min(sum(rate(cache_gets_total{instance=~\"$instance\", job=~\"$job\", cache_name=~\"$cache_name\"}[5m])), 0.001)) * 100",
+                    "refId": "A"
+                }
+            ],
+            "title": "缓存命中率",
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+            },
+            "description": "缓存操作速率：包括 Gets、Puts 和 Removals 的总和。",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "ops"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 5,
+                "w": 5,
                 "x": 19,
                 "y": 1
             },
@@ -325,11 +317,11 @@
             },
             "targets": [
                 {
-                    "expr": "(rate(hikaricp_connections_acquire_seconds_sum{instance=~\"$instance\", pool=~\"$pool\"}[5m]) / clamp_min(rate(hikaricp_connections_acquire_seconds_count{instance=~\"$instance\", pool=~\"$pool\"}[5m]), 0.001)) * 1000",
+                    "expr": "sum(rate(cache_gets_total{instance=~\"$instance\", job=~\"$job\", cache_name=~\"$cache_name\"}[1m])) + sum(rate(cache_puts_total{instance=~\"$instance\", job=~\"$job\", cache_name=~\"$cache_name\"}[1m])) + sum(rate(cache_removals_total{instance=~\"$instance\", job=~\"$job\", cache_name=~\"$cache_name\"}[1m]))",
                     "refId": "A"
                 }
             ],
-            "title": "平均获取延迟",
+            "title": "缓存操作速率",
             "type": "stat"
         },
         {
@@ -340,9 +332,9 @@
                 "x": 0,
                 "y": 6
             },
-            "id": 24,
+            "id": 200,
             "panels": [],
-            "title": "连接池基础配置",
+            "title": "命令延迟监控",
             "type": "row"
         },
         {
@@ -350,551 +342,7 @@
                 "type": "prometheus",
                 "uid": "${datasource}"
             },
-            "description": "连接池配置的最大连接数，通常由 spring.datasource.hikari.maximum-pool-size 配置。",
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "palette-classic"
-                    },
-                    "mappings": [],
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                            {
-                                "color": "blue",
-                                "value": null
-                            }
-                        ]
-                    },
-                    "unit": "short"
-                },
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 4,
-                "w": 8,
-                "x": 0,
-                "y": 7
-            },
-            "id": 2,
-            "options": {
-                "colorMode": "value",
-                "graphMode": "area",
-                "justifyMode": "auto",
-                "orientation": "horizontal",
-                "reduceOptions": {
-                    "calcs": [
-                        "lastNotNull"
-                    ],
-                    "fields": "",
-                    "values": false
-                },
-                "textMode": "auto"
-            },
-            "targets": [
-                {
-                    "expr": "hikaricp_connections_max{instance=~\"$instance\", pool=~\"$pool\"}",
-                    "refId": "A"
-                }
-            ],
-            "title": "最大连接数 (max)",
-            "type": "stat"
-        },
-        {
-            "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-            },
-            "description": "连接池配置的最小空闲连接数，通常由 spring.datasource.hikari.minimum-idle 配置。",
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "palette-classic"
-                    },
-                    "mappings": [],
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                            {
-                                "color": "blue",
-                                "value": null
-                            }
-                        ]
-                    },
-                    "unit": "short"
-                },
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 4,
-                "w": 8,
-                "x": 8,
-                "y": 7
-            },
-            "id": 4,
-            "options": {
-                "colorMode": "value",
-                "graphMode": "area",
-                "justifyMode": "auto",
-                "orientation": "horizontal",
-                "reduceOptions": {
-                    "calcs": [
-                        "lastNotNull"
-                    ],
-                    "fields": "",
-                    "values": false
-                },
-                "textMode": "auto"
-            },
-            "targets": [
-                {
-                    "expr": "hikaricp_connections_min{instance=~\"$instance\", pool=~\"$pool\"}",
-                    "refId": "A"
-                }
-            ],
-            "title": "最小空闲连接数 (min)",
-            "type": "stat"
-        },
-        {
-            "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-            },
-            "description": "活动连接数占最大连接数的百分比。\n- 绿色 (<80%)：资源充足\n- 黄色 (80-90%)：接近上限\n- 红色 (>90%)：资源紧张",
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "thresholds"
-                    },
-                    "mappings": [],
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                            {
-                                "color": "green",
-                                "value": null
-                            },
-                            {
-                                "color": "yellow",
-                                "value": 80
-                            },
-                            {
-                                "color": "red",
-                                "value": 90
-                            }
-                        ]
-                    },
-                    "unit": "percent"
-                },
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 4,
-                "w": 8,
-                "x": 16,
-                "y": 7
-            },
-            "id": 6,
-            "options": {
-                "colorMode": "value",
-                "graphMode": "area",
-                "justifyMode": "auto",
-                "orientation": "horizontal",
-                "reduceOptions": {
-                    "calcs": [
-                        "lastNotNull"
-                    ],
-                    "fields": "",
-                    "values": false
-                },
-                "textMode": "auto"
-            },
-            "targets": [
-                {
-                    "expr": "(hikaricp_connections_active{instance=~\"$instance\", pool=~\"$pool\"} / clamp_min(hikaricp_connections_max{instance=~\"$instance\", pool=~\"$pool\"}, 1)) * 100",
-                    "refId": "A"
-                }
-            ],
-            "title": "连接利用率 (%)",
-            "type": "stat"
-        },
-        {
-            "collapsed": false,
-            "gridPos": {
-                "h": 1,
-                "w": 24,
-                "x": 0,
-                "y": 11
-            },
-            "id": 26,
-            "panels": [],
-            "title": "连接状态监控",
-            "type": "row"
-        },
-        {
-            "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-            },
-            "description": "连接池中的活动连接、空闲连接和总连接数趋势。总连接数应该保持在最大连接数以下。",
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "palette-classic"
-                    },
-                    "custom": {
-                        "axisCenteredZero": false,
-                        "axisColorMode": "text",
-                        "axisLabel": "",
-                        "axisPlacement": "auto",
-                        "barAlignment": 0,
-                        "drawStyle": "line",
-                        "fillOpacity": 20,
-                        "gradientMode": "none",
-                        "hideFrom": {
-                            "tooltip": false,
-                            "viz": false,
-                            "legend": false
-                        },
-                        "lineInterpolation": "smooth",
-                        "lineWidth": 2,
-                        "pointSize": 5,
-                        "scaleDistribution": {
-                            "type": "linear"
-                        },
-                        "showPoints": "never",
-                        "spanNulls": false,
-                        "stacking": {
-                            "group": "A",
-                            "mode": "none"
-                        },
-                        "thresholdsStyle": {
-                            "mode": "off"
-                        }
-                    },
-                    "mappings": [],
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                            {
-                                "color": "green",
-                                "value": null
-                            }
-                        ]
-                    },
-                    "unit": "short"
-                },
-                "overrides": [
-                    {
-                        "matcher": {
-                            "id": "byName",
-                            "options": "最大连接数"
-                        },
-                        "properties": [
-                            {
-                                "id": "custom.lineStyle",
-                                "value": {
-                                    "dash": [
-                                        10,
-                                        10
-                                    ],
-                                    "fill": "dash"
-                                }
-                            },
-                            {
-                                "id": "custom.fillOpacity",
-                                "value": 0
-                            }
-                        ]
-                    }
-                ]
-            },
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 0,
-                "y": 12
-            },
-            "id": 8,
-            "options": {
-                "legend": {
-                    "calcs": [
-                        "last",
-                        "mean",
-                        "max"
-                    ],
-                    "displayMode": "table",
-                    "placement": "bottom",
-                    "showLegend": true
-                },
-                "tooltip": {
-                    "mode": "multi",
-                    "sort": "none"
-                }
-            },
-            "targets": [
-                {
-                    "expr": "hikaricp_connections_active{instance=~\"$instance\", pool=~\"$pool\"}",
-                    "legendFormat": "活动连接数",
-                    "refId": "A"
-                },
-                {
-                    "expr": "hikaricp_connections_idle{instance=~\"$instance\", pool=~\"$pool\"}",
-                    "legendFormat": "空闲连接数",
-                    "refId": "B"
-                },
-                {
-                    "expr": "hikaricp_connections_active{instance=~\"$instance\", pool=~\"$pool\"} + hikaricp_connections_idle{instance=~\"$instance\", pool=~\"$pool\"}",
-                    "legendFormat": "总连接数",
-                    "refId": "C"
-                },
-                {
-                    "expr": "hikaricp_connections_max{instance=~\"$instance\", pool=~\"$pool\"}",
-                    "legendFormat": "最大连接数",
-                    "refId": "D"
-                }
-            ],
-            "title": "活动/空闲连接趋势",
-            "type": "timeseries"
-        },
-        {
-            "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-            },
-            "description": "等待获取连接的线程数和连接超时次数。等待线程数持续大于 0 说明连接池不足，超时次数增加说明需要调整超时配置或优化数据库性能。",
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "palette-classic"
-                    },
-                    "custom": {
-                        "axisCenteredZero": false,
-                        "axisColorMode": "text",
-                        "axisLabel": "",
-                        "axisPlacement": "auto",
-                        "barAlignment": 0,
-                        "drawStyle": "line",
-                        "fillOpacity": 20,
-                        "gradientMode": "none",
-                        "hideFrom": {
-                            "tooltip": false,
-                            "viz": false,
-                            "legend": false
-                        },
-                        "lineInterpolation": "smooth",
-                        "lineWidth": 2,
-                        "pointSize": 5,
-                        "scaleDistribution": {
-                            "type": "linear"
-                        },
-                        "showPoints": "never",
-                        "spanNulls": false,
-                        "stacking": {
-                            "group": "A",
-                            "mode": "none"
-                        },
-                        "thresholdsStyle": {
-                            "mode": "off"
-                        }
-                    },
-                    "mappings": [],
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                            {
-                                "color": "green",
-                                "value": null
-                            }
-                        ]
-                    },
-                    "unit": "short"
-                },
-                "overrides": [
-                    {
-                        "matcher": {
-                            "id": "byRegexp",
-                            "options": ".*超时.*"
-                        },
-                        "properties": [
-                            {
-                                "id": "custom.axisPlacement",
-                                "value": "right"
-                            },
-                            {
-                                "id": "color",
-                                "value": {
-                                    "fixedColor": "red",
-                                    "mode": "fixed"
-                                }
-                            }
-                        ]
-                    }
-                ]
-            },
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 12,
-                "y": 12
-            },
-            "id": 10,
-            "options": {
-                "legend": {
-                    "calcs": [
-                        "last",
-                        "mean",
-                        "max"
-                    ],
-                    "displayMode": "table",
-                    "placement": "bottom",
-                    "showLegend": true
-                },
-                "tooltip": {
-                    "mode": "multi",
-                    "sort": "none"
-                }
-            },
-            "targets": [
-                {
-                    "expr": "hikaricp_connections_pending{instance=~\"$instance\", pool=~\"$pool\"}",
-                    "legendFormat": "等待连接的线程数",
-                    "refId": "A"
-                },
-                {
-                    "expr": "increase(hikaricp_connections_timeout_total{instance=~\"$instance\", pool=~\"$pool\"}[5m])",
-                    "legendFormat": "连接超时数 (5m增量)",
-                    "refId": "B"
-                }
-            ],
-            "title": "连接等待与超时",
-            "type": "timeseries"
-        },
-        {
-            "collapsed": false,
-            "gridPos": {
-                "h": 1,
-                "w": 24,
-                "x": 0,
-                "y": 20
-            },
-            "id": 30,
-            "panels": [],
-            "title": "连接池吞吐量",
-            "type": "row"
-        },
-        {
-            "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-            },
-            "description": "连接获取速率和连接创建速率。获取速率高说明应用并发访问数据库频繁，创建速率高说明连接复用率低或连接池不足。",
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "palette-classic"
-                    },
-                    "custom": {
-                        "axisCenteredZero": false,
-                        "axisColorMode": "text",
-                        "axisLabel": "",
-                        "axisPlacement": "auto",
-                        "barAlignment": 0,
-                        "drawStyle": "line",
-                        "fillOpacity": 20,
-                        "gradientMode": "none",
-                        "hideFrom": {
-                            "tooltip": false,
-                            "viz": false,
-                            "legend": false
-                        },
-                        "lineInterpolation": "smooth",
-                        "lineWidth": 2,
-                        "pointSize": 5,
-                        "scaleDistribution": {
-                            "type": "linear"
-                        },
-                        "showPoints": "never",
-                        "spanNulls": false,
-                        "stacking": {
-                            "group": "A",
-                            "mode": "none"
-                        },
-                        "thresholdsStyle": {
-                            "mode": "off"
-                        }
-                    },
-                    "mappings": [],
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                            {
-                                "color": "green",
-                                "value": null
-                            }
-                        ]
-                    },
-                    "unit": "reqps"
-                },
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 8,
-                "w": 24,
-                "x": 0,
-                "y": 21
-            },
-            "id": 31,
-            "options": {
-                "legend": {
-                    "calcs": [
-                        "last",
-                        "mean",
-                        "max"
-                    ],
-                    "displayMode": "table",
-                    "placement": "bottom",
-                    "showLegend": true
-                },
-                "tooltip": {
-                    "mode": "multi",
-                    "sort": "none"
-                }
-            },
-            "targets": [
-                {
-                    "expr": "rate(hikaricp_connections_acquire_seconds_count{instance=~\"$instance\", pool=~\"$pool\"}[1m])",
-                    "legendFormat": "连接获取速率 (次/秒)",
-                    "refId": "A"
-                },
-                {
-                    "expr": "rate(hikaricp_connections_creation_seconds_count{instance=~\"$instance\", pool=~\"$pool\"}[1m])",
-                    "legendFormat": "连接创建速率 (次/秒)",
-                    "refId": "B"
-                }
-            ],
-            "title": "连接获取与创建速率",
-            "type": "timeseries"
-        },
-        {
-            "collapsed": false,
-            "gridPos": {
-                "h": 1,
-                "w": 24,
-                "x": 0,
-                "y": 29
-            },
-            "id": 28,
-            "panels": [],
-            "title": "性能指标监控",
-            "type": "row"
-        },
-        {
-            "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-            },
-            "description": "连接获取、创建和使用的延迟指标。\n- 获取延迟：从连接池获取连接的时间\n- 创建延迟：创建新连接的时间\n- 使用时长：业务代码持有连接的时间\n\n显示平均值和最大值，帮助识别性能瓶颈。参考文档：https://github.com/brettwooldridge/HikariCP",
+            "description": "Redis 命令完成延迟分布（P50/P95/P99 和最大值）。用于分析命令执行性能和识别慢查询。",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -952,10 +400,7 @@
                             {
                                 "id": "custom.lineStyle",
                                 "value": {
-                                    "dash": [
-                                        5,
-                                        10
-                                    ],
+                                    "dash": [5, 10],
                                     "fill": "dash"
                                 }
                             },
@@ -968,12 +413,12 @@
                 ]
             },
             "gridPos": {
-                "h": 10,
-                "w": 24,
+                "h": 8,
+                "w": 12,
                 "x": 0,
-                "y": 30
+                "y": 7
             },
-            "id": 14,
+            "id": 201,
             "options": {
                 "legend": {
                     "calcs": [
@@ -992,37 +437,671 @@
             },
             "targets": [
                 {
-                    "expr": "(rate(hikaricp_connections_acquire_seconds_sum{instance=~\"$instance\", pool=~\"$pool\"}[5m]) / clamp_min(rate(hikaricp_connections_acquire_seconds_count{instance=~\"$instance\", pool=~\"$pool\"}[5m]), 0.001)) * 1000",
-                    "legendFormat": "获取连接 - 平均延迟",
+                    "expr": "histogram_quantile(0.50, sum(rate(lettuce_command_completion_seconds_bucket{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])) by (le, command)) * 1000",
+                    "legendFormat": "P50 - {{command}}",
                     "refId": "A"
                 },
                 {
-                    "expr": "hikaricp_connections_acquire_seconds_max{instance=~\"$instance\", pool=~\"$pool\"} * 1000",
-                    "legendFormat": "获取连接 - 最大延迟",
+                    "expr": "histogram_quantile(0.95, sum(rate(lettuce_command_completion_seconds_bucket{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])) by (le, command)) * 1000",
+                    "legendFormat": "P95 - {{command}}",
                     "refId": "B"
                 },
                 {
-                    "expr": "(rate(hikaricp_connections_creation_seconds_sum{instance=~\"$instance\", pool=~\"$pool\"}[5m]) / clamp_min(rate(hikaricp_connections_creation_seconds_count{instance=~\"$instance\", pool=~\"$pool\"}[5m]), 0.001)) * 1000",
-                    "legendFormat": "创建连接 - 平均延迟",
+                    "expr": "histogram_quantile(0.99, sum(rate(lettuce_command_completion_seconds_bucket{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])) by (le, command)) * 1000",
+                    "legendFormat": "P99 - {{command}}",
                     "refId": "C"
                 },
                 {
-                    "expr": "hikaricp_connections_creation_seconds_max{instance=~\"$instance\", pool=~\"$pool\"} * 1000",
-                    "legendFormat": "创建连接 - 最大延迟",
+                    "expr": "lettuce_command_completion_seconds_max{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"} * 1000",
+                    "legendFormat": "最大值 - {{command}}",
                     "refId": "D"
-                },
-                {
-                    "expr": "(rate(hikaricp_connections_usage_seconds_sum{instance=~\"$instance\", pool=~\"$pool\"}[5m]) / clamp_min(rate(hikaricp_connections_usage_seconds_count{instance=~\"$instance\", pool=~\"$pool\"}[5m]), 0.001)) * 1000",
-                    "legendFormat": "连接使用 - 平均时长",
-                    "refId": "E"
-                },
-                {
-                    "expr": "hikaricp_connections_usage_seconds_max{instance=~\"$instance\", pool=~\"$pool\"} * 1000",
-                    "legendFormat": "连接使用 - 最大时长",
-                    "refId": "F"
                 }
             ],
-            "title": "连接延迟与使用时长（平均/最大）",
+            "title": "命令完成延迟分布",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+            },
+            "description": "Redis 命令首次响应延迟分布（P50/P95/P99 和最大值）。首次响应延迟主要反映网络延迟和 Redis 处理延迟。",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 10,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "tooltip": false,
+                            "viz": false,
+                            "legend": false
+                        },
+                        "lineInterpolation": "smooth",
+                        "lineWidth": 2,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "ms"
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byRegexp",
+                            "options": ".*最大.*"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.lineStyle",
+                                "value": {
+                                    "dash": [5, 10],
+                                    "fill": "dash"
+                                }
+                            },
+                            {
+                                "id": "custom.fillOpacity",
+                                "value": 0
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 7
+            },
+            "id": 202,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "last",
+                        "mean",
+                        "max"
+                    ],
+                    "displayMode": "table",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "histogram_quantile(0.50, sum(rate(lettuce_command_firstresponse_seconds_bucket{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])) by (le, command)) * 1000",
+                    "legendFormat": "P50 - {{command}}",
+                    "refId": "A"
+                },
+                {
+                    "expr": "histogram_quantile(0.95, sum(rate(lettuce_command_firstresponse_seconds_bucket{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])) by (le, command)) * 1000",
+                    "legendFormat": "P95 - {{command}}",
+                    "refId": "B"
+                },
+                {
+                    "expr": "histogram_quantile(0.99, sum(rate(lettuce_command_firstresponse_seconds_bucket{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])) by (le, command)) * 1000",
+                    "legendFormat": "P99 - {{command}}",
+                    "refId": "C"
+                },
+                {
+                    "expr": "lettuce_command_firstresponse_seconds_max{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"} * 1000",
+                    "legendFormat": "最大值 - {{command}}",
+                    "refId": "D"
+                }
+            ],
+            "title": "首次响应延迟分布",
+            "type": "timeseries"
+        },
+        {
+            "collapsed": false,
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 15
+            },
+            "id": 300,
+            "panels": [],
+            "title": "命令性能分析",
+            "type": "row"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+            },
+            "description": "各类型 Redis 命令的执行吞吐量（ops）。用于分析命令使用模式和识别热点命令。",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 20,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "tooltip": false,
+                            "viz": false,
+                            "legend": false
+                        },
+                        "lineInterpolation": "smooth",
+                        "lineWidth": 2,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "ops"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 16
+            },
+            "id": 301,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "last",
+                        "mean",
+                        "max"
+                    ],
+                    "displayMode": "table",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "sum(rate(lettuce_command_completion_seconds_count{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[1m])) by (command)",
+                    "legendFormat": "{{command}}",
+                    "refId": "A"
+                }
+            ],
+            "title": "命令吞吐量（按命令类型）",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+            },
+            "description": "各类型 Redis 命令的平均完成延迟。用于对比不同命令的性能表现和识别慢命令。",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 20,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "tooltip": false,
+                            "viz": false,
+                            "legend": false
+                        },
+                        "lineInterpolation": "smooth",
+                        "lineWidth": 2,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "ms"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 16
+            },
+            "id": 302,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "last",
+                        "mean",
+                        "max"
+                    ],
+                    "displayMode": "table",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "(sum(rate(lettuce_command_completion_seconds_sum{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])) by (command) / clamp_min(sum(rate(lettuce_command_completion_seconds_count{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])) by (command), 0.001)) * 1000",
+                    "legendFormat": "{{command}}",
+                    "refId": "A"
+                }
+            ],
+            "title": "平均延迟对比（按命令类型）",
+            "type": "timeseries"
+        },
+        {
+            "collapsed": false,
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 24
+            },
+            "id": 400,
+            "panels": [],
+            "title": "Spring Cache 监控",
+            "type": "row"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+            },
+            "description": "Spring Cache 缓存命中率趋势和命中/未命中速率。用于评估缓存效果和优化缓存策略。",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 20,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "tooltip": false,
+                            "viz": false,
+                            "legend": false
+                        },
+                        "lineInterpolation": "smooth",
+                        "lineWidth": 2,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "percent"
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byRegexp",
+                            "options": ".*(速率|Hit|Miss).*"
+                        },
+                        "properties": [
+                            {
+                                "id": "unit",
+                                "value": "ops"
+                            },
+                            {
+                                "id": "custom.axisPlacement",
+                                "value": "right"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 25
+            },
+            "id": 401,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "last",
+                        "mean",
+                        "min"
+                    ],
+                    "displayMode": "table",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "(sum(rate(cache_gets_total{instance=~\"$instance\", job=~\"$job\", cache_name=~\"$cache_name\", result=\"hit\"}[5m])) by (cache_name) / clamp_min(sum(rate(cache_gets_total{instance=~\"$instance\", job=~\"$job\", cache_name=~\"$cache_name\"}[5m])) by (cache_name), 0.001)) * 100",
+                    "legendFormat": "命中率 - {{cache_name}}",
+                    "refId": "A"
+                },
+                {
+                    "expr": "sum(rate(cache_gets_total{instance=~\"$instance\", job=~\"$job\", cache_name=~\"$cache_name\", result=\"hit\"}[1m])) by (cache_name)",
+                    "legendFormat": "Hit 速率 - {{cache_name}}",
+                    "refId": "B"
+                },
+                {
+                    "expr": "sum(rate(cache_gets_total{instance=~\"$instance\", job=~\"$job\", cache_name=~\"$cache_name\", result=\"miss\"}[1m])) by (cache_name)",
+                    "legendFormat": "Miss 速率 - {{cache_name}}",
+                    "refId": "C"
+                }
+            ],
+            "title": "缓存命中率趋势",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+            },
+            "description": "Spring Cache 缓存操作统计：Gets、Puts 和 Removals 速率。用于分析缓存使用模式。",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 20,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "tooltip": false,
+                            "viz": false,
+                            "legend": false
+                        },
+                        "lineInterpolation": "smooth",
+                        "lineWidth": 2,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "ops"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 25
+            },
+            "id": 402,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "last",
+                        "mean",
+                        "max"
+                    ],
+                    "displayMode": "table",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "sum(rate(cache_gets_total{instance=~\"$instance\", job=~\"$job\", cache_name=~\"$cache_name\"}[1m])) by (cache_name)",
+                    "legendFormat": "Gets - {{cache_name}}",
+                    "refId": "A"
+                },
+                {
+                    "expr": "sum(rate(cache_puts_total{instance=~\"$instance\", job=~\"$job\", cache_name=~\"$cache_name\"}[1m])) by (cache_name)",
+                    "legendFormat": "Puts - {{cache_name}}",
+                    "refId": "B"
+                },
+                {
+                    "expr": "sum(rate(cache_removals_total{instance=~\"$instance\", job=~\"$job\", cache_name=~\"$cache_name\"}[1m])) by (cache_name)",
+                    "legendFormat": "Removals - {{cache_name}}",
+                    "refId": "C"
+                }
+            ],
+            "title": "缓存操作统计",
+            "type": "timeseries"
+        },
+        {
+            "collapsed": false,
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 33
+            },
+            "id": 500,
+            "panels": [],
+            "title": "连接与网络监控",
+            "type": "row"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+            },
+            "description": "连接延迟分析：首次响应延迟主要反映网络延迟，命令完成延迟减去首次响应延迟可以得到命令处理时间。按 remote 端点分组显示。",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 20,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "tooltip": false,
+                            "viz": false,
+                            "legend": false
+                        },
+                        "lineInterpolation": "smooth",
+                        "lineWidth": 2,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "ms"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 34
+            },
+            "id": 501,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "last",
+                        "mean",
+                        "max"
+                    ],
+                    "displayMode": "table",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "(sum(rate(lettuce_command_firstresponse_seconds_sum{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])) by (remote) / clamp_min(sum(rate(lettuce_command_firstresponse_seconds_count{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])) by (remote), 0.001)) * 1000",
+                    "legendFormat": "首次响应延迟（网络） - {{remote}}",
+                    "refId": "A"
+                },
+                {
+                    "expr": "(sum(rate(lettuce_command_completion_seconds_sum{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])) by (remote) / clamp_min(sum(rate(lettuce_command_completion_seconds_count{instance=~\"$instance\", job=~\"$job\", command=~\"$command\"}[5m])) by (remote), 0.001)) * 1000",
+                    "legendFormat": "命令完成延迟（总） - {{remote}}",
+                    "refId": "B"
+                }
+            ],
+            "title": "连接延迟分析（按端点）",
             "type": "timeseries"
         }
     ],
@@ -1030,10 +1109,10 @@
     "schemaVersion": 37,
     "style": "dark",
     "tags": [
-        "hikaricp",
-        "connection-pool",
+        "redis",
+        "lettuce",
+        "cache",
         "spring-boot",
-        "database",
         "performance"
     ],
     "templating": {
@@ -1066,7 +1145,7 @@
                     "type": "prometheus",
                     "uid": "${datasource}"
                 },
-                "definition": "label_values(hikaricp_connections_max, instance)",
+                "definition": "label_values(lettuce_command_completion_seconds_count, instance)",
                 "hide": 0,
                 "includeAll": true,
                 "label": "实例",
@@ -1074,7 +1153,7 @@
                 "name": "instance",
                 "options": [],
                 "query": {
-                    "query": "label_values(hikaricp_connections_max, instance)",
+                    "query": "label_values(lettuce_command_completion_seconds_count, instance)",
                     "refId": "StandardVariableQuery"
                 },
                 "refresh": 1,
@@ -1093,15 +1172,69 @@
                     "type": "prometheus",
                     "uid": "${datasource}"
                 },
-                "definition": "label_values(hikaricp_connections_max, pool)",
+                "definition": "label_values(lettuce_command_completion_seconds_count, job)",
                 "hide": 0,
                 "includeAll": true,
-                "label": "连接池",
+                "label": "Job",
                 "multi": true,
-                "name": "pool",
+                "name": "job",
                 "options": [],
                 "query": {
-                    "query": "label_values(hikaricp_connections_max, pool)",
+                    "query": "label_values(lettuce_command_completion_seconds_count, job)",
+                    "refId": "StandardVariableQuery"
+                },
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 1,
+                "type": "query"
+            },
+            {
+                "current": {
+                    "selected": false,
+                    "text": "All",
+                    "value": "$__all"
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                },
+                "definition": "label_values(lettuce_command_completion_seconds_count, command)",
+                "hide": 0,
+                "includeAll": true,
+                "label": "命令类型",
+                "multi": true,
+                "name": "command",
+                "options": [],
+                "query": {
+                    "query": "label_values(lettuce_command_completion_seconds_count, command)",
+                    "refId": "StandardVariableQuery"
+                },
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 1,
+                "type": "query"
+            },
+            {
+                "current": {
+                    "selected": false,
+                    "text": "All",
+                    "value": "$__all"
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                },
+                "definition": "label_values(cache_gets_total, cache_name)",
+                "hide": 0,
+                "includeAll": true,
+                "label": "缓存名称",
+                "multi": true,
+                "name": "cache_name",
+                "options": [],
+                "query": {
+                    "query": "label_values(cache_gets_total, cache_name)",
                     "refId": "StandardVariableQuery"
                 },
                 "refresh": 1,
@@ -1131,7 +1264,8 @@
         ]
     },
     "timezone": "browser",
-    "title": "HikariCP 连接池监控",
-    "uid": "hikaricp-monitor",
-    "version": 2
+    "title": "Lettuce Redis 客户端监控",
+    "uid": "lettuce-monitor",
+    "version": 1
 }
+

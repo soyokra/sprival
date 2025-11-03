@@ -30,8 +30,9 @@
 ### 方式1：稳定流量测试（最常用）
 
 ```bash
-mvn exec:java -Dexec.mainClass="com.soyokra.sprival.loadtest.standalone.StandaloneLoadTester" \
-  -Dexec.args="--url http://localhost:8338/api/order/insert --scenario steady --threads 20 --duration 120"
+# PowerShell中使用cmd包装
+cmd /c "mvn exec:java -Dexec.mainClass=com.soyokra.sprival.loadtest.standalone.StandaloneLoadTester -Dexec.classpathScope=test -Dexec.args=""--url http://localhost:8338/api/order/insert --scenario steady --threads 20 --duration 120"""
+mvn exec:java -Dexec.mainClass="com.soyokra.sprival.loadtest.standalone.StandaloneLoadTester" -Dexec.args="--url http://localhost:8338/api/order/insert --scenario steady --threads 20 --duration 120"
 ```
 
 ### 方式2：突发流量测试（秒杀场景）
