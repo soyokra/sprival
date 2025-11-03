@@ -1,0 +1,45 @@
+{
+  "test_name": "Test Order Update Performance",
+  "description": "测试订单更新性能",
+  
+  "http": {
+    "base_url": "http://127.0.0.1:8338",
+    "timeout": 30,
+    "max_retries": 3,
+    "verify_ssl": true,
+    "default_headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  
+  "scenario": {
+    "type": "constant",
+    "threads": 20,
+    "duration": 60
+  },
+  
+  "report": {
+    "formats": ["console", "json", "html"],
+    "report_dir": "reports",
+    "auto_save": true
+  },
+  
+  "log": {
+    "level": "WARNING",
+    "log_to_file": true,
+    "log_to_console": false,
+    "log_dir": "logs"
+  },
+  
+  "api": {
+    "endpoint": "/api/test/order/update",
+    "method": "PUT",
+    "body_template": {
+      "orderId": "${mock:int:1:100000}",
+      "status": "${mock:int:1:4}",
+      "paymentMethod": "${mock:choice:支付宝:微信支付:银行卡}",
+      "remark": "${mock:string:30:alphanumeric}"
+    }
+  }
+}
+

@@ -1,0 +1,51 @@
+{
+  "test_name": "Ramp Up Load Test",
+  "description": "渐进式压测示例",
+  
+  "http": {
+    "base_url": "https://api.example.com",
+    "timeout": 30,
+    "max_retries": 3,
+    "verify_ssl": true,
+    "default_headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  
+  "scenario": {
+    "type": "ramp_up",
+    "target_threads": 100,
+    "ramp_duration": 60,
+    "hold_duration": 120,
+    "initial_threads": 1,
+    "ramp_steps": 10
+  },
+  
+  "report": {
+    "formats": ["console", "json", "html"],
+    "report_dir": "reports",
+    "auto_save": true
+  },
+  
+  "log": {
+    "level": "INFO",
+    "log_to_file": true,
+    "log_to_console": true,
+    "log_dir": "logs"
+  },
+  
+  "api": {
+    "endpoint": "/api/v1/users",
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer ${mock:uuid}"
+    },
+    "body_template": {
+      "username": "${mock:username}",
+      "email": "${mock:email}",
+      "age": "${mock:int:18:60}",
+      "phone": "${mock:phone}"
+    }
+  }
+}
+

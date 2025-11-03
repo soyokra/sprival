@@ -1,0 +1,58 @@
+{
+  "test_name": "Order Insert API Test",
+  "description": "订单插入接口测试 - 基于 order_tbl 表结构",
+  
+  "http": {
+    "base_url": "http://127.0.0.1:8338",
+    "timeout": 30,
+    "max_retries": 3,
+    "verify_ssl": false,
+    "default_headers": {
+      "Content-Type": "application/json",
+      "User-Agent": "API-Test-Framework/1.0"
+    }
+  },
+  
+  "scenario": {
+    "type": "constant",
+    "threads": 10,
+    "duration": 60
+  },
+  
+  "report": {
+    "formats": ["html"],
+    "report_dir": "reports",
+    "auto_save": true
+  },
+  
+  "log": {
+    "level": "INFO",
+    "log_to_file": true,
+    "log_to_console": true,
+    "log_dir": "logs"
+  },
+  
+  "api": {
+    "endpoint": "/api/order/insert",
+    "method": "POST",
+    "headers": {},
+    "params": {},
+    "body_template": {
+      "orderId": "${mock:string:22:alphanumeric}",
+      "tradeId": "${mock:string:20:alphanumeric}",
+      "parentOrderId": "${mock:string:22:alphanumeric}",
+      "orderType": "${mock:choice:STANDARD:PRESALE:CUSTOM:GROUP_BUY:FLASH_SALE}",
+      "userId": "${mock:string:20:numeric}",
+      "partnerId": "${mock:string:12:alphanumeric}",
+      "supplierId": "${mock:string:16:alphanumeric}",
+      "idempotentId": "${mock:uuid}",
+      "statusNo": "${mock:int:0:10}",
+      "businessStatus": "${mock:int:0:100}",
+      "startTime": "${mock:datetime:%Y-%m-%d %H:%M:%S}",
+      "endTime": "${mock:datetime:%Y-%m-%d %H:%M:%S}",
+      "createTime": "${mock:datetime:%Y-%m-%d %H:%M:%S}",
+      "updateTime": "${mock:datetime:%Y-%m-%d %H:%M:%S}"
+    }
+  }
+}
+

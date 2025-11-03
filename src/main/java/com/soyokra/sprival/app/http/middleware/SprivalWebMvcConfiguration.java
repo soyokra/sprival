@@ -1,13 +1,10 @@
 package com.soyokra.sprival.app.http.middleware;
 
-import com.soyokra.sprival.app.http.middleware.ratelimiter.SprivalRateLimitInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -19,14 +16,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class SprivalWebMvcConfiguration implements WebMvcConfigurer {
 
-    @Autowired
-    private SprivalRateLimitInterceptor rateLimitInterceptor;
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(rateLimitInterceptor).addPathPatterns("/api/**")
-                .excludePathPatterns("/api/actuator/**");
-    }
 
     /**
      * CORS跨域配置

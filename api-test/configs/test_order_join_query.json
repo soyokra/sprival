@@ -1,0 +1,39 @@
+{
+  "test_name": "Test Order JOIN Query",
+  "description": "测试订单关联明细查询性能 - JOIN 查询测试",
+  
+  "http": {
+    "base_url": "http://127.0.0.1:8338",
+    "timeout": 30,
+    "max_retries": 3,
+    "verify_ssl": true,
+    "default_headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  
+  "scenario": {
+    "type": "constant",
+    "threads": 30,
+    "duration": 60
+  },
+  
+  "report": {
+    "formats": ["console", "json", "html"],
+    "report_dir": "reports",
+    "auto_save": true
+  },
+  
+  "log": {
+    "level": "WARNING",
+    "log_to_file": true,
+    "log_to_console": false,
+    "log_dir": "logs"
+  },
+  
+  "api": {
+    "endpoint": "/api/test/order/withDetail/${mock:int:1:100000}",
+    "method": "GET"
+  }
+}
+

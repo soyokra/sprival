@@ -1,0 +1,39 @@
+{
+  "test_name": "Test Order Mixed Operations",
+  "description": "测试订单混合操作性能 - 模拟真实业务场景（70%读+30%写）",
+  
+  "http": {
+    "base_url": "http://127.0.0.1:8338",
+    "timeout": 30,
+    "max_retries": 3,
+    "verify_ssl": true,
+    "default_headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  
+  "scenario": {
+    "type": "constant",
+    "threads": 40,
+    "duration": 180
+  },
+  
+  "report": {
+    "formats": ["console", "json", "html"],
+    "report_dir": "reports",
+    "auto_save": true
+  },
+  
+  "log": {
+    "level": "WARNING",
+    "log_to_file": true,
+    "log_to_console": false,
+    "log_dir": "logs"
+  },
+  
+  "api": {
+    "endpoint": "/api/test/order/mixedOperation",
+    "method": "POST"
+  }
+}
+

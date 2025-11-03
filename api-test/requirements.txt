@@ -1,0 +1,25 @@
+# HTTP 客户端
+requests==2.31.0
+urllib3==2.1.0
+
+# JSON Schema 验证
+jsonschema==4.20.0
+
+# HTML 报告模板引擎
+jinja2==3.1.2
+
+# 数据生成
+faker==20.1.0
+
+# 命令行工具
+colorama==0.4.6
+
+# 重试机制
+tenacity==8.2.3
+
+# 性能统计
+numpy==1.26.2
+
+# 日期时间处理
+python-dateutil==2.8.2
+
