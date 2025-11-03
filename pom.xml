@@ -425,6 +425,13 @@
                         <artifactId>maven-compiler-plugin</artifactId>
                         <configuration>
                             <annotationProcessorPaths>
+                                <!-- Lombok注解处理器 -->
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                    <version>1.18.30</version>
+                                </path>
+                                <!-- JMH注解处理器 -->
                                 <path>
                                     <groupId>org.openjdk.jmh</groupId>
                                     <artifactId>jmh-generator-annprocess</artifactId>

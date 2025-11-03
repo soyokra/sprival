@@ -15,6 +15,7 @@
 ### 参考文档
 | 文档 | 说明 | 行数 |
 |------|------|------|
+| [TEST-FRAMEWORK-GUIDE.md](TEST-FRAMEWORK-GUIDE.md) | 测试框架开发指南 ⭐ | ~600 |
 | [DEVELOPMENT-CHECKLIST.md](DEVELOPMENT-CHECKLIST.md) | 开发检查清单 | ~300 |
 | [SYSTEM-ENVIRONMENT.md](SYSTEM-ENVIRONMENT.md) | 系统环境配置 | ~190 |
 | [ENCODING-STANDARDS.md](ENCODING-STANDARDS.md) | 编码标准规范 | ~336 |
@@ -29,7 +30,8 @@
 ### 开发流程
 1. **配置环境**: 参考 [SYSTEM-ENVIRONMENT.md](SYSTEM-ENVIRONMENT.md)
 2. **遵循规范**: 参考 [ENCODING-STANDARDS.md](ENCODING-STANDARDS.md)
-3. **完成检查**: 使用 [DEVELOPMENT-CHECKLIST.md](DEVELOPMENT-CHECKLIST.md)
+3. **编写测试**: 参考 [TEST-FRAMEWORK-GUIDE.md](TEST-FRAMEWORK-GUIDE.md)
+4. **完成检查**: 使用 [DEVELOPMENT-CHECKLIST.md](DEVELOPMENT-CHECKLIST.md)
 
 ## 📖 项目文档体系
 
@@ -40,6 +42,7 @@ ai-home/
 ├── FILE-INDEX.md              # 文件快速定位 ⭐
 ├── TECH-STACK.md              # 技术栈概览 ⭐
 ├── QUICK-REFERENCE.md         # 快速参考手册 ⭐
+├── TEST-FRAMEWORK-GUIDE.md    # 测试框架开发指南 ⭐
 ├── DEVELOPMENT-CHECKLIST.md   # 开发检查清单
 ├── SYSTEM-ENVIRONMENT.md      # 系统环境配置
 └── ENCODING-STANDARDS.md      # 编码标准
@@ -64,6 +67,7 @@ docs/
 - **查找某个文件在哪里** → [FILE-INDEX.md](FILE-INDEX.md)
 - **了解使用了哪些技术** → [TECH-STACK.md](TECH-STACK.md)
 - **查询组件连接信息** → [QUICK-REFERENCE.md](QUICK-REFERENCE.md)
+- **编写测试代码** → [TEST-FRAMEWORK-GUIDE.md](TEST-FRAMEWORK-GUIDE.md)
 - **配置开发环境** → [SYSTEM-ENVIRONMENT.md](SYSTEM-ENVIRONMENT.md)
 - **了解编码规范** → [ENCODING-STANDARDS.md](ENCODING-STANDARDS.md)
 - **开发前的检查项** → [DEVELOPMENT-CHECKLIST.md](DEVELOPMENT-CHECKLIST.md)
@@ -120,6 +124,6 @@ docs/
 
 ---
 
-**最后更新**: 2025-10-22  
+**最后更新**: 2025-10-25  
 **用途**: AI 开发时的项目导航和快速参考
 

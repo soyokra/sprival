@@ -1,4 +1,4 @@
-CREATE TABLE `order_trade`
+CREATE TABLE `order_trade_tbl`
 (
     `trade_id`         varchar(20) NOT NULL DEFAULT '' COMMENT '合并支付Id',
     `trade_sn`         varchar(40)          DEFAULT NULL COMMENT '交易sn',

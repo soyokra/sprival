@@ -1,0 +1,605 @@
+{
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                    "type": "datasource",
+                    "uid": "grafana"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+            }
+        ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "iteration": 1698642321462,
+    "panels": [
+        {
+            "collapsed": false,
+            "datasource": null,
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 0
+            },
+            "id": 24,
+            "panels": [],
+            "title": "连接池基础配置",
+            "type": "row"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "links": []
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 8,
+                "x": 0,
+                "y": 1
+            },
+            "id": 2,
+            "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                    "calcs": [
+                        "last"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "pluginVersion": "9.2.0",
+            "targets": [
+                {
+                    "expr": "hikaricp_connections_max{instance=~\"$instance\", pool=~\"$pool\"}",
+                    "interval": "",
+                    "legendFormat": "最大连接数",
+                    "refId": "A"
+                }
+            ],
+            "title": "最大连接数 (max)",
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "links": []
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 8,
+                "x": 8,
+                "y": 1
+            },
+            "id": 4,
+            "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                    "calcs": [
+                        "last"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "pluginVersion": "9.2.0",
+            "targets": [
+                {
+                    "expr": "hikaricp_connections_min{instance=~\"$instance\", pool=~\"$pool\"}",
+                    "interval": "",
+                    "legendFormat": "最小空闲连接数",
+                    "refId": "A"
+                }
+            ],
+            "title": "最小空闲连接数 (min)",
+            "type": "stat"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "links": []
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 8,
+                "x": 16,
+                "y": 1
+            },
+            "id": 6,
+            "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                    "calcs": [
+                        "last"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "textMode": "auto"
+            },
+            "pluginVersion": "9.2.0",
+            "targets": [
+                {
+                    "expr": "(hikaricp_connections_active{instance=~\"$instance\", pool=~\"$pool\"} / hikaricp_connections_max{instance=~\"$instance\", pool=~\"$pool\"}) * 100",
+                    "interval": "",
+                    "legendFormat": "连接利用率",
+                    "refId": "A"
+                }
+            ],
+            "title": "连接利用率 (%)",
+            "type": "stat"
+        },
+        {
+            "collapsed": false,
+            "datasource": null,
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 5
+            },
+            "id": 26,
+            "panels": [],
+            "title": "连接状态监控",
+            "type": "row"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "links": [],
+                    "unit": "short"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 6
+            },
+            "id": 8,
+            "options": {
+                "legend": {
+                    "avg": false,
+                    "current": true,
+                    "max": false,
+                    "min": false,
+                    "show": true,
+                    "total": false,
+                    "values": true
+                },
+                "tooltip": {
+                    "shared": true,
+                    "sort": 0,
+                    "value_type": "individual"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "hikaricp_connections_active{instance=~\"$instance\", pool=~\"$pool\"}",
+                    "interval": "",
+                    "legendFormat": "活动连接数",
+                    "refId": "A"
+                },
+                {
+                    "expr": "hikaricp_connections_idle{instance=~\"$instance\", pool=~\"$pool\"}",
+                    "interval": "",
+                    "legendFormat": "空闲连接数",
+                    "refId": "B"
+                },
+                {
+                    "expr": "hikaricp_connections_max{instance=~\"$instance\", pool=~\"$pool\"}",
+                    "interval": "",
+                    "legendFormat": "最大连接数",
+                    "refId": "C"
+                }
+            ],
+            "title": "活动/空闲连接趋势",
+            "type": "graph"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "links": [],
+                    "unit": "short"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 14
+            },
+            "id": 10,
+            "options": {
+                "legend": {
+                    "avg": false,
+                    "current": true,
+                    "max": false,
+                    "min": false,
+                    "show": true,
+                    "total": false,
+                    "values": true
+                },
+                "tooltip": {
+                    "shared": true,
+                    "sort": 0,
+                    "value_type": "individual"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "hikaricp_connections_pending{instance=~\"$instance\", pool=~\"$pool\"}",
+                    "interval": "",
+                    "legendFormat": "等待连接的线程数",
+                    "refId": "A"
+                }
+            ],
+            "title": "连接等待线程数 (pending)",
+            "type": "graph"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "links": [],
+                    "unit": "short"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 14
+            },
+            "id": 12,
+            "options": {
+                "legend": {
+                    "avg": false,
+                    "current": true,
+                    "max": false,
+                    "min": false,
+                    "show": true,
+                    "total": false,
+                    "values": true
+                },
+                "tooltip": {
+                    "shared": true,
+                    "sort": 0,
+                    "value_type": "individual"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "increase(hikaricp_connections_timeout_total{instance=~\"$instance\", pool=~\"$pool\"}[5m])",
+                    "interval": "",
+                    "legendFormat": "连接超时数 (5m增量)",
+                    "refId": "A"
+                }
+            ],
+            "title": "连接超时计数 (timeout)",
+            "type": "graph"
+        },
+        {
+            "collapsed": false,
+            "datasource": null,
+            "gridPos": {
+                "h": 1,
+                "w": 24,
+                "x": 0,
+                "y": 22
+            },
+            "id": 28,
+            "panels": [],
+            "title": "性能指标监控",
+            "type": "row"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "links": [],
+                    "unit": "ms"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 23
+            },
+            "id": 14,
+            "options": {
+                "legend": {
+                    "avg": false,
+                    "current": true,
+                    "max": false,
+                    "min": false,
+                    "show": true,
+                    "total": false,
+                    "values": true
+                },
+                "tooltip": {
+                    "shared": true,
+                    "sort": 0,
+                    "value_type": "individual"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "histogram_quantile(0.95, sum(rate(hikaricp_connections_acquire_seconds_bucket{instance=~\"$instance\", pool=~\"$pool\"}[5m])) by (le, instance, pool)) * 1000",
+                    "interval": "",
+                    "legendFormat": "获取连接 P95 (ms)",
+                    "refId": "A"
+                },
+                {
+                    "expr": "histogram_quantile(0.99, sum(rate(hikaricp_connections_acquire_seconds_bucket{instance=~\"$instance\", pool=~\"$pool\"}[5m])) by (le, instance, pool)) * 1000",
+                    "interval": "",
+                    "legendFormat": "获取连接 P99 (ms)",
+                    "refId": "B"
+                }
+            ],
+            "title": "连接获取延迟 (acquire)",
+            "type": "graph"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "links": [],
+                    "unit": "ms"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 31
+            },
+            "id": 16,
+            "options": {
+                "legend": {
+                    "avg": false,
+                    "current": true,
+                    "max": false,
+                    "min": false,
+                    "show": true,
+                    "total": false,
+                    "values": true
+                },
+                "tooltip": {
+                    "shared": true,
+                    "sort": 0,
+                    "value_type": "individual"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "histogram_quantile(0.95, sum(rate(hikaricp_connections_creation_seconds_bucket{instance=~\"$instance\", pool=~\"$pool\"}[5m])) by (le, instance, pool)) * 1000",
+                    "interval": "",
+                    "legendFormat": "创建连接 P95 (ms)",
+                    "refId": "A"
+                },
+                {
+                    "expr": "histogram_quantile(0.99, sum(rate(hikaricp_connections_creation_seconds_bucket{instance=~\"$instance\", pool=~\"$pool\"}[5m])) by (le, instance, pool)) * 1000",
+                    "interval": "",
+                    "legendFormat": "创建连接 P99 (ms)",
+                    "refId": "B"
+                }
+            ],
+            "title": "连接创建延迟 (creation)",
+            "type": "graph"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "links": [],
+                    "unit": "ms"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 31
+            },
+            "id": 18,
+            "options": {
+                "legend": {
+                    "avg": false,
+                    "current": true,
+                    "max": false,
+                    "min": false,
+                    "show": true,
+                    "total": false,
+                    "values": true
+                },
+                "tooltip": {
+                    "shared": true,
+                    "sort": 0,
+                    "value_type": "individual"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "histogram_quantile(0.95, sum(rate(hikaricp_connections_usage_seconds_bucket{instance=~\"$instance\", pool=~\"$pool\"}[5m])) by (le, instance, pool)) * 1000",
+                    "interval": "",
+                    "legendFormat": "连接使用 P95 (ms)",
+                    "refId": "A"
+                },
+                {
+                    "expr": "histogram_quantile(0.99, sum(rate(hikaricp_connections_usage_seconds_bucket{instance=~\"$instance\", pool=~\"$pool\"}[5m])) by (le, instance, pool)) * 1000",
+                    "interval": "",
+                    "legendFormat": "连接使用 P99 (ms)",
+                    "refId": "B"
+                }
+            ],
+            "title": "连接使用时长 (usage)",
+            "type": "graph"
+        }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 37,
+    "style": "dark",
+    "tags": [
+        "hikaricp",
+        "connection-pool",
+        "spring-boot"
+    ],
+    "templating": {
+        "list": [
+            {
+                "current": {
+                    "selected": false,
+                    "text": "All",
+                    "value": "$__all"
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "definition": "label_values(hikaricp_connections_max, instance)",
+                "description": null,
+                "error": null,
+                "hide": 0,
+                "includeAll": true,
+                "label": "Instance",
+                "multi": false,
+                "name": "instance",
+                "options": [],
+                "query": {
+                    "query": "label_values(hikaricp_connections_max, instance)",
+                    "refId": "StandardVariableQuery"
+                },
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 1,
+                "tagValuesQuery": "",
+                "tags": [],
+                "tagsQuery": "",
+                "type": "query",
+                "useTags": false
+            },
+            {
+                "current": {
+                    "selected": false,
+                    "text": "All",
+                    "value": "$__all"
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "definition": "label_values(hikaricp_connections_max, pool)",
+                "description": null,
+                "error": null,
+                "hide": 0,
+                "includeAll": true,
+                "label": "Pool",
+                "multi": false,
+                "name": "pool",
+                "options": [],
+                "query": {
+                    "query": "label_values(hikaricp_connections_max, pool)",
+                    "refId": "StandardVariableQuery"
+                },
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 1,
+                "tagValuesQuery": "",
+                "tags": [],
+                "tagsQuery": "",
+                "type": "query",
+                "useTags": false
+            }
+        ]
+    },
+    "time": {
+        "from": "now-1h",
+        "to": "now"
+    },
+    "timepicker": {
+        "refresh_intervals": [
+            "5s",
+            "10s",
+            "30s",
+            "1m",
+            "5m",
+            "15m",
+            "30m",
+            "1h",
+            "2h",
+            "1d"
+        ]
+    },
+    "timezone": "",
+    "title": "HikariCP 连接池监控",
+    "uid": "hikaricp-monitor",
+    "version": 1
+}

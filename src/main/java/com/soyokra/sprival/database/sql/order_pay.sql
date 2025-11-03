@@ -1,4 +1,4 @@
-CREATE TABLE `order_pay`
+CREATE TABLE `order_pay_tbl`
 (
     `order_id`      varchar(22) NOT NULL DEFAULT '' COMMENT '订单id',
     `trade_id`      varchar(20) NOT NULL DEFAULT '' COMMENT '合并支付id',

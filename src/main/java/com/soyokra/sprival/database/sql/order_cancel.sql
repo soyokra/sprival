@@ -1,4 +1,4 @@
-CREATE TABLE `order_cancel`
+CREATE TABLE `order_cancel_tbl`
 (
     `order_id`      varchar(22) NOT NULL DEFAULT '' COMMENT '订单号',
     `order_type`    varchar(50) NOT NULL DEFAULT '' COMMENT '订单类型',
