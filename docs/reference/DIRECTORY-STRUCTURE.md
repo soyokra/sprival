@@ -115,8 +115,8 @@ sprival/
 
 #### docs/reference/ - 参考文档目录
 存放学习和使用时的参考文档，类似于 [Spring Boot Reference Documentation](https://docs.spring.io/spring-boot/index.html)
-- **components/**: 各组件集成指南和最佳实践
-- **deployment/**: 部署相关文档（Docker、Kubernetes等）
+- **components/**: 组件集成
+- **deployment/**: 云原生部署
 - **logging/**: 日志系统配置和使用指南
 - **monitoring/**: 监控系统配置和使用指南
 - **DIRECTORY-STRUCTURE.md**: 项目目录结构规范

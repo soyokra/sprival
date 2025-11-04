@@ -98,22 +98,6 @@ Repository (数据访问、CRUD)
 - 提交前自查代码规范、逻辑正确性、安全性
 - 小步迭代，频繁提交
 
-## AI 私有工作区管理（ai-home 目录）
-
-项目根目录下的 `ai-home` 是你的专属私有目录，用于维护项目的索引和认知：
-
-**核心目的**：
-- 为整个项目建立和维护索引，帮助你快速定位和理解项目结构
-- 对项目现有文档进行索引和总结，而不是重新建立一份文档
-- 存放辅助开发的脚本和临时工具
-
-**使用原则**：
-- 项目本身已有完整的文档体系（在 `docs/` 目录下），你的任务是索引和总结这些文档，而非复制或重写它们
-- 在 `ai-home` 中维护文档索引（如 FILE-INDEX.md、QUICK-REFERENCE.md 等），记录关键文件位置和要点
-- 生成的索引文件应该简洁、准确，便于你快速检索项目信息
-- 不要将 `ai-home` 中的内容暴露到主项目代码中或影响人类开发者的工作流
-- 如果 `ai-home` 目录不存在，需要先创建它；如果已存在，则直接复用并维护现有索引
-
 ## 代码输出规范
 
 ### 代码完整性
@@ -131,17 +115,42 @@ Repository (数据访问、CRUD)
 - 代码为主，减少不必要的文字说明
 - 优先参考 ai-home 目录中的项目索引，了解项目特定的技术栈和规范
 
+
+## 目录规范
+
+### 1. 根目录文件
+- **README.md**: 项目主要说明文档
+- **LICENSE**: 开源许可证
+- **pom.xml**: Maven项目配置
+- **.gitignore**: Git忽略规则
+- **.editorconfig**: 编辑器统一配置
+
+### 2. docs/ 文档目录
+
+#### docs/api/ - API文档目录
+存放类文件的API说明文档，类似于 [Spring Boot API Documentation](https://docs.spring.io/spring-boot/api/java/index.html)
+- 采用JavaDoc风格
+- 包含类、接口、方法的详细说明
+- 提供完整的方法签名、参数说明、返回值说明
+- 包括使用示例和注意事项
+
+#### docs/reference/ - 参考文档目录
+存放学习和使用时的参考文档，类似于 [Spring Boot Reference Documentation](https://docs.spring.io/spring-boot/index.html)
+- **components/**: 应用集成组件，例如jetty,okhttp,feign
+- **deployment/**: 云原生部署，k8s, gitlab
+- **logging/**: 日志系统配置和使用指南, kafka+elk
+- **monitoring/**: 监控系统配置和使用指南, grafana,promet
+- **middleware/**: 监控系统配置和使用指南
+- **DIRECTORY-STRUCTURE.md**: 项目目录结构规范
+- **README.md**: 参考文档索引
+
+### 3. src/ 源码目录
+- **main/java/**: 主代码，按功能分包
+- **main/resources/**: 资源文件，按类型组织
+- **test/**: 测试代码
+
+### 4. dockers/ 容器目录
+- 按组件组织Docker配置
+- 每个组件独立的Dockerfile和配置
+
 ## 文档撰写规范
-
-### 禁止行为
-- ❌ 不创建变更日志、总结性文档（CHANGELOG.md、SUMMARY.md 等）
-- ❌ 开发完成后不自动生成大量说明文档
-- ❌ 不在 `ai-home` 目录外随意创建文档
-- ❌ 不重复编写项目中已有的文档内容
-
-### 正确做法
-- **更新优先**：优先更新现有文档而非创建新文档，保持文档一致性
-- **遵循项目结构**：通过 ai-home 索引了解项目文档组织方式，只在已有目录结构中创建文档
-- **提议机制**：创建预设类型之外的文档时，先在 `docs/issue/` 目录下生成提议
-- **明确指令**：除非用户明确要求，否则不主动撰写文档
-- **保证质量**：文档清晰简洁，包含必要示例，与代码同步更新
