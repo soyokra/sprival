@@ -1,0 +1,43 @@
+{
+    "test_name": "Feign Circuit Breaker Test",
+    "description": "测试 Feign 熔断器机制 - 触发熔断打开和恢复",
+    
+    "http": {
+        "base_url": "http://127.0.0.1:8338",
+        "timeout": 30,
+        "max_retries": 0,
+        "verify_ssl": true,
+        "default_headers": {
+            "Content-Type": "application/json"
+        }
+    },
+    
+    "scenario": {
+        "type": "constant",
+        "threads": 10,
+        "duration": 60
+    },
+    
+    "report": {
+        "formats": ["console", "json", "html"],
+        "report_dir": "reports",
+        "auto_save": true
+    },
+    
+    "log": {
+        "level": "INFO",
+        "log_to_file": true,
+        "log_to_console": true,
+        "log_dir": "logs"
+    },
+    
+    "api": {
+        "endpoint": "/api/client/test/circuit-breaker",
+        "method": "GET",
+        "params": {
+            "shouldFail": "true",
+            "delay": "0"
+        }
+    }
+}
+

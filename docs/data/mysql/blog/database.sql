@@ -1,0 +1,1 @@
+create schema blog collate utf8mb4_general_ci;

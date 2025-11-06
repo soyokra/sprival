@@ -85,5 +85,25 @@
     <logger name="org.h2" level="WARN" />
     <logger name="redis.embedded" level="WARN" />
     <logger name="de.flapdoodle.embed" level="WARN" />
+    
+    <!-- P6Spy SQL日志配置 -->
+    <appender name="P6SPY_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/spy.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/spy-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- P6Spy logger：输出 SQL 执行日志 -->
+    <logger name="p6spy" level="INFO" additivity="false">
+        <appender-ref ref="P6SPY_FILE" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
 </configuration>
 
