@@ -10,9 +10,6 @@ Sprival是一个AI协同工作构建的Spring Boot集成框架，旨在提供一
 - mysql
 - redis
 - rabbitmq
-- kafka
-- elasticsearch
-- clickhouse
 
 ### ELK日志
 - kafkaAppender
@@ -23,8 +20,13 @@ Sprival是一个AI协同工作构建的Spring Boot集成框架，旨在提供一
 - prometheus
 
 ### 测试
+api-test
 
 ### 云原生部署
 - docker
 - gitlab
 - k8s
+
+### ai
+代码审查
+监控
