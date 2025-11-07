@@ -1,0 +1,45 @@
+{
+  "test_name": "Test Post Cache Ramp Up Load",
+  "description": "测试缓存接口渐进式压测 - 寻找性能拐点",
+  
+  "http": {
+    "base_url": "${sprival.url}",
+    "timeout": 30,
+    "max_retries": 3,
+    "verify_ssl": false,
+    "default_headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  
+  "scenario": {
+    "type": "ramp_up",
+    "initial_threads": 1,
+    "target_threads": 100,
+    "ramp_duration": 60,
+    "hold_duration": 120
+  },
+  
+  "report": {
+    "formats": ["console", "json", "html"],
+    "report_dir": "reports",
+    "auto_save": true
+  },
+  
+  "log": {
+    "level": "WARNING",
+    "log_to_file": true,
+    "log_to_console": false,
+    "log_dir": "logs"
+  },
+  
+  "api": {
+    "endpoint": "/post-cache/read",
+    "method": "GET",
+    "params": {
+      "key": "${mock:string:10:50:alphanumeric}",
+      "cacheName": "post"
+    }
+  }
+}
+

@@ -1,0 +1,46 @@
+{
+  "test_name": "Test Post Spike Load",
+  "description": "测试文章接口峰值冲击 - 突发流量测试",
+  
+  "http": {
+    "base_url": "${sprival.url}",
+    "timeout": 30,
+    "max_retries": 3,
+    "verify_ssl": false,
+    "default_headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  
+  "scenario": {
+    "type": "spike",
+    "base_threads": 10,
+    "spike_threads": 200,
+    "spike_duration": 30,
+    "spike_interval": 60,
+    "cycles": 3
+  },
+  
+  "report": {
+    "formats": ["console", "json", "html"],
+    "report_dir": "reports",
+    "auto_save": true
+  },
+  
+  "log": {
+    "level": "WARNING",
+    "log_to_file": true,
+    "log_to_console": false,
+    "log_dir": "logs"
+  },
+  
+  "api": {
+    "endpoint": "/post/get-list",
+    "method": "GET",
+    "params": {
+      "pageNo": "${mock:int:1:10}",
+      "pageSize": 20
+    }
+  }
+}
+

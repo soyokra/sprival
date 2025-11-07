@@ -2,12 +2,9 @@ package com.soyokra.sprival.config.kafka;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.autoconfigure.kafka.DefaultKafkaConsumerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.kafka.DefaultKafkaProducerFactoryCustomizer;
 import org.springframework.core.annotation.Order;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.MicrometerConsumerListener;
-import org.springframework.kafka.core.MicrometerProducerListener;
 import org.springframework.stereotype.Component;
 
 @Component

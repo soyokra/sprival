@@ -1,6 +1,6 @@
 package com.soyokra.sprival.config;
 
-import com.soyokra.sprival.app.util.ResponseUtils;
+import com.soyokra.sprival.app.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -18,21 +18,21 @@ public class SprivalExceptionAdvice {
 
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
-    public ResponseUtils<Object> exception(HttpServletRequest request, Exception e) {
+    public ResponseUtil<Object> exception(HttpServletRequest request, Exception e) {
         log.error(e.getMessage(), e);
-        return ResponseUtils.error(500, "Server Error");
+        return ResponseUtil.error(500, "Server Error");
     }
 
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
     @ResponseBody
-    public ResponseUtils<Object> httpRequestMethodNotSupportedException(HttpServletRequest request, HttpRequestMethodNotSupportedException e) {
+    public ResponseUtil<Object> httpRequestMethodNotSupportedException(HttpServletRequest request, HttpRequestMethodNotSupportedException e) {
         log.warn(e.getMessage(), e);
-        return ResponseUtils.error(405, "Client Error: Method Not Allowed");
+        return ResponseUtil.error(405, "Client Error: Method Not Allowed");
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     @ResponseBody
-    public ResponseUtils<Object> methodArgumentNotValidException(HttpServletRequest request, MethodArgumentNotValidException e) {
+    public ResponseUtil<Object> methodArgumentNotValidException(HttpServletRequest request, MethodArgumentNotValidException e) {
         // 请求参数异常
         List<ObjectError> errorList = e.getBindingResult().getAllErrors();
         String message = "Client Error: ";
@@ -45,6 +45,6 @@ public class SprivalExceptionAdvice {
             break;
         }
         log.warn(e.getMessage(), e);
-        return ResponseUtils.error(400, message);
+        return ResponseUtil.error(400, message);
     }
 }

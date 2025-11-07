@@ -1,0 +1,49 @@
+{
+  "test_name": "Test Post RabbitMQ Send With Exchange Performance",
+  "description": "测试RabbitMQ消息发送接口性能（通过交换器） - 恒定负载",
+  
+  "http": {
+    "base_url": "${sprival.url}",
+    "timeout": 30,
+    "max_retries": 3,
+    "verify_ssl": false,
+    "default_headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  
+  "scenario": {
+    "type": "constant",
+    "threads": 20,
+    "duration": 60
+  },
+  
+  "report": {
+    "formats": ["console", "json", "html"],
+    "report_dir": "reports",
+    "auto_save": true
+  },
+  
+  "log": {
+    "level": "WARNING",
+    "log_to_file": true,
+    "log_to_console": false,
+    "log_dir": "logs"
+  },
+  
+  "api": {
+    "endpoint": "/rabbit/send",
+    "method": "POST",
+    "body_template": {
+      "exchange": "post.exchange",
+      "routingKey": "post.routing.key",
+      "message": {
+        "id": "${mock:int:1:10000}",
+        "title": "${mock:string:10:200:alphanumeric}",
+        "content": "${mock:string:100:1000:alphanumeric}",
+        "timestamp": "${mock:timestamp}"
+      }
+    }
+  }
+}
+

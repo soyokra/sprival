@@ -1,0 +1,43 @@
+{
+  "test_name": "Test Post Status Update Performance",
+  "description": "测试更新文章状态接口性能",
+  
+  "http": {
+    "base_url": "${sprival.url}",
+    "timeout": 30,
+    "max_retries": 3,
+    "verify_ssl": false,
+    "default_headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  
+  "scenario": {
+    "type": "constant",
+    "threads": 30,
+    "duration": 60
+  },
+  
+  "report": {
+    "formats": ["console", "json", "html"],
+    "report_dir": "reports",
+    "auto_save": true
+  },
+  
+  "log": {
+    "level": "WARNING",
+    "log_to_file": true,
+    "log_to_console": false,
+    "log_dir": "logs"
+  },
+  
+  "api": {
+    "endpoint": "/post/update-status",
+    "method": "POST",
+    "body_template": {
+      "id": "${mock:int:1:1000}",
+      "status": "${mock:choice:draft:published:archived}"
+    }
+  }
+}
+

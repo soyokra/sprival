@@ -1,0 +1,44 @@
+{
+  "test_name": "Test Post Cache Warm Up Performance",
+  "description": "测试缓存预热接口性能 - 批量写入缓存",
+  
+  "http": {
+    "base_url": "${sprival.url}",
+    "timeout": 60,
+    "max_retries": 3,
+    "verify_ssl": false,
+    "default_headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  
+  "scenario": {
+    "type": "constant",
+    "threads": 5,
+    "duration": 120
+  },
+  
+  "report": {
+    "formats": ["console", "json", "html"],
+    "report_dir": "reports",
+    "auto_save": true
+  },
+  
+  "log": {
+    "level": "WARNING",
+    "log_to_file": true,
+    "log_to_console": false,
+    "log_dir": "logs"
+  },
+  
+  "api": {
+    "endpoint": "/post-cache/warm-up",
+    "method": "POST",
+    "body_template": {
+      "cacheName": "post",
+      "count": "${mock:int:100:1000}",
+      "keyPrefix": "cache-test"
+    }
+  }
+}
+

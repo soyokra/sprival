@@ -1,0 +1,43 @@
+{
+  "test_name": "Test Post Cache Hit Rate Performance",
+  "description": "测试缓存命中率接口性能 - 测试缓存命中率",
+  
+  "http": {
+    "base_url": "${sprival.url}",
+    "timeout": 120,
+    "max_retries": 3,
+    "verify_ssl": false,
+    "default_headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  
+  "scenario": {
+    "type": "constant",
+    "threads": 10,
+    "duration": 180
+  },
+  
+  "report": {
+    "formats": ["console", "json", "html"],
+    "report_dir": "reports",
+    "auto_save": true
+  },
+  
+  "log": {
+    "level": "WARNING",
+    "log_to_file": true,
+    "log_to_console": false,
+    "log_dir": "logs"
+  },
+  
+  "api": {
+    "endpoint": "/post-cache/hit-rate",
+    "method": "GET",
+    "params": {
+      "cacheName": "post",
+      "testCount": "${mock:choice:500:1000:2000}"
+    }
+  }
+}
+

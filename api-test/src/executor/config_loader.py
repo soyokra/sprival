@@ -6,7 +6,9 @@
 
 import json
 import os
+import re
 from typing import Dict, Any
+from dotenv import load_dotenv
 from ..config.settings import Settings
 from ..config.schema import ConfigValidator
 from ..utils.logger import Logger
@@ -22,6 +24,7 @@ class ConfigLoader:
     def __init__(self):
         self.logger = Logger.get_logger("config_loader")
         self.validator = ConfigValidator()
+        self._load_environment()
     
     def load(self, config_path: str) -> Settings:
         """
@@ -50,9 +53,12 @@ class ConfigLoader:
             
             # 验证配置
             self.validator.validate(config_data)
-            
+
+            # 解析占位符
+            resolved_data = self._resolve_placeholders(config_data)
+
             # 创建 Settings 对象
-            settings = Settings.from_dict(config_data)
+            settings = Settings.from_dict(resolved_data)
             
             self.logger.info(f"配置加载成功: {settings.test_name}")
             return settings
@@ -74,9 +80,12 @@ class ConfigLoader:
         """
         # 验证配置
         self.validator.validate(config_data)
-        
+
+        # 解析占位符
+        resolved_data = self._resolve_placeholders(config_data)
+
         # 创建 Settings 对象
-        return Settings.from_dict(config_data)
+        return Settings.from_dict(resolved_data)
     
     def save(self, settings: Settings, config_path: str):
         """
@@ -97,4 +106,28 @@ class ConfigLoader:
             json.dump(config_data, f, indent=2, ensure_ascii=False)
         
         self.logger.info(f"配置已保存: {config_path}")
+
+    def _load_environment(self):
+        """加载环境变量文件"""
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+        dotenv_path = os.path.join(project_root, ".env")
+        load_dotenv(dotenv_path=dotenv_path, override=False)
+
+    def _resolve_placeholders(self, config: Dict[str, Any]) -> Dict[str, Any]:
+        """解析配置中的占位符"""
+        pattern = re.compile(r"^\$\{([^}]+)\}$")
+        http_config = config.get("http") or {}
+        base_url = http_config.get("base_url")
+
+        if isinstance(base_url, str):
+            match = pattern.match(base_url)
+            if match:
+                env_key = match.group(1).strip()
+                env_value = os.getenv(env_key)
+                if env_value is None:
+                    raise ValueError(f"环境变量未定义: {env_key}")
+                http_config["base_url"] = env_value
+                config["http"] = http_config
+
+        return config
 

@@ -164,6 +164,27 @@ DataFactory.array(item_template)    # 生成数组
 }
 ```
 
+### 使用环境变量占位符
+
+在项目根目录的 `.env` 文件中声明服务地址：
+
+```bash
+sprival.url=https://api.example.com
+```
+
+然后在配置文件中引用占位符：
+
+```json
+{
+  "http": {
+    "base_url": "${sprival.url}",
+    "timeout": 30
+  }
+}
+```
+
+当占位符无法解析时，加载过程会提示缺失的环境变量；仍可继续使用直接写入域名的方式。
+
 ### 使用 Mock 数据
 
 ```json
