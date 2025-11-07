@@ -2,11 +2,7 @@ package com.soyokra.sprival.app.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soyokra.sprival.app.controller.request.MySqlPostCreateRequest;
-import com.soyokra.sprival.app.controller.request.PostDeleteRequest;
 import com.soyokra.sprival.app.controller.request.MySqlPostQueryRequest;
-import com.soyokra.sprival.app.controller.request.PostStatusUpdateRequest;
-import com.soyokra.sprival.app.controller.request.PostUpdateRequest;
-import com.soyokra.sprival.app.controller.request.PostViewCountRequest;
 import com.soyokra.sprival.app.controller.response.PostListResponse;
 import com.soyokra.sprival.app.controller.response.PostResponse;
 import com.soyokra.sprival.app.repository.db.blog.model.Post;
