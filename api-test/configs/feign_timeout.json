@@ -1,11 +1,11 @@
 {
-  "test_name": "Test Post Ramp Up Load",
-  "description": "测试文章接口渐进式压测 - 寻找性能拐点",
+  "test_name": "Test Feign Timeout",
+  "description": "测试 Feign 超时功能 - 正常响应（未超时）",
   
   "http": {
     "base_url": "${sprival.url}",
     "timeout": 30,
-    "max_retries": 3,
+    "max_retries": 0,
     "verify_ssl": false,
     "default_headers": {
       "Content-Type": "application/json"
@@ -13,11 +13,9 @@
   },
   
   "scenario": {
-    "type": "ramp_up",
-    "initial_threads": 1,
-    "target_threads": 100,
-    "ramp_duration": 60,
-    "hold_duration": 120
+    "type": "constant",
+    "threads": 1,
+    "duration": 30
   },
   
   "report": {
@@ -27,18 +25,17 @@
   },
   
   "log": {
-    "level": "WARNING",
+    "level": "INFO",
     "log_to_file": true,
-    "log_to_console": false,
+    "log_to_console": true,
     "log_dir": "logs"
   },
   
   "api": {
-    "endpoint": "/post/get-list",
+    "endpoint": "/feign/timeout",
     "method": "GET",
     "params": {
-      "pageNo": "${mock:int:1:10}",
-      "pageSize": 20
+      "delay": "2000"
     }
   }
 }

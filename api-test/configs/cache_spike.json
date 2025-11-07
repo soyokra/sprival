@@ -1,6 +1,6 @@
 {
-  "test_name": "Test Post Delete Performance",
-  "description": "测试删除文章接口性能",
+  "test_name": "Test Post Cache Spike Load",
+  "description": "测试缓存接口峰值冲击 - 突发流量测试",
   
   "http": {
     "base_url": "${sprival.url}",
@@ -13,9 +13,12 @@
   },
   
   "scenario": {
-    "type": "constant",
-    "threads": 10,
-    "duration": 60
+    "type": "spike",
+    "base_threads": 10,
+    "spike_threads": 200,
+    "spike_duration": 30,
+    "spike_interval": 60,
+    "cycles": 3
   },
   
   "report": {
@@ -32,10 +35,11 @@
   },
   
   "api": {
-    "endpoint": "/post/delete",
-    "method": "POST",
-    "body_template": {
-      "id": "${mock:int:1:1000}"
+    "endpoint": "/cache/read",
+    "method": "GET",
+    "params": {
+      "key": "${mock:string:10:50:alphanumeric}",
+      "cacheName": "post"
     }
   }
 }

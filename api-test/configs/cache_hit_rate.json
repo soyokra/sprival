@@ -1,10 +1,10 @@
 {
-  "test_name": "Test Post Page Query Performance",
-  "description": "测试文章分页查询接口性能",
+  "test_name": "Test Post Cache Hit Rate Performance",
+  "description": "测试缓存命中率接口性能 - 测试缓存命中率",
   
   "http": {
     "base_url": "${sprival.url}",
-    "timeout": 30,
+    "timeout": 120,
     "max_retries": 3,
     "verify_ssl": false,
     "default_headers": {
@@ -14,8 +14,8 @@
   
   "scenario": {
     "type": "constant",
-    "threads": 30,
-    "duration": 60
+    "threads": 10,
+    "duration": 180
   },
   
   "report": {
@@ -32,15 +32,11 @@
   },
   
   "api": {
-    "endpoint": "/post/get-list",
+    "endpoint": "/cache/hit-rate",
     "method": "GET",
     "params": {
-      "pageNo": "${mock:int:1:100}",
-      "pageSize": "${mock:choice:10:20:50}",
-      "status": "${mock:choice:draft:published:archived:}",
-      "categoryId": "${mock:int:1:20:}",
-      "authorId": "${mock:int:1:100:}",
-      "keyword": "${mock:string:3:10:alphanumeric:}"
+      "cacheName": "post",
+      "testCount": "${mock:choice:500:1000:2000}"
     }
   }
 }

@@ -1,11 +1,11 @@
 {
-  "test_name": "Test Post Cache Evict Performance",
-  "description": "测试缓存清除接口性能（单个）",
+  "test_name": "Test Feign Circuit Breaker",
+  "description": "测试 Feign 熔断器功能 - 连续失败触发熔断",
   
   "http": {
     "base_url": "${sprival.url}",
     "timeout": 30,
-    "max_retries": 3,
+    "max_retries": 0,
     "verify_ssl": false,
     "default_headers": {
       "Content-Type": "application/json"
@@ -14,8 +14,8 @@
   
   "scenario": {
     "type": "constant",
-    "threads": 20,
-    "duration": 60
+    "threads": 1,
+    "duration": 120
   },
   
   "report": {
@@ -25,18 +25,18 @@
   },
   
   "log": {
-    "level": "WARNING",
+    "level": "INFO",
     "log_to_file": true,
-    "log_to_console": false,
+    "log_to_console": true,
     "log_dir": "logs"
   },
   
   "api": {
-    "endpoint": "/post-cache/evict",
-    "method": "POST",
-    "body_template": {
-      "key": "${mock:string:10:50:alphanumeric}",
-      "cacheName": "post"
+    "endpoint": "/feign/circuit-breaker",
+    "method": "GET",
+    "params": {
+      "shouldFail": "true",
+      "delay": "0"
     }
   }
 }

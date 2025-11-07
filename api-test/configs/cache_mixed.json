@@ -32,7 +32,7 @@
   },
   
   "api": {
-    "endpoint": "/post-cache/read",
+    "endpoint": "/cache/read",
     "method": "GET",
     "params": {
       "key": "${mock:string:10:50:alphanumeric}",
@@ -43,7 +43,7 @@
   "mixed_operations": [
     {
       "weight": 50,
-      "endpoint": "/post-cache/read",
+      "endpoint": "/cache/read",
       "method": "GET",
       "params": {
         "key": "${mock:string:10:50:alphanumeric}",
@@ -52,7 +52,7 @@
     },
     {
       "weight": 30,
-      "endpoint": "/post-cache/write",
+      "endpoint": "/cache/write",
       "method": "POST",
       "body_template": {
         "key": "${mock:string:10:50:alphanumeric}",
@@ -62,7 +62,7 @@
     },
     {
       "weight": 15,
-      "endpoint": "/post-cache/evict",
+      "endpoint": "/cache/evict",
       "method": "POST",
       "body_template": {
         "key": "${mock:string:10:50:alphanumeric}",
@@ -71,7 +71,7 @@
     },
     {
       "weight": 5,
-      "endpoint": "/post-cache/redis-command",
+      "endpoint": "/cache/redis-command",
       "method": "POST",
       "body_template": {
         "command": "${mock:choice:GET:SET}",

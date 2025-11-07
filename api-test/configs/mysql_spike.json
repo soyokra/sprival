@@ -1,6 +1,6 @@
 {
-  "test_name": "Test Post Get By Slug Performance",
-  "description": "测试根据slug获取文章详情接口性能",
+  "test_name": "Test MySQL Spike Load",
+  "description": "测试MySQL接口峰值冲击 - 突发流量测试",
   
   "http": {
     "base_url": "${sprival.url}",
@@ -13,9 +13,12 @@
   },
   
   "scenario": {
-    "type": "constant",
-    "threads": 50,
-    "duration": 60
+    "type": "spike",
+    "base_threads": 10,
+    "spike_threads": 200,
+    "spike_duration": 30,
+    "spike_interval": 60,
+    "cycles": 3
   },
   
   "report": {
@@ -32,10 +35,11 @@
   },
   
   "api": {
-    "endpoint": "/post/get-by-slug",
+    "endpoint": "/mysql/get-list",
     "method": "GET",
     "params": {
-      "slug": "${mock:string:10:200:alphanumeric}"
+      "pageNo": "${mock:int:1:10}",
+      "pageSize": 20
     }
   }
 }

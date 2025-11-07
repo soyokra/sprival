@@ -1,6 +1,6 @@
 {
-  "test_name": "Test Post Create Performance",
-  "description": "测试创建文章接口性能 - 恒定负载",
+  "test_name": "Test Post Cache Evict Performance",
+  "description": "测试缓存清除接口性能（单个）",
   
   "http": {
     "base_url": "${sprival.url}",
@@ -32,16 +32,11 @@
   },
   
   "api": {
-    "endpoint": "/post/create",
+    "endpoint": "/cache/evict",
     "method": "POST",
     "body_template": {
-      "title": "${mock:string:10:200:alphanumeric}",
-      "slug": "${mock:string:10:200:alphanumeric}",
-      "content": "${mock:string:100:5000:alphanumeric}",
-      "excerpt": "${mock:string:50:500:alphanumeric}",
-      "status": "${mock:choice:draft:published:archived}",
-      "authorId": "${mock:int:1:100}",
-      "categoryId": "${mock:int:1:20}"
+      "key": "${mock:string:10:50:alphanumeric}",
+      "cacheName": "post"
     }
   }
 }

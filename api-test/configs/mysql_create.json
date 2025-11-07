@@ -1,6 +1,6 @@
 {
-  "test_name": "Test Post Status Update Performance",
-  "description": "测试更新文章状态接口性能",
+  "test_name": "Test MySQL Create Performance",
+  "description": "测试创建MySQL接口性能 - 恒定负载",
   
   "http": {
     "base_url": "${sprival.url}",
@@ -14,7 +14,7 @@
   
   "scenario": {
     "type": "constant",
-    "threads": 30,
+    "threads": 20,
     "duration": 60
   },
   
@@ -32,11 +32,16 @@
   },
   
   "api": {
-    "endpoint": "/post/update-status",
+    "endpoint": "/mysql/create",
     "method": "POST",
     "body_template": {
-      "id": "${mock:int:1:1000}",
-      "status": "${mock:choice:draft:published:archived}"
+      "title": "${mock:string:10:200:alphanumeric}",
+      "slug": "${mock:string:10:200:alphanumeric}",
+      "content": "${mock:string:100:5000:alphanumeric}",
+      "excerpt": "${mock:string:50:500:alphanumeric}",
+      "status": "${mock:choice:draft:published:archived}",
+      "authorId": "${mock:int:1:100}",
+      "categoryId": "${mock:int:1:20}"
     }
   }
 }

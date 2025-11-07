@@ -1,10 +1,10 @@
 {
-  "test_name": "Test Post Cache Redis Command Performance",
-  "description": "测试Redis直接操作接口性能 - 测试GET/SET等命令",
+  "test_name": "Test MySQL Page Query Performance",
+  "description": "测试MySQL分页查询接口性能",
   
   "http": {
     "base_url": "${sprival.url}",
-    "timeout": 120,
+    "timeout": 30,
     "max_retries": 3,
     "verify_ssl": false,
     "default_headers": {
@@ -14,7 +14,7 @@
   
   "scenario": {
     "type": "constant",
-    "threads": 20,
+    "threads": 30,
     "duration": 60
   },
   
@@ -32,13 +32,15 @@
   },
   
   "api": {
-    "endpoint": "/post-cache/redis-command",
-    "method": "POST",
-    "body_template": {
-      "command": "${mock:choice:GET:SET:HGET:HSET:ZADD:DEL}",
-      "key": "${mock:string:10:50:alphanumeric}",
-      "value": "${mock:string:50:500:alphanumeric:}",
-      "count": "${mock:int:100:1000}"
+    "endpoint": "/mysql/get-list",
+    "method": "GET",
+    "params": {
+      "pageNo": "${mock:int:1:100}",
+      "pageSize": "${mock:choice:10:20:50}",
+      "status": "${mock:choice:draft:published:archived:}",
+      "categoryId": "${mock:int:1:20:}",
+      "authorId": "${mock:int:1:100:}",
+      "keyword": "${mock:string:3:10:alphanumeric:}"
     }
   }
 }

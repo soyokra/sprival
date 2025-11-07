@@ -8,7 +8,7 @@ import lombok.Data;
  * @author sprival
  */
 @Data
-public class PostQueryRequest {
+public class MySqlPostQueryRequest {
 
     /**
      * 当前页码，从1开始

@@ -1,6 +1,7 @@
 {
-  "test_name": "Test Post Create Performance",
-  "description": "测试创建文章接口性能 - 恒定负载",
+  "test_name": "Spike Test",
+  "description": "峰值冲击测试示例",
+
   "http": {
     "base_url": "${sprival.url}",
     "timeout": 30,
@@ -10,26 +11,28 @@
       "Content-Type": "application/json"
     }
   },
+  
   "scenario": {
-    "type": "constant",
-    "threads": 20,
-    "duration": 60
+    "type": "spike",
+    "spike_threads": 200,
+    "spike_duration": 10,
+    "base_threads": 10,
+    "warmup_duration": 30
   },
+  
   "report": {
-    "formats": [
-      "console",
-      "json",
-      "html"
-    ],
+    "formats": ["console", "json", "html"],
     "report_dir": "reports",
     "auto_save": true
   },
+  
   "log": {
-    "level": "WARNING",
+    "level": "INFO",
     "log_to_file": true,
-    "log_to_console": false,
+    "log_to_console": true,
     "log_dir": "logs"
   },
+
   "api": {
     "endpoint": "/mysql/create",
     "method": "POST",
@@ -44,3 +47,4 @@
     }
   }
 }
+

@@ -1,10 +1,10 @@
 {
-  "test_name": "Test Post Update Performance",
-  "description": "测试更新文章接口性能",
+  "test_name": "Test Post Cache Redis Command Performance",
+  "description": "测试Redis直接操作接口性能 - 测试GET/SET等命令",
   
   "http": {
     "base_url": "${sprival.url}",
-    "timeout": 30,
+    "timeout": 120,
     "max_retries": 3,
     "verify_ssl": false,
     "default_headers": {
@@ -32,16 +32,13 @@
   },
   
   "api": {
-    "endpoint": "/post/update",
+    "endpoint": "/cache/redis-command",
     "method": "POST",
     "body_template": {
-      "id": "${mock:int:1:1000}",
-      "title": "${mock:string:10:200:alphanumeric:}",
-      "slug": "${mock:string:10:200:alphanumeric:}",
-      "content": "${mock:string:100:5000:alphanumeric:}",
-      "excerpt": "${mock:string:50:500:alphanumeric:}",
-      "status": "${mock:choice:draft:published:archived:}",
-      "categoryId": "${mock:int:1:20:}"
+      "command": "${mock:choice:GET:SET:HGET:HSET:ZADD:DEL}",
+      "key": "${mock:string:10:50:alphanumeric}",
+      "value": "${mock:string:50:500:alphanumeric:}",
+      "count": "${mock:int:100:1000}"
     }
   }
 }

@@ -1,11 +1,11 @@
 {
-  "test_name": "Test Post Get By ID Performance",
-  "description": "测试根据ID获取文章详情接口性能",
+  "test_name": "Test Feign Retry",
+  "description": "测试 Feign 重试功能 - 前 N 次失败，第 N+1 次成功",
   
   "http": {
     "base_url": "${sprival.url}",
     "timeout": 30,
-    "max_retries": 3,
+    "max_retries": 0,
     "verify_ssl": false,
     "default_headers": {
       "Content-Type": "application/json"
@@ -14,7 +14,7 @@
   
   "scenario": {
     "type": "constant",
-    "threads": 50,
+    "threads": 1,
     "duration": 60
   },
   
@@ -25,17 +25,18 @@
   },
   
   "log": {
-    "level": "WARNING",
+    "level": "INFO",
     "log_to_file": true,
-    "log_to_console": false,
+    "log_to_console": true,
     "log_dir": "logs"
   },
   
   "api": {
-    "endpoint": "/post/get-by-id",
+    "endpoint": "/feign/retry",
     "method": "GET",
     "params": {
-      "id": "${mock:int:1:1000}"
+      "shouldFail": "true",
+      "failTimes": "2"
     }
   }
 }

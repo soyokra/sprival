@@ -1,0 +1,42 @@
+{
+  "test_name": "Test Post Cache Evict All Performance",
+  "description": "测试清除全部缓存接口性能",
+  
+  "http": {
+    "base_url": "${sprival.url}",
+    "timeout": 30,
+    "max_retries": 3,
+    "verify_ssl": false,
+    "default_headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  
+  "scenario": {
+    "type": "constant",
+    "threads": 10,
+    "duration": 60
+  },
+  
+  "report": {
+    "formats": ["console", "json", "html"],
+    "report_dir": "reports",
+    "auto_save": true
+  },
+  
+  "log": {
+    "level": "WARNING",
+    "log_to_file": true,
+    "log_to_console": false,
+    "log_dir": "logs"
+  },
+  
+  "api": {
+    "endpoint": "/cache/evict-all",
+    "method": "POST",
+    "body_template": {
+      "cacheName": "post"
+    }
+  }
+}
+

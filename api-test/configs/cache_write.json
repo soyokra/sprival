@@ -32,7 +32,7 @@
   },
   
   "api": {
-    "endpoint": "/post-cache/write",
+    "endpoint": "/cache/write",
     "method": "POST",
     "body_template": {
       "key": "${mock:string:10:50:alphanumeric}",

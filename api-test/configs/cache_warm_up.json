@@ -1,10 +1,10 @@
 {
-  "test_name": "Test Post Cache Read Performance",
-  "description": "测试缓存读取接口性能 - 测试缓存命中/未命中",
+  "test_name": "Test Post Cache Warm Up Performance",
+  "description": "测试缓存预热接口性能 - 批量写入缓存",
   
   "http": {
     "base_url": "${sprival.url}",
-    "timeout": 30,
+    "timeout": 60,
     "max_retries": 3,
     "verify_ssl": false,
     "default_headers": {
@@ -14,8 +14,8 @@
   
   "scenario": {
     "type": "constant",
-    "threads": 50,
-    "duration": 60
+    "threads": 5,
+    "duration": 120
   },
   
   "report": {
@@ -32,11 +32,12 @@
   },
   
   "api": {
-    "endpoint": "/post-cache/read",
-    "method": "GET",
-    "params": {
-      "key": "${mock:string:10:50:alphanumeric}",
-      "cacheName": "post"
+    "endpoint": "/cache/warm-up",
+    "method": "POST",
+    "body_template": {
+      "cacheName": "post",
+      "count": "${mock:int:100:1000}",
+      "keyPrefix": "cache-test"
     }
   }
 }

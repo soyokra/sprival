@@ -1,6 +1,6 @@
 {
-  "test_name": "Test Post Spike Load",
-  "description": "测试文章接口峰值冲击 - 突发流量测试",
+  "test_name": "Test Post Cache Read Performance",
+  "description": "测试缓存读取接口性能 - 测试缓存命中/未命中",
   
   "http": {
     "base_url": "${sprival.url}",
@@ -13,12 +13,9 @@
   },
   
   "scenario": {
-    "type": "spike",
-    "base_threads": 10,
-    "spike_threads": 200,
-    "spike_duration": 30,
-    "spike_interval": 60,
-    "cycles": 3
+    "type": "constant",
+    "threads": 50,
+    "duration": 60
   },
   
   "report": {
@@ -35,11 +32,11 @@
   },
   
   "api": {
-    "endpoint": "/post/get-list",
+    "endpoint": "/cache/read",
     "method": "GET",
     "params": {
-      "pageNo": "${mock:int:1:10}",
-      "pageSize": 20
+      "key": "${mock:string:10:50:alphanumeric}",
+      "cacheName": "post"
     }
   }
 }

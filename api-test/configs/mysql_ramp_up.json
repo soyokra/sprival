@@ -1,10 +1,10 @@
 {
-  "test_name": "Test Post Cache Hit Rate Performance",
-  "description": "测试缓存命中率接口性能 - 测试缓存命中率",
+  "test_name": "Test MySQL Ramp Up Load",
+  "description": "测试MySQL接口渐进式压测 - 寻找性能拐点",
   
   "http": {
     "base_url": "${sprival.url}",
-    "timeout": 120,
+    "timeout": 30,
     "max_retries": 3,
     "verify_ssl": false,
     "default_headers": {
@@ -13,9 +13,11 @@
   },
   
   "scenario": {
-    "type": "constant",
-    "threads": 10,
-    "duration": 180
+    "type": "ramp_up",
+    "initial_threads": 1,
+    "target_threads": 100,
+    "ramp_duration": 60,
+    "hold_duration": 120
   },
   
   "report": {
@@ -32,11 +34,11 @@
   },
   
   "api": {
-    "endpoint": "/post-cache/hit-rate",
+    "endpoint": "/mysql/get-list",
     "method": "GET",
     "params": {
-      "cacheName": "post",
-      "testCount": "${mock:choice:500:1000:2000}"
+      "pageNo": "${mock:int:1:10}",
+      "pageSize": 20
     }
   }
 }
