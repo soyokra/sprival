@@ -2,6 +2,17 @@
 <configuration debug="true">
     <springProperty scope="context" name="kafkaBootstrapServers" source="sprival.logging.kafka.bootstrap-servers" defaultValue="localhost:9092"/>
     <springProperty scope="context" name="kafkaTopic" source="sprival.logging.kafka.topic" defaultValue="application-logs"/>
+    <springProperty scope="context" name="kafkaClientId" source="sprival.logging.kafka.client-id" defaultValue="sprival-log-app"/>
+    <springProperty scope="context" name="kafkaAcks" source="sprival.logging.kafka.acks" defaultValue="all"/>
+    <springProperty scope="context" name="kafkaRetries" source="sprival.logging.kafka.retries" defaultValue="3"/>
+    <springProperty scope="context" name="kafkaBatchSize" source="sprival.logging.kafka.batch-size" defaultValue="16384"/>
+    <springProperty scope="context" name="kafkaLingerMs" source="sprival.logging.kafka.linger-ms" defaultValue="5"/>
+    <springProperty scope="context" name="kafkaBufferMemory" source="sprival.logging.kafka.buffer-memory" defaultValue="33554432"/>
+    <springProperty scope="context" name="kafkaCompressionType" source="sprival.logging.kafka.compression-type" defaultValue="lz4"/>
+    <springProperty scope="context" name="kafkaEnableIdempotence" source="sprival.logging.kafka.enable-idempotence" defaultValue="true"/>
+    <springProperty scope="context" name="kafkaRequestTimeoutMs" source="sprival.logging.kafka.request-timeout-ms" defaultValue="30000"/>
+    <springProperty scope="context" name="kafkaDeliveryTimeoutMs" source="sprival.logging.kafka.delivery-timeout-ms" defaultValue="120000"/>
+    <springProperty scope="context" name="kafkaMaxBlockMs" source="sprival.logging.kafka.max-block-ms" defaultValue="60000"/>
     
     <!-- 控制台输出 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -54,11 +65,20 @@
         <valueSerializer>org.apache.kafka.common.serialization.StringSerializer</valueSerializer>
     </appender>
 
+    <!-- Kafka异步包装，避免阻塞 -->
+    <appender name="ASYNC_KAFKA" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="KAFKA" />
+        <queueSize>8192</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <neverBlock>true</neverBlock>
+        <includeCallerData>false</includeCallerData>
+    </appender>
+
     <!-- 根日志配置 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
-        <appender-ref ref="KAFKA" />
+        <appender-ref ref="ASYNC_KAFKA" />
     </root>
 
     <!-- 应用日志级别 -->
@@ -78,7 +98,14 @@
     <logger name="org.springframework.data.mongodb" level="DEBUG" />
     
     <!-- Kafka日志级别 -->
-    <logger name="org.apache.kafka" level="WARN" />
+    <logger name="org.apache.kafka" level="WARN">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.apache.kafka.clients" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </logger>
     <logger name="org.springframework.kafka" level="INFO" />
     
     <!-- 第三方库日志级别 -->
@@ -94,6 +121,7 @@
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>7</maxHistory>
             <totalSizeCap>1GB</totalSizeCap>
+            <cleanHistoryOnStart>false</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
             <pattern>%msg%n</pattern>
@@ -102,6 +130,14 @@
     
     <!-- P6Spy logger：输出 SQL 执行日志 -->
     <logger name="p6spy" level="INFO" additivity="false">
+        <appender-ref ref="P6SPY_FILE" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+    <logger name="p6spy.log" level="INFO" additivity="false">
+        <appender-ref ref="P6SPY_FILE" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+    <logger name="p6spy.perf" level="INFO" additivity="false">
         <appender-ref ref="P6SPY_FILE" />
         <appender-ref ref="CONSOLE" />
     </logger>

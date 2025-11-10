@@ -22,7 +22,7 @@ import ch.qos.logback.core.util.OptionHelper;
  * Logback Appender 实现，将日志事件发送到 Kafka。
  * 
  * <p>
- * 支持通过 logback.xml 配置 Kafka Producer 的所有主要参数，包括：
+ * 支持通过 logback-spring.xml 配置 Kafka Producer 的所有主要参数，包括：
  * <ul>
  * <li>基本配置：bootstrapServers、topic、clientId</li>
  * <li>生产者配置：acks、retries、batchSize、lingerMs、bufferMemory、compressionType、enableIdempotence</li>

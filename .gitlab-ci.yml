@@ -8,8 +8,8 @@ variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
   
   # Docker 配置
-  DOCKER_REGISTRY: "registry:5000"
-  DOCKER_IMAGE_NAME: "sprival"
+  DOCKER_REGISTRY: "docker.io"
+  DOCKER_IMAGE_NAME: "soyokra/sprival"
   DOCKER_TAG: "${CI_COMMIT_SHORT_SHA}"
   
   # Java 配置
@@ -102,21 +102,21 @@ docker-build:
     - echo "准备 Docker 环境..."
     - docker info
     - echo "登录到 Docker Registry..."
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$DOCKER_REGISTRY"
+    - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
   script:
     - echo "开始构建 Docker 镜像..."
-    - 'echo "镜像标签: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG"'
-    - docker build -t "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG" .
+    - 'echo "镜像标签: $DOCKER_IMAGE_NAME:$DOCKER_TAG"'
+    - docker build -t "$DOCKER_IMAGE_NAME:$DOCKER_TAG" .
     - echo "Docker 镜像构建完成"
     - echo "推送镜像到 Registry..."
-    - docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG"
+    - docker push "$DOCKER_IMAGE_NAME:$DOCKER_TAG"
     - echo "镜像推送完成"
     - echo "为主分支打 latest 标签..."
-    - docker tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG" "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
-    - docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest"
+    - docker tag "$DOCKER_IMAGE_NAME:$DOCKER_TAG" "$DOCKER_IMAGE_NAME:latest"
+    - docker push "$DOCKER_IMAGE_NAME:latest"
     - echo "latest 标签推送完成"
-    - docker rmi "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG" || true
-    - docker rmi "$DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:latest" || true
+    - docker rmi "$DOCKER_IMAGE_NAME:$DOCKER_TAG" || true
+    - docker rmi "$DOCKER_IMAGE_NAME:latest" || true
   after_script:
     - echo "Docker 构建和推送流程完成"
   only:
@@ -132,7 +132,7 @@ deploy-production:
     - apk add --no-cache curl
   script:
     - echo "开始生产环境部署..."
-    - 'echo "部署镜像: $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG"'
+    - 'echo "部署镜像: $DOCKER_IMAGE_NAME:$DOCKER_TAG"'
     - 'echo "部署时间: $(date)"'
     - 'echo "部署分支: $CI_COMMIT_REF_NAME"'
     - 'echo "提交信息: $CI_COMMIT_MESSAGE"'
