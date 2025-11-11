@@ -24,6 +24,10 @@ git push gitlab main
 创建runner
 
 
+## 设置上传大小
+Settings > CI/CD > General pipelines。
+Maximum artifacts size (MB)
+
 ## 配置docker用户名密码
 
 

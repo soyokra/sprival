@@ -92,6 +92,7 @@ docker-build:
     - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
   script:
     - echo "开始构建 Docker 镜像..."
+    - echo "运行时基础镜像: eclipse-temurin:8-jre-alpine"
     - 'echo "镜像标签: $DOCKER_IMAGE_NAME:$DOCKER_TAG"'
     - docker build -t "$DOCKER_IMAGE_NAME:$DOCKER_TAG" .
     - echo "Docker 镜像构建完成"
