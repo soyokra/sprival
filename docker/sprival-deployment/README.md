@@ -15,9 +15,11 @@ docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password
 ## 配置远程仓库
 git remove -v
 git remote add gitlab git@localhost:home/sprival.git
+git push gitlab main
 
 ## 推送代码
 
 
 ## 配置gitlab-runner
+查看Registration token
 
