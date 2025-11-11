@@ -21,6 +21,8 @@ services:
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://gitlab'
+        nginx['client_max_body_size'] = '250m'
+        gitlab_rails['artifacts_max_size'] = 250
     ports:
       - '80:80'
       - '443:443'
