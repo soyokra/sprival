@@ -65,6 +65,9 @@ package:
     - mvn $MAVEN_CLI_OPTS package
     - echo "打包完成"
     - ls -la target/*.jar
+    - echo "产物大小:"
+    - du -h target/*.jar || true
+    - du -sh target || true
   artifacts:
     paths:
       - target/*.jar
