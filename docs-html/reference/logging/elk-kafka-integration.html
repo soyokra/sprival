@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprival</title>
+
+    <style>
+        /* 基础样式与变量定义 */
+        :root {
+            --primary: #2c3e50;
+            --primary-light: #34495e;
+            --primary-accent: #3498db;
+            --secondary: #7f8c8d;
+            --light-bg: #f5f7fa;
+            --white: #ffffff;
+            --gray-light: #ecf0f1;
+            --gray: #bdc3c7;
+            --text-dark: #2c3e50;
+            --text-medium: #7f8c8d;
+            --text-light: #95a5a6;
+            --border-color: #e1e4e8;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 4px 15px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 60px; /* 为顶部导航栏预留空间 */
+        }
+
+        /* 布局基础类 */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .fixed {
+            position: fixed;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .top-0 {
+            top: 0;
+        }
+
+        .left-0 {
+            left: 0;
+        }
+
+        .right-0 {
+            right: 0;
+        }
+
+        .bottom-0 {
+            bottom: 0;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .h-full {
+            height: 100%;
+        }
+
+        .overflow-hidden {
+            overflow: hidden;
+        }
+
+        .overflow-y-auto {
+            overflow-y: auto;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .block {
+            display: block;
+        }
+
+        /* 间距类 */
+        .m-1 {
+            margin: 0.25rem;
+        }
+
+        .m-2 {
+            margin: 0.5rem;
+        }
+
+        .m-4 {
+            margin: 1rem;
+        }
+
+        .m-6 {
+            margin: 1.5rem;
+        }
+
+        .m-8 {
+            margin: 2rem;
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .mt-8 {
+            margin-top: 2rem;
+        }
+
+        .mt-16 {
+            margin-top: 4rem;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .mb-12 {
+            margin-bottom: 3rem;
+        }
+
+        .ml-4 {
+            margin-left: 1rem;
+        }
+
+        .mr-4 {
+            margin-right: 1rem;
+        }
+
+        .p-1 {
+            padding: 0.25rem;
+        }
+
+        .p-2 {
+            padding: 0.5rem;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .p-8 {
+            padding: 2rem;
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .py-6 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        .py-8 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .px-2 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .space-y-1 > * + * {
+            margin-top: 0.25rem;
+        }
+
+        .space-y-2 > * + * {
+            margin-top: 0.5rem;
+        }
+
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+
+        .space-x-2 > * + * {
+            margin-left: 0.5rem;
+        }
+
+        .space-x-4 > * + * {
+            margin-left: 1rem;
+        }
+
+        .space-x-6 > * + * {
+            margin-left: 1.5rem;
+        }
+
+        /* 文本样式类 */
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-base {
+            font-size: 1rem;
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+        }
+
+        .font-light {
+            font-weight: 300;
+        }
+
+        .font-normal {
+            font-weight: 400;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .text-primary {
+            color: var(--primary);
+        }
+
+        .text-primary-accent {
+            color: var(--primary-accent);
+        }
+
+        .text-secondary {
+            color: var(--secondary);
+        }
+
+        .text-white {
+            color: var(--white);
+        }
+
+        .text-gray {
+            color: var(--gray);
+        }
+
+        /* 背景与边框类 */
+        .bg-white {
+            background-color: var(--white);
+        }
+
+        .bg-light {
+            background-color: var(--light-bg);
+        }
+
+        .bg-primary {
+            background-color: var(--primary);
+        }
+
+        .bg-primary-accent {
+            background-color: var(--primary-accent);
+        }
+
+        .bg-gray-light {
+            background-color: var(--gray-light);
+        }
+
+        .border {
+            border: 1px solid var(--border-color);
+        }
+
+        .border-b {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .border-r {
+            border-right: 1px solid var(--border-color);
+        }
+
+        .border-l-4 {
+            border-left: 4px solid var(--primary-accent);
+        }
+
+        .rounded {
+            border-radius: 4px;
+        }
+
+        .rounded-md {
+            border-radius: 6px;
+        }
+
+        .rounded-lg {
+            border-radius: 8px;
+        }
+
+        /* 阴影与过渡类 */
+        .shadow {
+            box-shadow: var(--shadow);
+        }
+
+        .shadow-hover {
+            transition: var(--transition);
+        }
+
+        .shadow-hover:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .transition {
+            transition: var(--transition);
+        }
+
+        /* 顶部导航栏 */
+        #top-nav {
+            height: 60px;
+            z-index: 50;
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-link {
+            color: var(--text-medium);
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-accent);
+        }
+
+        .nav-link.active {
+            color: var(--primary-accent);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-accent);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        /* 左侧章节导航 - 始终显示 */
+        #left-sidebar {
+            width: 240px;
+            position: fixed;
+            top: 60px;
+            bottom: 0;
+            background-color: var(--white);
+            border-right: 1px solid var(--border-color);
+            z-index: 40;
+            overflow-y: auto;
+            scrollbar-hide: auto;
+        }
+
+        /* 响应式调整左侧导航宽度 */
+        @media (max-width: 1024px) {
+            #left-sidebar {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #left-sidebar {
+                width: 160px;
+            }
+        }
+
+        .chapter-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chapter-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-medium);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .chapter-link:hover {
+            background-color: var(--light-bg);
+            color: var(--primary-accent);
+        }
+
+        .chapter-link.active {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-accent);
+            border-left-color: var(--primary-accent);
+        }
+
+        /* 主内容区 - 始终为左侧导航留出空间 */
+        .main-content {
+            margin-left: 240px; /* 与左侧导航宽度一致 */
+            padding: 2rem;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* 响应式调整主内容区margin */
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 200px;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 160px;
+                padding: 1rem;
+            }
+        }
+
+        /* 为右侧导航留出空间 */
+        @media (min-width: 1200px) {
+            .main-content {
+                padding-right: 260px; /* 右侧导航宽度+间距 */
+            }
+        }
+
+        .article-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .article-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .article-meta {
+            color: var(--text-medium);
+            font-size: 0.9rem;
+        }
+
+        /* Markdown内容样式 */
+        .markdown-content h2 {
+            font-size: 1.8rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .markdown-content h3 {
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-light);
+        }
+
+        .markdown-content p {
+            margin-bottom: 1.25rem;
+            line-height: 1.7;
+        }
+
+        .markdown-content ul,
+        .markdown-content ol {
+            margin-bottom: 1.25rem;
+            padding-left: 1.5rem;
+        }
+
+        .markdown-content ul {
+            list-style-type: disc;
+        }
+
+        .markdown-content ol {
+            list-style-type: decimal;
+        }
+
+        .markdown-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .markdown-content a {
+            color: var(--primary-accent);
+            text-decoration: none;
+        }
+
+        .markdown-content a:hover {
+            text-decoration: underline;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid var(--primary-accent);
+            padding: 0.5rem 1rem;
+            margin: 1.5rem 0;
+            background-color: rgba(52, 152, 219, 0.05);
+            color: var(--text-medium);
+        }
+
+        /* 代码块样式 */
+        .markdown-content pre {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .markdown-content code {
+            background-color: #edf2f7;
+            color: #2d3748;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.875rem;
+        }
+
+        .markdown-content pre code {
+            background-color: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        .markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .markdown-content th,
+        .markdown-content td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .markdown-content th {
+            background-color: var(--light-bg);
+            font-weight: 600;
+        }
+
+        /* 右侧悬浮二级标题导航 - 始终显示 */
+        #right-sidebar {
+            width: 240px;
+            position: fixed;
+            top: 80px;
+            bottom: 80px;
+            right: 20px;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            overflow-y: auto;
+            z-index: 30;
+        }
+
+        /* 小屏幕下调整右侧导航位置和大小 */
+        @media (max-width: 1199px) and (min-width: 769px) {
+            #right-sidebar {
+                width: 200px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #right-sidebar {
+                width: 140px;
+                right: 10px;
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        .toc-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .toc-link {
+            display: block;
+            padding: 0.35rem 0.5rem;
+            color: var(--text-medium);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .toc-link:hover {
+            background-color: var(--light-bg);
+            color: var(--primary-accent);
+        }
+
+        .toc-link.active {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-accent);
+            font-weight: 500;
+        }
+
+        .toc-level-2 {
+            padding-left: 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* 移除移动端控制按钮 */
+        #toc-toggle, #sidebar-toggle, #overlay {
+            display: none !important;
+        }
+
+        img {
+            max-width: 100%; /* 最大宽度不超过父容器 */
+            height: auto; /* 高度自动计算，保持原始比例 */
+            display: block; /* 移除图片底部默认空白 */
+            margin: 0 auto; /* 可选：让图片居中显示 */
+        }
+    </style>
+</head>
+
+<body>
+<!-- 顶部导航栏 -->
+<header id="top-nav" class="fixed top-0 left-0 right-0 bg-white shadow">
+    <div class="container flex items-center justify-between h-full px-4">
+        <!-- 左侧Logo -->
+        <div class="flex items-center space-x-4">
+            <a href="#" class="logo">
+                <span>SPRIVAL</span>
+            </a>
+        </div>
+
+        <!-- 中间导航链接 -->
+        <nav class="md:flex items-center space-x-6">
+        </nav>
+
+        <!-- 右侧功能区 -->
+        <div class="flex items-center space-x-4">
+            <a href="/sprdoc/blog_index.html" class="nav-link active">Blog</a>
+            <a href="https://github.com/soyokra/sprival" class="nav-link active">Github</a>
+        </div>
+    </div>
+</header>
+
+<!-- 左侧固定章节导航 - 始终显示 -->
+<aside id="left-sidebar" class="overflow-y-auto scrollbar-hide">
+    <div class="p-4">
+        <h2 class="chapter-title mb-4">Sprival</h2>
+        <nav class="space-y-1">
+            <a href="/sprdoc/view/sprival/README.html" class="chapter-link">
+                <span>快速开始</span>
+            </a>
+            <a href="/sprdoc/view/sprival/spring-http-server/README.html" class="chapter-link">
+                <span>HTTP 服务端</span>
+            </a>
+            <a href="/sprdoc/view/sprival/spring-http-client/README.html" class="chapter-link">
+                <span>HTTP 客户端</span>
+            </a>
+            <a href="/sprdoc/view/sprival/spring-mysql/README.html" class="chapter-link">
+                <span>数据库</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-rabbit/README.html" class="chapter-link">
+                <span>RabbitMQ</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-kafka/README.html" class="chapter-link">
+                <span>Kafka</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-mongo/README.html" class="chapter-link">
+                <span>MongoDB</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-ealsticsearch/README.html" class="chapter-link">
+                <span>Elasticsearch</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-clickhouse/README.html" class="chapter-link">
+                <span>Clickhouse</span>
+            </a>
+        </nav>
+    </div>
+</aside>
+
+<!-- 主内容区 -->
+<main class="main-content">
+    <div class="container max-w-4xl">
+        <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
+            <h1>ELK + Kafka 日志集成指南</h1>
+<h2>概述</h2>
+<p>本文档介绍如何使用 ELK（Elasticsearch, Logstash, Kibana）+ Kafka 构建完整的日志收集、处理和可视化系统。</p>
+<h2>架构</h2>
+<h3>整体架构</h3>
+<pre><code>┌─────────────────────┐
+│  Spring Boot App    │
+│  (KafkaAppender)    │
+└──────────┬──────────┘
+           │ 异步发送 JSON 日志
+           ↓
+┌─────────────────────┐
+│      Kafka          │
+│  - application-logs │
+│  - access-logs      │
+└──────────┬──────────┘
+           │ Logstash 消费
+           ↓
+┌─────────────────────┐
+│     Logstash        │
+│  - 解析 JSON        │
+│  - 添加字段         │
+│  - 数据转换         │
+└──────────┬──────────┘
+           │ 写入索引
+           ↓
+┌─────────────────────┐
+│  Elasticsearch      │
+│  - application-logs-*│
+│  - access-logs-*    │
+└──────────┬──────────┘
+           │ 查询和聚合
+           ↓
+┌─────────────────────┐
+│      Kibana         │
+│  - Discover         │
+│  - Dashboard        │
+│  - Visualize        │
+└─────────────────────┘
+</code></pre>
+<h3>数据流</h3>
+<ol>
+<li><strong>日志生成</strong>: Spring Boot 应用使用 KafkaAppender 发送日志</li>
+<li><strong>消息队列</strong>: Kafka 作为缓冲，提供削峰填谷能力</li>
+<li><strong>日志处理</strong>: Logstash 消费、解析和转换日志</li>
+<li><strong>日志存储</strong>: Elasticsearch 存储和索引日志数据</li>
+<li><strong>日志查询</strong>: Kibana 提供可视化查询界面</li>
+</ol>
+<h2>部署步骤</h2>
+<h3>前置条件</h3>
+<ul>
+<li>Docker 和 Docker Compose 已安装</li>
+<li>至少 4GB 可用内存</li>
+<li>至少 10GB 可用磁盘空间</li>
+</ul>
+<h3>1. 启动 Docker 环境</h3>
+<pre><code class="language-bash">cd dockers
+
+# 创建必要的目录
+mkdir -p logstash/{pipeline,config,volumes/data}
+mkdir -p kibana/{config,volumes/data}
+
+# 设置权限
+chmod -R 777 elasticsearch/volumes
+chmod -R 777 logstash/volumes
+chmod -R 777 kibana/volumes
+
+# 启动所有服务
+docker-compose up -d
+
+# 等待服务启动（约 2-3 分钟）
+docker-compose ps
+</code></pre>
+<h3>2. 验证服务状态</h3>
+<pre><code class="language-bash"># 检查 Elasticsearch
+curl http://localhost:9201/_cluster/health?pretty
+
+# 检查 Logstash
+curl http://localhost:9600/?pretty
+
+# 检查 Kibana
+curl http://localhost:5601/api/status
+
+# 检查 Kafka
+docker-compose exec kafka kafka-topics.sh \
+  --bootstrap-server localhost:29092 --list
+</code></pre>
+<h3>3. 初始化索引模板</h3>
+<pre><code class="language-bash"># 给脚本添加执行权限
+chmod +x elasticsearch-init-templates.sh
+
+# 执行初始化
+./elasticsearch-init-templates.sh
+</code></pre>
+<p>预期输出：</p>
+<pre><code>等待 Elasticsearch 启动...
+Elasticsearch 已就绪，开始创建索引模板...
+创建 application-logs 索引模板...
+创建 jetty-access-logs 索引模板...
+索引模板创建完成！
+</code></pre>
+<h3>4. 初始化 Kibana</h3>
+<pre><code class="language-bash"># 给脚本添加执行权限
+chmod +x kibana-init-config.sh
+
+# 执行初始化
+./kibana-init-config.sh
+</code></pre>
+<p>预期输出：</p>
+<pre><code>等待 Kibana 启动...
+Kibana 已就绪，开始创建配置...
+创建 application-logs Index Pattern...
+创建 jetty-access-logs Index Pattern...
+Kibana 配置完成！
+</code></pre>
+<h3>5. 配置 Spring Boot 应用</h3>
+<p>在 <code>application.properties</code> 中配置 KafkaAppender：</p>
+<pre><code class="language-properties"># 应用日志配置
+sprival.logging.application.output-target=kafka
+sprival.logging.application.bootstrap-servers=localhost:9092
+sprival.logging.application.topic=application-logs
+sprival.logging.application.compression-type=gzip
+
+# 访问日志配置
+sprival.logging.jetty-access.output-target=kafka
+sprival.logging.jetty-access.bootstrap-servers=localhost:9092
+sprival.logging.jetty-access.topic=jetty-access-logs
+sprival.logging.jetty-access.compression-type=gzip
+</code></pre>
+<h3>6. 启动应用并生成日志</h3>
+<pre><code class="language-bash"># 启动 Spring Boot 应用
+java -jar sprival-*.jar
+
+# 或使用 Maven
+mvn spring-boot:run
+</code></pre>
+<h3>7. 在 Kibana 中查看日志</h3>
+<ol>
+<li>访问 http://localhost:5601</li>
+<li>点击左侧菜单的 "Discover"</li>
+<li>选择 Index Pattern: <code>application-logs-*</code></li>
+<li>设置时间范围为"Last 15 minutes"</li>
+<li>开始查看和搜索日志</li>
+</ol>
+<h2>使用指南</h2>
+<h3>Kibana Discover 使用</h3>
+<h4>基本搜索</h4>
+<p><strong>搜索特定日志级别</strong>:</p>
+<pre><code>level: ERROR
+</code></pre>
+<p><strong>搜索包含关键词的日志</strong>:</p>
+<pre><code>message: *exception*
+</code></pre>
+<p><strong>搜索特定Logger的日志</strong>:</p>
+<pre><code>loggerName: &quot;com.soyokra.sprival.app.service.UserService&quot;
+</code></pre>
+<h4>高级搜索</h4>
+<p><strong>组合条件</strong>:</p>
+<pre><code>level: ERROR AND loggerName: *UserService*
+</code></pre>
+<p><strong>范围查询</strong>:</p>
+<pre><code>processingTime &gt; 1000
+</code></pre>
+<p><strong>MDC 字段搜索</strong>:</p>
+<pre><code>mdc.userId: &quot;12345&quot;
+</code></pre>
+<p><strong>IP 地址搜索</strong>:</p>
+<pre><code>clientIp: 192.168.1.0/24
+</code></pre>
+<h4>时间过滤</h4>
+<ul>
+<li><strong>Quick</strong>: 快速选择（Last 15 minutes, Last 1 hour, etc.）</li>
+<li><strong>Relative</strong>: 相对时间（Last 2 hours）</li>
+<li><strong>Absolute</strong>: 绝对时间范围</li>
+<li><strong>Refresh</strong>: 设置自动刷新间隔（实时监控）</li>
+</ul>
+<h3>创建 Dashboard</h3>
+<h4>1. 创建 Visualization</h4>
+<p><strong>示例：错误日志趋势图</strong></p>
+<ol>
+<li>进入 "Visualize Library"</li>
+<li>点击 "Create visualization"</li>
+<li>选择 "Line" 图表类型</li>
+<li>选择 Index Pattern: <code>application-logs-*</code></li>
+<li>配置：</li>
+<li>X-axis: Date Histogram (@timestamp)</li>
+<li>Y-axis: Count</li>
+<li>Filter: level: ERROR</li>
+<li>保存为 "Error Logs Trend"</li>
+</ol>
+<p><strong>示例：HTTP 状态码分布</strong></p>
+<ol>
+<li>选择 "Pie" 图表</li>
+<li>Index Pattern: <code>jetty-access-logs-*</code></li>
+<li>配置：</li>
+<li>Slice by: Terms (statusCode)</li>
+<li>Metric: Count</li>
+<li>保存为 "HTTP Status Distribution"</li>
+</ol>
+<h4>2. 组合 Dashboard</h4>
+<ol>
+<li>进入 "Dashboard"</li>
+<li>点击 "Create dashboard"</li>
+<li>添加已保存的 Visualizations</li>
+<li>调整布局和大小</li>
+<li>保存 Dashboard</li>
+</ol>
+<h3>日志分析示例</h3>
+<h4>场景 1: 查找慢请求</h4>
+<p>在 Discover 中搜索：</p>
+<pre><code>processingTime &gt; 5000
+</code></pre>
+<p>添加字段：
+- uri
+- statusCode
+- processingTime
+- clientIp</p>
+<p>排序：按 processingTime 降序</p>
+<h4>场景 2: 分析错误日志</h4>
+<p>搜索：</p>
+<pre><code>level: ERROR AND NOT message: *SocketTimeoutException*
+</code></pre>
+<p>查看：
+- 错误消息
+- 异常堆栈
+- 发生时间
+- 相关上下文（MDC）</p>
+<h4>场景 3: 用户行为追踪</h4>
+<p>使用 MDC 中的 userId：</p>
+<pre><code>mdc.userId: &quot;user123&quot;
+</code></pre>
+<p>按时间排序，查看用户的完整操作轨迹。</p>
+<h4>场景 4: API 性能分析</h4>
+<p>在 <code>jetty-access-logs-*</code> 中：</p>
+<pre><code>uri: /api/users/* AND processingTime &gt; 1000
+</code></pre>
+<p>创建聚合：
+- Avg processingTime by uri
+- Max processingTime by uri
+- 95th percentile</p>
+<h2>性能优化</h2>
+<h3>Logstash 优化</h3>
+<h4>增加处理能力</h4>
+<p>编辑 <code>logstash/config/logstash.yml</code>:</p>
+<pre><code class="language-yaml">pipeline.workers: 4          # 增加 worker 数量
+pipeline.batch.size: 250     # 增加批处理大小
+pipeline.batch.delay: 50     # 调整延迟
+</code></pre>
+<h4>内存优化</h4>
+<p>编辑 <code>docker-compose.yml</code>:</p>
+<pre><code class="language-yaml">logstash:
+  environment:
+    - &quot;LS_JAVA_OPTS=-Xms1g -Xmx1g&quot;
+</code></pre>
+<h3>Elasticsearch 优化</h3>
+<h4>索引刷新间隔</h4>
+<pre><code class="language-bash">curl -X PUT &quot;http://localhost:9201/application-logs-*/_settings&quot; \
+  -H 'Content-Type: application/json' -d'
+{
+  &quot;index&quot;: {
+    &quot;refresh_interval&quot;: &quot;30s&quot;
+  }
+}'
+</code></pre>
+<h4>合并策略</h4>
+<pre><code class="language-bash">curl -X PUT &quot;http://localhost:9201/application-logs-*/_settings&quot; \
+  -H 'Content-Type: application/json' -d'
+{
+  &quot;index&quot;: {
+    &quot;merge.scheduler.max_thread_count&quot;: 1
+  }
+}'
+</code></pre>
+<h3>Kafka 优化</h3>
+<p>已有配置已优化，建议监控：
+- Consumer lag
+- Partition 分布
+- 磁盘使用</p>
+<h2>监控和维护</h2>
+<h3>监控指标</h3>
+<h4>Elasticsearch</h4>
+<pre><code class="language-bash"># 集群健康
+curl http://localhost:9201/_cluster/health?pretty
+
+# 节点统计
+curl http://localhost:9201/_nodes/stats?pretty
+
+# 索引统计
+curl http://localhost:9201/application-logs-*/_stats?pretty
+</code></pre>
+<h4>Logstash</h4>
+<pre><code class="language-bash"># Pipeline 统计
+curl http://localhost:9600/_node/stats/pipelines?pretty
+
+# JVM 内存
+curl http://localhost:9600/_node/stats/jvm?pretty
+</code></pre>
+<h4>Kafka</h4>
+<pre><code class="language-bash"># 进入容器
+docker-compose exec kafka bash
+
+# Consumer lag
+kafka-consumer-groups.sh --bootstrap-server localhost:29092 \
+  --describe --group logstash-consumer-group
+</code></pre>
+<h3>日志保留策略</h3>
+<h4>自动删除旧索引</h4>
+<p>创建脚本 <code>cleanup-old-indices.sh</code>:</p>
+<pre><code class="language-bash">#!/bin/bash
+# 删除 30 天前的索引
+
+DAYS_TO_KEEP=30
+DATE_CUTOFF=$(date -d &quot;$DAYS_TO_KEEP days ago&quot; +%Y.%m.%d)
+
+curl -X GET &quot;http://localhost:9201/_cat/indices/application-logs-*?h=index&quot; | \
+while read index; do
+  INDEX_DATE=$(echo $index | grep -oP '\d{4}\.\d{2}\.\d{2}')
+  if [[ &quot;$INDEX_DATE&quot; &lt; &quot;$DATE_CUTOFF&quot; ]]; then
+    echo &quot;Deleting index: $index&quot;
+    curl -X DELETE &quot;http://localhost:9201/$index&quot;
+  fi
+done
+</code></pre>
+<p>添加到 crontab:</p>
+<pre><code class="language-bash">0 2 * * * /path/to/cleanup-old-indices.sh
+</code></pre>
+<h3>备份和恢复</h3>
+<h4>配置快照仓库</h4>
+<pre><code class="language-bash">curl -X PUT &quot;http://localhost:9201/_snapshot/my_backup&quot; \
+  -H 'Content-Type: application/json' -d'
+{
+  &quot;type&quot;: &quot;fs&quot;,
+  &quot;settings&quot;: {
+    &quot;location&quot;: &quot;/usr/share/elasticsearch/backups&quot;
+  }
+}'
+</code></pre>
+<h4>创建快照</h4>
+<pre><code class="language-bash">curl -X PUT &quot;http://localhost:9201/_snapshot/my_backup/snapshot_1&quot; \
+  -H 'Content-Type: application/json' -d'
+{
+  &quot;indices&quot;: &quot;application-logs-*,jetty-access-logs-*&quot;,
+  &quot;ignore_unavailable&quot;: true,
+  &quot;include_global_state&quot;: false
+}'
+</code></pre>
+<h4>恢复快照</h4>
+<pre><code class="language-bash">curl -X POST &quot;http://localhost:9201/_snapshot/my_backup/snapshot_1/_restore&quot;
+</code></pre>
+<h2>故障排除</h2>
+<h3>问题 1: Logstash 无法消费 Kafka 消息</h3>
+<p><strong>症状</strong>: Kibana 中看不到日志</p>
+<p><strong>排查步骤</strong>:</p>
+<ol>
+<li>检查 Kafka topic 是否有数据：</li>
+</ol>
+<pre><code class="language-bash">docker-compose exec kafka kafka-console-consumer.sh \
+  --bootstrap-server localhost:29092 \
+  --topic application-logs --max-messages 10
+</code></pre>
+<ol>
+<li>检查 Logstash Pipeline 状态：</li>
+</ol>
+<pre><code class="language-bash">curl http://localhost:9600/_node/stats/pipelines?pretty
+</code></pre>
+<ol>
+<li>查看 Logstash 日志：</li>
+</ol>
+<pre><code class="language-bash">docker-compose logs logstash | tail -100
+</code></pre>
+<p><strong>解决方案</strong>:
+- 确认 Kafka 地址正确（kafka:29092）
+- 检查网络连通性
+- 重启 Logstash</p>
+<h3>问题 2: Elasticsearch 内存不足</h3>
+<p><strong>症状</strong>: 服务崩溃或响应慢</p>
+<p><strong>解决方案</strong>:</p>
+<p>增加 JVM 内存：</p>
+<pre><code class="language-yaml"># docker-compose.yml
+elasticsearch:
+  environment:
+    - &quot;ES_JAVA_OPTS=-Xms2g -Xmx2g&quot;
+</code></pre>
+<h3>问题 3: Kibana 无法连接 Elasticsearch</h3>
+<p><strong>症状</strong>: Kibana 显示连接错误</p>
+<p><strong>解决方案</strong>:</p>
+<ol>
+<li>检查 Elasticsearch 状态：</li>
+</ol>
+<pre><code class="language-bash">docker-compose ps elasticsearch
+curl http://localhost:9201/_cluster/health
+</code></pre>
+<ol>
+<li>检查 Kibana 配置：</li>
+</ol>
+<pre><code class="language-bash">docker-compose exec kibana cat /usr/share/kibana/config/kibana.yml
+</code></pre>
+<ol>
+<li>重启 Kibana：</li>
+</ol>
+<pre><code class="language-bash">docker-compose restart kibana
+</code></pre>
+<h3>问题 4: 日志时间不正确</h3>
+<p><strong>症状</strong>: Kibana 中看到的时间与实际不符</p>
+<p><strong>解决方案</strong>:</p>
+<p>检查 Logstash 时区配置：</p>
+<pre><code class="language-conf"># logstash.conf
+filter {
+  date {
+    match =&gt; [&quot;timestamp&quot;, &quot;UNIX_MS&quot;]
+    target =&gt; &quot;@timestamp&quot;
+    timezone =&gt; &quot;Asia/Shanghai&quot;  # 确保时区正确
+  }
+}
+</code></pre>
+<h2>最佳实践</h2>
+<h3>1. 索引命名</h3>
+<p>使用时间后缀，便于管理和清理：
+- <code>application-logs-2025.10.22</code>
+- <code>jetty-access-logs-2025.10.22</code></p>
+<h3>2. 字段映射</h3>
+<p>明确定义字段类型，避免动态映射：
+- IP 地址使用 <code>ip</code> 类型
+- 数值使用 <code>long</code> 或 <code>integer</code>
+- 关键词使用 <code>keyword</code>
+- 全文搜索使用 <code>text</code></p>
+<h3>3. 日志级别</h3>
+<p>合理使用日志级别：
+- ERROR: 严重错误，需要立即处理
+- WARN: 警告信息，需要关注
+- INFO: 重要信息
+- DEBUG: 调试信息（生产环境慎用）</p>
+<h3>4. MDC 使用</h3>
+<p>在业务代码中使用 MDC 添加上下文：</p>
+<pre><code class="language-java">MDC.put(&quot;userId&quot;, userId);
+MDC.put(&quot;requestId&quot;, requestId);
+MDC.put(&quot;action&quot;, &quot;createOrder&quot;);
+</code></pre>
+<h3>5. 性能监控</h3>
+<p>定期监控：
+- Consumer lag
+- 磁盘使用率
+- JVM 内存使用
+- 查询响应时间</p>
+<h2>安全建议</h2>
+<h3>开发环境（当前配置）</h3>
+<ul>
+<li>无认证</li>
+<li>HTTP 明文传输</li>
+<li>所有端口暴露</li>
+</ul>
+<h3>生产环境建议</h3>
+<ol>
+<li><strong>启用认证</strong>:</li>
+</ol>
+<pre><code class="language-yaml">elasticsearch:
+  environment:
+    - xpack.security.enabled=true
+    - ELASTIC_PASSWORD=strongpassword
+</code></pre>
+<ol>
+<li><strong>使用 HTTPS</strong>:</li>
+</ol>
+<pre><code class="language-yaml">elasticsearch:
+  environment:
+    - xpack.security.http.ssl.enabled=true
+</code></pre>
+<ol>
+<li><strong>网络隔离</strong>:</li>
+<li>仅暴露 Kibana 端口</li>
+<li>ES 和 Logstash 使用内部网络</li>
+<li>
+<p>使用反向代理</p>
+</li>
+<li>
+<p><strong>访问控制</strong>:</p>
+</li>
+<li>配置 Kibana 用户认证</li>
+<li>使用角色和权限管理</li>
+</ol>
+<h2>相关文档</h2>
+<ul>
+<li><a href="./README.md">日志集成参考文档</a></li>
+<li><a href="../../dockers/README-ELK.md">Docker 部署 README</a></li>
+<li><a href="../../ai-home/elk-kafka-logging-plan.md">ELK 架构规划</a></li>
+</ul>
+<hr />
+<p><strong>版本</strong>: 1.0.0<br />
+<strong>更新时间</strong>: 2025-10-22</p>
+        </article>
+    </div>
+</main>
+
+<!-- 右侧悬浮二级标题导航 - 始终显示 -->
+<!--  <aside id="right-sidebar" class="scrollbar-hide">-->
+<!--    <h3 class="toc-title">目录导航</h3>-->
+<!--    <nav class="toc-nav space-y-1">-->
+<!--      <a href="/sprdoc/view/sprival/README.html" class="toc-link">1. 快速开始</a>-->
+<!--      <a href="#section-1-1" class="toc-link toc-level-2">1.1 Web开发的定义与重要性</a>-->
+<!--      <a href="/sprdoc/view/sprival/spring-myql/README.html" class="toc-link">2. 数据库</a>-->
+<!--    </nav>-->
+<!--  </aside>-->
+
+<script>
+    // 元素获取
+    const chapterLinks = document.querySelectorAll('.chapter-link');
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const sections = document.querySelectorAll('section, h3[id]');
+
+    // 滚动监听，高亮当前章节和目录项
+    window.addEventListener('scroll', () => {
+        let current = '';
+
+        // 找到当前可见的最高章节
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+
+            if (window.scrollY >= (sectionTop - 150)) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        // 更新左侧章节导航高亮
+        chapterLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').substring(1) === current ||
+                current.startsWith(link.getAttribute('href').substring(1) + '-')) {
+                link.classList.add('active');
+            }
+        });
+
+        // 更新右侧目录导航高亮
+        tocLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').substring(1) === current) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+</body>
+</html>

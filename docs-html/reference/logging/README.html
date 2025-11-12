@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprival</title>
+
+    <style>
+        /* 基础样式与变量定义 */
+        :root {
+            --primary: #2c3e50;
+            --primary-light: #34495e;
+            --primary-accent: #3498db;
+            --secondary: #7f8c8d;
+            --light-bg: #f5f7fa;
+            --white: #ffffff;
+            --gray-light: #ecf0f1;
+            --gray: #bdc3c7;
+            --text-dark: #2c3e50;
+            --text-medium: #7f8c8d;
+            --text-light: #95a5a6;
+            --border-color: #e1e4e8;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 4px 15px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 60px; /* 为顶部导航栏预留空间 */
+        }
+
+        /* 布局基础类 */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .fixed {
+            position: fixed;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .top-0 {
+            top: 0;
+        }
+
+        .left-0 {
+            left: 0;
+        }
+
+        .right-0 {
+            right: 0;
+        }
+
+        .bottom-0 {
+            bottom: 0;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .h-full {
+            height: 100%;
+        }
+
+        .overflow-hidden {
+            overflow: hidden;
+        }
+
+        .overflow-y-auto {
+            overflow-y: auto;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .block {
+            display: block;
+        }
+
+        /* 间距类 */
+        .m-1 {
+            margin: 0.25rem;
+        }
+
+        .m-2 {
+            margin: 0.5rem;
+        }
+
+        .m-4 {
+            margin: 1rem;
+        }
+
+        .m-6 {
+            margin: 1.5rem;
+        }
+
+        .m-8 {
+            margin: 2rem;
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .mt-8 {
+            margin-top: 2rem;
+        }
+
+        .mt-16 {
+            margin-top: 4rem;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .mb-12 {
+            margin-bottom: 3rem;
+        }
+
+        .ml-4 {
+            margin-left: 1rem;
+        }
+
+        .mr-4 {
+            margin-right: 1rem;
+        }
+
+        .p-1 {
+            padding: 0.25rem;
+        }
+
+        .p-2 {
+            padding: 0.5rem;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .p-8 {
+            padding: 2rem;
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .py-6 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        .py-8 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .px-2 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .space-y-1 > * + * {
+            margin-top: 0.25rem;
+        }
+
+        .space-y-2 > * + * {
+            margin-top: 0.5rem;
+        }
+
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+
+        .space-x-2 > * + * {
+            margin-left: 0.5rem;
+        }
+
+        .space-x-4 > * + * {
+            margin-left: 1rem;
+        }
+
+        .space-x-6 > * + * {
+            margin-left: 1.5rem;
+        }
+
+        /* 文本样式类 */
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-base {
+            font-size: 1rem;
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+        }
+
+        .font-light {
+            font-weight: 300;
+        }
+
+        .font-normal {
+            font-weight: 400;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .text-primary {
+            color: var(--primary);
+        }
+
+        .text-primary-accent {
+            color: var(--primary-accent);
+        }
+
+        .text-secondary {
+            color: var(--secondary);
+        }
+
+        .text-white {
+            color: var(--white);
+        }
+
+        .text-gray {
+            color: var(--gray);
+        }
+
+        /* 背景与边框类 */
+        .bg-white {
+            background-color: var(--white);
+        }
+
+        .bg-light {
+            background-color: var(--light-bg);
+        }
+
+        .bg-primary {
+            background-color: var(--primary);
+        }
+
+        .bg-primary-accent {
+            background-color: var(--primary-accent);
+        }
+
+        .bg-gray-light {
+            background-color: var(--gray-light);
+        }
+
+        .border {
+            border: 1px solid var(--border-color);
+        }
+
+        .border-b {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .border-r {
+            border-right: 1px solid var(--border-color);
+        }
+
+        .border-l-4 {
+            border-left: 4px solid var(--primary-accent);
+        }
+
+        .rounded {
+            border-radius: 4px;
+        }
+
+        .rounded-md {
+            border-radius: 6px;
+        }
+
+        .rounded-lg {
+            border-radius: 8px;
+        }
+
+        /* 阴影与过渡类 */
+        .shadow {
+            box-shadow: var(--shadow);
+        }
+
+        .shadow-hover {
+            transition: var(--transition);
+        }
+
+        .shadow-hover:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .transition {
+            transition: var(--transition);
+        }
+
+        /* 顶部导航栏 */
+        #top-nav {
+            height: 60px;
+            z-index: 50;
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-link {
+            color: var(--text-medium);
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-accent);
+        }
+
+        .nav-link.active {
+            color: var(--primary-accent);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-accent);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        /* 左侧章节导航 - 始终显示 */
+        #left-sidebar {
+            width: 240px;
+            position: fixed;
+            top: 60px;
+            bottom: 0;
+            background-color: var(--white);
+            border-right: 1px solid var(--border-color);
+            z-index: 40;
+            overflow-y: auto;
+            scrollbar-hide: auto;
+        }
+
+        /* 响应式调整左侧导航宽度 */
+        @media (max-width: 1024px) {
+            #left-sidebar {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #left-sidebar {
+                width: 160px;
+            }
+        }
+
+        .chapter-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chapter-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-medium);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .chapter-link:hover {
+            background-color: var(--light-bg);
+            color: var(--primary-accent);
+        }
+
+        .chapter-link.active {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-accent);
+            border-left-color: var(--primary-accent);
+        }
+
+        /* 主内容区 - 始终为左侧导航留出空间 */
+        .main-content {
+            margin-left: 240px; /* 与左侧导航宽度一致 */
+            padding: 2rem;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* 响应式调整主内容区margin */
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 200px;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 160px;
+                padding: 1rem;
+            }
+        }
+
+        /* 为右侧导航留出空间 */
+        @media (min-width: 1200px) {
+            .main-content {
+                padding-right: 260px; /* 右侧导航宽度+间距 */
+            }
+        }
+
+        .article-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .article-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .article-meta {
+            color: var(--text-medium);
+            font-size: 0.9rem;
+        }
+
+        /* Markdown内容样式 */
+        .markdown-content h2 {
+            font-size: 1.8rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .markdown-content h3 {
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-light);
+        }
+
+        .markdown-content p {
+            margin-bottom: 1.25rem;
+            line-height: 1.7;
+        }
+
+        .markdown-content ul,
+        .markdown-content ol {
+            margin-bottom: 1.25rem;
+            padding-left: 1.5rem;
+        }
+
+        .markdown-content ul {
+            list-style-type: disc;
+        }
+
+        .markdown-content ol {
+            list-style-type: decimal;
+        }
+
+        .markdown-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .markdown-content a {
+            color: var(--primary-accent);
+            text-decoration: none;
+        }
+
+        .markdown-content a:hover {
+            text-decoration: underline;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid var(--primary-accent);
+            padding: 0.5rem 1rem;
+            margin: 1.5rem 0;
+            background-color: rgba(52, 152, 219, 0.05);
+            color: var(--text-medium);
+        }
+
+        /* 代码块样式 */
+        .markdown-content pre {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .markdown-content code {
+            background-color: #edf2f7;
+            color: #2d3748;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.875rem;
+        }
+
+        .markdown-content pre code {
+            background-color: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        .markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .markdown-content th,
+        .markdown-content td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .markdown-content th {
+            background-color: var(--light-bg);
+            font-weight: 600;
+        }
+
+        /* 右侧悬浮二级标题导航 - 始终显示 */
+        #right-sidebar {
+            width: 240px;
+            position: fixed;
+            top: 80px;
+            bottom: 80px;
+            right: 20px;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            overflow-y: auto;
+            z-index: 30;
+        }
+
+        /* 小屏幕下调整右侧导航位置和大小 */
+        @media (max-width: 1199px) and (min-width: 769px) {
+            #right-sidebar {
+                width: 200px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #right-sidebar {
+                width: 140px;
+                right: 10px;
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        .toc-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .toc-link {
+            display: block;
+            padding: 0.35rem 0.5rem;
+            color: var(--text-medium);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .toc-link:hover {
+            background-color: var(--light-bg);
+            color: var(--primary-accent);
+        }
+
+        .toc-link.active {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-accent);
+            font-weight: 500;
+        }
+
+        .toc-level-2 {
+            padding-left: 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* 移除移动端控制按钮 */
+        #toc-toggle, #sidebar-toggle, #overlay {
+            display: none !important;
+        }
+
+        img {
+            max-width: 100%; /* 最大宽度不超过父容器 */
+            height: auto; /* 高度自动计算，保持原始比例 */
+            display: block; /* 移除图片底部默认空白 */
+            margin: 0 auto; /* 可选：让图片居中显示 */
+        }
+    </style>
+</head>
+
+<body>
+<!-- 顶部导航栏 -->
+<header id="top-nav" class="fixed top-0 left-0 right-0 bg-white shadow">
+    <div class="container flex items-center justify-between h-full px-4">
+        <!-- 左侧Logo -->
+        <div class="flex items-center space-x-4">
+            <a href="#" class="logo">
+                <span>SPRIVAL</span>
+            </a>
+        </div>
+
+        <!-- 中间导航链接 -->
+        <nav class="md:flex items-center space-x-6">
+        </nav>
+
+        <!-- 右侧功能区 -->
+        <div class="flex items-center space-x-4">
+            <a href="/sprdoc/blog_index.html" class="nav-link active">Blog</a>
+            <a href="https://github.com/soyokra/sprival" class="nav-link active">Github</a>
+        </div>
+    </div>
+</header>
+
+<!-- 左侧固定章节导航 - 始终显示 -->
+<aside id="left-sidebar" class="overflow-y-auto scrollbar-hide">
+    <div class="p-4">
+        <h2 class="chapter-title mb-4">Sprival</h2>
+        <nav class="space-y-1">
+            <a href="/sprdoc/view/sprival/README.html" class="chapter-link">
+                <span>快速开始</span>
+            </a>
+            <a href="/sprdoc/view/sprival/spring-http-server/README.html" class="chapter-link">
+                <span>HTTP 服务端</span>
+            </a>
+            <a href="/sprdoc/view/sprival/spring-http-client/README.html" class="chapter-link">
+                <span>HTTP 客户端</span>
+            </a>
+            <a href="/sprdoc/view/sprival/spring-mysql/README.html" class="chapter-link">
+                <span>数据库</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-rabbit/README.html" class="chapter-link">
+                <span>RabbitMQ</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-kafka/README.html" class="chapter-link">
+                <span>Kafka</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-mongo/README.html" class="chapter-link">
+                <span>MongoDB</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-ealsticsearch/README.html" class="chapter-link">
+                <span>Elasticsearch</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-clickhouse/README.html" class="chapter-link">
+                <span>Clickhouse</span>
+            </a>
+        </nav>
+    </div>
+</aside>
+
+<!-- 主内容区 -->
+<main class="main-content">
+    <div class="container max-w-4xl">
+        <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
+            <h1>日志集成</h1>
+<h2>概述</h2>
+<p>Sprival 提供了与 Kafka 集成的日志功能，支持将应用日志和 HTTP 访问日志发送到 Kafka 主题，便于日志的集中收集、分析和监控。</p>
+<h2>功能特性</h2>
+<h3>核心功能</h3>
+<ul>
+<li><strong>应用日志发送</strong>: 基于 Logback 的 KafkaAppender，将应用日志异步发送到 Kafka</li>
+<li><strong>访问日志发送</strong>: 集成 Jetty 访问日志，将 HTTP 请求日志发送到 Kafka</li>
+<li><strong>灵活输出</strong>: 支持输出到文件、Kafka 或同时输出到两者</li>
+<li><strong>异步非阻塞</strong>: 日志发送采用异步方式，不影响应用性能</li>
+<li><strong>JSON 格式</strong>: 日志消息以 JSON 格式发送，便于后续处理</li>
+<li><strong>性能优化</strong>: 支持批处理、压缩、缓存等性能优化机制</li>
+</ul>
+<h3>高级特性</h3>
+<ul>
+<li><strong>MDC 支持</strong>: 自动包含 Logback MDC 上下文信息</li>
+<li><strong>自定义字段</strong>: 支持添加自定义字段到日志消息</li>
+<li><strong>异常堆栈</strong>: 自动包含完整的异常堆栈信息</li>
+<li><strong>主机名缓存</strong>: 自动添加主机名和应用名，并缓存提高性能</li>
+<li><strong>路径过滤</strong>: 支持忽略特定路径的访问日志（如健康检查端点）</li>
+</ul>
+<h2>快速开始</h2>
+<h3>1. 启用 Kafka 日志功能</h3>
+<p>在 <code>application.properties</code> 中配置日志输出到 Kafka：</p>
+<pre><code class="language-properties"># 应用日志输出到 Kafka
+sprival.logging.application.output-target=kafka
+sprival.logging.application.bootstrap-servers=localhost:9092
+sprival.logging.application.topic=application-logs
+
+# Jetty 访问日志输出到 Kafka
+sprival.logging.jetty-access.output-target=kafka
+sprival.logging.jetty-access.bootstrap-servers=localhost:9092
+sprival.logging.jetty-access.topic=access-logs
+</code></pre>
+<h3>2. 使用标准日志 API</h3>
+<p>使用标准的 SLF4J API 记录日志，无需修改代码：</p>
+<pre><code class="language-java">import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+public class UserService {
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
+    public void createUser(String userId, String username) {
+        // 基本日志
+        log.info(&quot;Creating user: {}&quot;, username);
+
+        // 使用 MDC 添加上下文信息
+        try {
+            MDC.put(&quot;userId&quot;, userId);
+            MDC.put(&quot;action&quot;, &quot;create_user&quot;);
+
+            // 业务逻辑
+            log.debug(&quot;Validating user data&quot;);
+            // ...
+
+            log.info(&quot;User created successfully&quot;);
+
+        } catch (Exception e) {
+            log.error(&quot;Failed to create user&quot;, e);
+        } finally {
+            MDC.clear();
+        }
+    }
+}
+</code></pre>
+<h3>3. 验证日志发送</h3>
+<p>使用 Kafka 消费者验证日志是否正确发送：</p>
+<pre><code class="language-bash"># 查看应用日志主题
+kafka-console-consumer.sh --bootstrap-server localhost:9092 \
+    --topic application-logs --from-beginning
+
+# 查看访问日志主题
+kafka-console-consumer.sh --bootstrap-server localhost:9092 \
+    --topic access-logs --from-beginning
+</code></pre>
+<h2>配置说明</h2>
+<h3>输出目标配置</h3>
+<p>| 配置值 | 说明 | 使用场景 |
+|--------|------|----------|
+| <code>file</code> | 仅输出到本地文件 | 开发环境、测试环境 |
+| <code>kafka</code> | 仅输出到 Kafka | 生产环境（日志集中管理） |
+| <code>both</code> | 同时输出到文件和 Kafka | 生产环境（保留本地备份） |</p>
+<h3>应用日志配置</h3>
+<pre><code class="language-properties"># 输出目标
+sprival.logging.application.output-target=both
+
+# Kafka 基本配置
+sprival.logging.application.bootstrap-servers=kafka1:9092,kafka2:9092,kafka3:9092
+sprival.logging.application.topic=my-app-logs
+sprival.logging.application.client-id=my-app-log-producer
+
+# 生产者配置
+sprival.logging.application.acks=1
+sprival.logging.application.retries=3
+sprival.logging.application.batch-size=32768
+sprival.logging.application.linger-ms=5
+sprival.logging.application.compression-type=gzip
+
+# 超时配置
+sprival.logging.application.request-timeout-ms=30000
+sprival.logging.application.delivery-timeout-ms=120000
+sprival.logging.application.max-block-ms=60000
+</code></pre>
+<h3>Jetty 访问日志配置</h3>
+<pre><code class="language-properties"># 输出目标
+sprival.logging.jetty-access.output-target=kafka
+
+# Kafka 基本配置
+sprival.logging.jetty-access.bootstrap-servers=localhost:9092
+sprival.logging.jetty-access.topic=jetty-access-logs
+sprival.logging.jetty-access.client-id=jetty-access-producer
+
+# 性能优化
+sprival.logging.jetty-access.batch-size=32768
+sprival.logging.jetty-access.linger-ms=5
+sprival.logging.jetty-access.compression-type=gzip
+</code></pre>
+<h3>完整配置参数</h3>
+<p>| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| <code>output-target</code> | String | file | 输出目标：file, kafka, both |
+| <code>bootstrap-servers</code> | String | localhost:9092 | Kafka 服务器地址列表 |
+| <code>topic</code> | String | application-logs / jetty-access-logs | Kafka 主题名称 |
+| <code>client-id</code> | String | *-log-producer | Kafka 客户端 ID |
+| <code>acks</code> | String | 1 | 确认机制：0, 1, all |
+| <code>retries</code> | int | 3 | 重试次数 |
+| <code>batch-size</code> | int | 16384 | 批处理大小（字节） |
+| <code>linger-ms</code> | int | 1 | 批处理延迟时间（毫秒） |
+| <code>buffer-memory</code> | long | 33554432 | 缓冲区内存大小（字节） |
+| <code>compression-type</code> | String | none | 压缩类型：none, gzip, snappy, lz4, zstd |
+| <code>request-timeout-ms</code> | int | 30000 | 请求超时时间（毫秒） |
+| <code>delivery-timeout-ms</code> | int | 120000 | 投递超时时间（毫秒） |
+| <code>max-block-ms</code> | int | 60000 | 最大阻塞时间（毫秒） |</p>
+<h2>日志消息格式</h2>
+<h3>应用日志消息格式</h3>
+<p>发送到 Kafka 的应用日志消息为 JSON 格式：</p>
+<pre><code class="language-json">{
+  &quot;timestamp&quot;: 1729584000000,
+  &quot;level&quot;: &quot;INFO&quot;,
+  &quot;loggerName&quot;: &quot;com.example.UserService&quot;,
+  &quot;threadName&quot;: &quot;http-nio-8080-exec-1&quot;,
+  &quot;message&quot;: &quot;Creating user: alice&quot;,
+  &quot;throwable&quot;: null,
+  &quot;mdc&quot;: {
+    &quot;userId&quot;: &quot;12345&quot;,
+    &quot;action&quot;: &quot;create_user&quot;,
+    &quot;requestId&quot;: &quot;req-abc-123&quot;
+  },
+  &quot;customFields&quot;: {
+    &quot;hostname&quot;: &quot;server-01&quot;,
+    &quot;application&quot;: &quot;sprival&quot;
+  }
+}
+</code></pre>
+<p><strong>字段说明</strong>:</p>
+<ul>
+<li><code>timestamp</code>: Unix 时间戳（毫秒）</li>
+<li><code>level</code>: 日志级别（TRACE, DEBUG, INFO, WARN, ERROR）</li>
+<li><code>loggerName</code>: Logger 名称（通常是类全限定名）</li>
+<li><code>threadName</code>: 线程名称</li>
+<li><code>message</code>: 格式化后的日志消息</li>
+<li><code>throwable</code>: 异常信息（如果有）</li>
+<li><code>mdc</code>: MDC 上下文信息</li>
+<li><code>customFields</code>: 自定义字段（主机名、应用名等）</li>
+</ul>
+<h3>Jetty 访问日志消息格式</h3>
+<pre><code class="language-json">{
+  &quot;timestamp&quot;: 1729584000000,
+  &quot;logType&quot;: &quot;jetty-access&quot;,
+  &quot;clientIp&quot;: &quot;192.168.1.100&quot;,
+  &quot;method&quot;: &quot;GET&quot;,
+  &quot;uri&quot;: &quot;/api/users/12345&quot;,
+  &quot;protocol&quot;: &quot;HTTP/1.1&quot;,
+  &quot;statusCode&quot;: 200,
+  &quot;responseBytes&quot;: 1024,
+  &quot;processingTime&quot;: 45,
+  &quot;userAgent&quot;: &quot;Mozilla/5.0 ...&quot;,
+  &quot;referer&quot;: &quot;https://example.com/&quot;,
+  &quot;customFields&quot;: {
+    &quot;hostname&quot;: &quot;server-01&quot;,
+    &quot;application&quot;: &quot;sprival&quot;
+  }
+}
+</code></pre>
+<p><strong>字段说明</strong>:</p>
+<ul>
+<li><code>timestamp</code>: 请求时间戳</li>
+<li><code>logType</code>: 日志类型（固定为 "jetty-access"）</li>
+<li><code>clientIp</code>: 客户端 IP 地址</li>
+<li><code>method</code>: HTTP 方法</li>
+<li><code>uri</code>: 请求 URI</li>
+<li><code>protocol</code>: HTTP 协议版本</li>
+<li><code>statusCode</code>: 响应状态码</li>
+<li><code>responseBytes</code>: 响应字节数</li>
+<li><code>processingTime</code>: 处理时间（毫秒）</li>
+<li><code>userAgent</code>: User-Agent 头</li>
+<li><code>referer</code>: Referer 头</li>
+<li><code>customFields</code>: 自定义字段</li>
+</ul>
+<h2>使用场景</h2>
+<h3>场景 1: 开发环境</h3>
+<p><strong>需求</strong>: 本地开发时查看日志，无需 Kafka</p>
+<p><strong>配置</strong>:</p>
+<pre><code class="language-properties">sprival.logging.application.output-target=file
+sprival.logging.jetty-access.output-target=file
+</code></pre>
+<p><strong>说明</strong>: 日志仅输出到本地文件，使用标准的 Logback 文件 Appender</p>
+<h3>场景 2: 测试环境</h3>
+<p><strong>需求</strong>: 同时保留本地日志和发送到 Kafka</p>
+<p><strong>配置</strong>:</p>
+<pre><code class="language-properties">sprival.logging.application.output-target=both
+sprival.logging.jetty-access.output-target=both
+sprival.logging.application.bootstrap-servers=test-kafka:9092
+</code></pre>
+<p><strong>说明</strong>: 日志同时输出到本地文件和 Kafka，便于调试和验证</p>
+<h3>场景 3: 生产环境</h3>
+<p><strong>需求</strong>: 日志集中收集，高性能，启用压缩</p>
+<p><strong>配置</strong>:</p>
+<pre><code class="language-properties"># 输出到 Kafka
+sprival.logging.application.output-target=kafka
+sprival.logging.jetty-access.output-target=kafka
+
+# Kafka 集群地址
+sprival.logging.application.bootstrap-servers=kafka1:9092,kafka2:9092,kafka3:9092
+
+# 性能优化
+sprival.logging.application.compression-type=gzip
+sprival.logging.application.batch-size=32768
+sprival.logging.application.linger-ms=5
+sprival.logging.application.acks=1
+</code></pre>
+<p><strong>说明</strong>: 仅输出到 Kafka，启用压缩和批处理提高性能</p>
+<h3>场景 4: 使用 MDC 添加追踪信息</h3>
+<p><strong>代码示例</strong>:</p>
+<pre><code class="language-java">import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import java.util.UUID;
+
+public class OrderService {
+    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+
+    public void createOrder(String userId, String productId) {
+        // 生成请求 ID
+        String requestId = UUID.randomUUID().toString();
+
+        try {
+            // 添加 MDC 上下文
+            MDC.put(&quot;requestId&quot;, requestId);
+            MDC.put(&quot;userId&quot;, userId);
+            MDC.put(&quot;action&quot;, &quot;create_order&quot;);
+
+            log.info(&quot;Starting to create order&quot;);
+
+            // 业务逻辑
+            validateProduct(productId);
+            log.debug(&quot;Product validated: {}&quot;, productId);
+
+            processPayment();
+            log.info(&quot;Payment processed&quot;);
+
+            saveOrder();
+            log.info(&quot;Order created successfully&quot;);
+
+        } catch (ValidationException e) {
+            log.warn(&quot;Invalid product: {}&quot;, productId);
+        } catch (PaymentException e) {
+            log.error(&quot;Payment failed&quot;, e);
+        } finally {
+            // 清除 MDC
+            MDC.clear();
+        }
+    }
+}
+</code></pre>
+<p><strong>Kafka 中的日志消息</strong>:</p>
+<pre><code class="language-json">{
+  &quot;timestamp&quot;: 1729584000000,
+  &quot;level&quot;: &quot;INFO&quot;,
+  &quot;loggerName&quot;: &quot;com.example.OrderService&quot;,
+  &quot;message&quot;: &quot;Starting to create order&quot;,
+  &quot;mdc&quot;: {
+    &quot;requestId&quot;: &quot;a1b2c3d4-e5f6-...&quot;,
+    &quot;userId&quot;: &quot;user123&quot;,
+    &quot;action&quot;: &quot;create_order&quot;
+  }
+}
+</code></pre>
+<h2>性能优化</h2>
+<h3>1. 批处理优化</h3>
+<p>批处理可以显著提高日志发送效率：</p>
+<pre><code class="language-properties"># 增加批处理大小
+sprival.logging.application.batch-size=32768
+
+# 增加延迟时间，累积更多日志
+sprival.logging.application.linger-ms=5
+</code></pre>
+<p><strong>效果</strong>: 减少网络请求次数，提高吞吐量</p>
+<h3>2. 启用压缩</h3>
+<p>压缩可以减少网络传输量：</p>
+<pre><code class="language-properties"># 使用 gzip 压缩（通用性好）
+sprival.logging.application.compression-type=gzip
+
+# 或使用 snappy 压缩（速度快）
+sprival.logging.application.compression-type=snappy
+</code></pre>
+<p><strong>压缩比对比</strong>:
+- none: 无压缩，传输速度快但流量大
+- gzip: 压缩比约 4-6 倍，CPU 占用中等
+- snappy: 压缩比约 2-3 倍，CPU 占用低
+- lz4: 压缩比约 2-3 倍，速度最快
+- zstd: 压缩比约 4-5 倍，速度较快（推荐）</p>
+<h3>3. 异步 Appender</h3>
+<p>使用 Logback 的 AsyncAppender 避免阻塞业务线程：</p>
+<pre><code class="language-xml">&lt;!-- logback-kafka.xml --&gt;
+&lt;appender name=&quot;ASYNC_KAFKA&quot; class=&quot;ch.qos.logback.classic.AsyncAppender&quot;&gt;
+    &lt;appender-ref ref=&quot;KAFKA&quot;/&gt;
+    &lt;queueSize&gt;2048&lt;/queueSize&gt;
+    &lt;discardingThreshold&gt;0&lt;/discardingThreshold&gt;
+    &lt;includeCallerData&gt;false&lt;/includeCallerData&gt;
+    &lt;neverBlock&gt;true&lt;/neverBlock&gt;
+&lt;/appender&gt;
+</code></pre>
+<p><strong>参数说明</strong>:
+- <code>queueSize</code>: 队列大小，建议 1024-4096
+- <code>discardingThreshold</code>: 丢弃阈值，设为 0 不丢弃
+- <code>includeCallerData</code>: 是否包含调用者信息，建议 false（性能）
+- <code>neverBlock</code>: 队列满时不阻塞，建议 true</p>
+<h3>4. 过滤不重要的日志</h3>
+<p>通过日志级别过滤减少日志量：</p>
+<pre><code class="language-xml">&lt;logger name=&quot;org.springframework&quot; level=&quot;WARN&quot;/&gt;
+&lt;logger name=&quot;com.zaxxer.hikari&quot; level=&quot;WARN&quot;/&gt;
+&lt;logger name=&quot;org.apache.kafka&quot; level=&quot;WARN&quot;/&gt;
+</code></pre>
+<h3>5. 主机名缓存</h3>
+<p>Sprival 自动缓存主机名，无需手动配置。首次获取后会缓存，避免重复的系统调用。</p>
+<h2>监控和运维</h2>
+<h3>查看 Kafka 主题</h3>
+<pre><code class="language-bash"># 列出所有主题
+kafka-topics.sh --bootstrap-server localhost:9092 --list
+
+# 查看主题详情
+kafka-topics.sh --bootstrap-server localhost:9092 \
+    --topic application-logs --describe
+</code></pre>
+<h3>消费日志消息</h3>
+<pre><code class="language-bash"># 从最新位置开始消费
+kafka-console-consumer.sh --bootstrap-server localhost:9092 \
+    --topic application-logs
+
+# 从头开始消费
+kafka-console-consumer.sh --bootstrap-server localhost:9092 \
+    --topic application-logs --from-beginning
+
+# 消费访问日志
+kafka-console-consumer.sh --bootstrap-server localhost:9092 \
+    --topic access-logs --from-beginning
+</code></pre>
+<h3>查看消费者组</h3>
+<pre><code class="language-bash"># 列出消费者组
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list
+
+# 查看消费者组详情
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+    --group my-log-consumer-group --describe
+</code></pre>
+<h3>监控指标</h3>
+<p>建议监控以下指标：</p>
+<ul>
+<li><strong>生产速率</strong>: 每秒发送的日志消息数</li>
+<li><strong>消费速率</strong>: 每秒消费的日志消息数</li>
+<li><strong>延迟</strong>: 从产生到消费的延迟时间</li>
+<li><strong>错误率</strong>: 发送失败的比例</li>
+<li><strong>队列大小</strong>: AsyncAppender 队列的大小</li>
+</ul>
+<h2>故障排除</h2>
+<h3>问题 1: 日志未发送到 Kafka</h3>
+<p><strong>症状</strong>: Kafka 主题中没有日志消息</p>
+<p><strong>排查步骤</strong>:</p>
+<ol>
+<li>检查配置是否正确：</li>
+</ol>
+<pre><code class="language-properties">sprival.logging.application.output-target=kafka  # 确认是 kafka 或 both
+sprival.logging.application.bootstrap-servers=localhost:9092  # 确认地址正确
+</code></pre>
+<ol>
+<li>检查 Kafka 服务器是否可访问：</li>
+</ol>
+<pre><code class="language-bash">telnet localhost 9092
+</code></pre>
+<ol>
+<li>查看应用日志是否有错误信息：</li>
+</ol>
+<pre><code>grep -i &quot;kafka&quot; logs/application.log
+</code></pre>
+<ol>
+<li>启用 Kafka 客户端调试日志：</li>
+</ol>
+<pre><code class="language-properties">logging.level.org.apache.kafka=DEBUG
+</code></pre>
+<h3>问题 2: 日志发送延迟高</h3>
+<p><strong>症状</strong>: 日志延迟几秒甚至更久才在 Kafka 中出现</p>
+<p><strong>解决方案</strong>:</p>
+<ol>
+<li>减少 <code>linger-ms</code>：</li>
+</ol>
+<pre><code class="language-properties">sprival.logging.application.linger-ms=1
+</code></pre>
+<ol>
+<li>减少 <code>batch-size</code>：</li>
+</ol>
+<pre><code class="language-properties">sprival.logging.application.batch-size=8192
+</code></pre>
+<ol>
+<li>增加 Kafka 分区数提高并发</li>
+</ol>
+<h3>问题 3: 日志丢失</h3>
+<p><strong>症状</strong>: 部分日志没有记录到 Kafka</p>
+<p><strong>解决方案</strong>:</p>
+<ol>
+<li>检查 AsyncAppender 配置：</li>
+</ol>
+<pre><code class="language-xml">&lt;appender name=&quot;ASYNC_KAFKA&quot; class=&quot;ch.qos.logback.classic.AsyncAppender&quot;&gt;
+    &lt;queueSize&gt;4096&lt;/queueSize&gt;
+    &lt;discardingThreshold&gt;0&lt;/discardingThreshold&gt;  &lt;!-- 设为 0 --&gt;
+    &lt;neverBlock&gt;false&lt;/neverBlock&gt;  &lt;!-- 改为 false --&gt;
+&lt;/appender&gt;
+</code></pre>
+<ol>
+<li>增加重试次数：</li>
+</ol>
+<pre><code class="language-properties">sprival.logging.application.retries=5
+</code></pre>
+<ol>
+<li>使用更可靠的 acks 设置：</li>
+</ol>
+<pre><code class="language-properties">sprival.logging.application.acks=all
+</code></pre>
+<h3>问题 4: 性能影响</h3>
+<p><strong>症状</strong>: 应用响应变慢</p>
+<p><strong>解决方案</strong>:</p>
+<ol>
+<li>使用异步 Appender</li>
+<li>启用压缩减少网络传输</li>
+<li>增大批处理大小和延迟时间</li>
+<li>过滤不重要的日志</li>
+<li>禁用 <code>includeCallerData</code></li>
+</ol>
+<h2>最佳实践</h2>
+<h3>1. 日志级别</h3>
+<ul>
+<li><strong>开发环境</strong>: DEBUG</li>
+<li><strong>测试环境</strong>: INFO</li>
+<li><strong>生产环境</strong>: WARN 或 ERROR</li>
+</ul>
+<h3>2. MDC 使用</h3>
+<p>始终在 finally 块中清除 MDC：</p>
+<pre><code class="language-java">try {
+    MDC.put(&quot;key&quot;, &quot;value&quot;);
+    // 业务逻辑
+} finally {
+    MDC.clear();
+}
+</code></pre>
+<h3>3. 异常日志</h3>
+<p>记录异常时提供上下文信息：</p>
+<pre><code class="language-java">try {
+    processOrder(orderId);
+} catch (Exception e) {
+    log.error(&quot;Failed to process order: orderId={}&quot;, orderId, e);
+}
+</code></pre>
+<h3>4. 敏感信息</h3>
+<p>避免记录敏感信息（密码、信用卡号等）：</p>
+<pre><code class="language-java">// ❌ 错误：记录了密码
+log.info(&quot;User login: username={}, password={}&quot;, username, password);
+
+// ✅ 正确：不记录敏感信息
+log.info(&quot;User login: username={}&quot;, username);
+</code></pre>
+<h3>5. 结构化日志</h3>
+<p>使用 MDC 和结构化消息：</p>
+<pre><code class="language-java">MDC.put(&quot;orderId&quot;, orderId);
+MDC.put(&quot;userId&quot;, userId);
+log.info(&quot;Order created: amount={}, items={}&quot;, amount, itemCount);
+</code></pre>
+<h3>6. 日志分类</h3>
+<p>使用不同的 topic 区分日志类型：</p>
+<pre><code class="language-properties"># 应用日志
+sprival.logging.application.topic=app-logs-prod
+
+# 访问日志
+sprival.logging.jetty-access.topic=access-logs-prod
+
+# 错误日志（可以单独配置一个 appender）
+error-logs.topic=error-logs-prod
+</code></pre>
+<h2>相关文档</h2>
+<ul>
+<li><a href="../../api/com/soyokra/sprival/support/logging/package-summary.md">API 文档 - logging 包</a></li>
+<li><a href="../components/kafka/README.md">Kafka 集成</a></li>
+<li><a href="../monitoring/README.md">监控集成</a></li>
+</ul>
+<h2>参考资料</h2>
+<ul>
+<li><a href="https://logback.qos.ch/documentation.html">Logback 官方文档</a></li>
+<li><a href="https://kafka.apache.org/documentation/#producerconfigs">Kafka 生产者配置</a></li>
+<li><a href="https://www.slf4j.org/manual.html">SLF4J 用户手册</a></li>
+</ul>
+<hr />
+<p><em>最后更新: 2025-10-22</em></p>
+        </article>
+    </div>
+</main>
+
+<!-- 右侧悬浮二级标题导航 - 始终显示 -->
+<!--  <aside id="right-sidebar" class="scrollbar-hide">-->
+<!--    <h3 class="toc-title">目录导航</h3>-->
+<!--    <nav class="toc-nav space-y-1">-->
+<!--      <a href="/sprdoc/view/sprival/README.html" class="toc-link">1. 快速开始</a>-->
+<!--      <a href="#section-1-1" class="toc-link toc-level-2">1.1 Web开发的定义与重要性</a>-->
+<!--      <a href="/sprdoc/view/sprival/spring-myql/README.html" class="toc-link">2. 数据库</a>-->
+<!--    </nav>-->
+<!--  </aside>-->
+
+<script>
+    // 元素获取
+    const chapterLinks = document.querySelectorAll('.chapter-link');
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const sections = document.querySelectorAll('section, h3[id]');
+
+    // 滚动监听，高亮当前章节和目录项
+    window.addEventListener('scroll', () => {
+        let current = '';
+
+        // 找到当前可见的最高章节
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+
+            if (window.scrollY >= (sectionTop - 150)) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        // 更新左侧章节导航高亮
+        chapterLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').substring(1) === current ||
+                current.startsWith(link.getAttribute('href').substring(1) + '-')) {
+                link.classList.add('active');
+            }
+        });
+
+        // 更新右侧目录导航高亮
+        tocLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').substring(1) === current) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+</body>
+</html>

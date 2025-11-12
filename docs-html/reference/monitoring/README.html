@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprival</title>
+
+    <style>
+        /* 基础样式与变量定义 */
+        :root {
+            --primary: #2c3e50;
+            --primary-light: #34495e;
+            --primary-accent: #3498db;
+            --secondary: #7f8c8d;
+            --light-bg: #f5f7fa;
+            --white: #ffffff;
+            --gray-light: #ecf0f1;
+            --gray: #bdc3c7;
+            --text-dark: #2c3e50;
+            --text-medium: #7f8c8d;
+            --text-light: #95a5a6;
+            --border-color: #e1e4e8;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 4px 15px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 60px; /* 为顶部导航栏预留空间 */
+        }
+
+        /* 布局基础类 */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .fixed {
+            position: fixed;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .top-0 {
+            top: 0;
+        }
+
+        .left-0 {
+            left: 0;
+        }
+
+        .right-0 {
+            right: 0;
+        }
+
+        .bottom-0 {
+            bottom: 0;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .h-full {
+            height: 100%;
+        }
+
+        .overflow-hidden {
+            overflow: hidden;
+        }
+
+        .overflow-y-auto {
+            overflow-y: auto;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .block {
+            display: block;
+        }
+
+        /* 间距类 */
+        .m-1 {
+            margin: 0.25rem;
+        }
+
+        .m-2 {
+            margin: 0.5rem;
+        }
+
+        .m-4 {
+            margin: 1rem;
+        }
+
+        .m-6 {
+            margin: 1.5rem;
+        }
+
+        .m-8 {
+            margin: 2rem;
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .mt-8 {
+            margin-top: 2rem;
+        }
+
+        .mt-16 {
+            margin-top: 4rem;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .mb-12 {
+            margin-bottom: 3rem;
+        }
+
+        .ml-4 {
+            margin-left: 1rem;
+        }
+
+        .mr-4 {
+            margin-right: 1rem;
+        }
+
+        .p-1 {
+            padding: 0.25rem;
+        }
+
+        .p-2 {
+            padding: 0.5rem;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .p-8 {
+            padding: 2rem;
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .py-6 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        .py-8 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .px-2 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .space-y-1 > * + * {
+            margin-top: 0.25rem;
+        }
+
+        .space-y-2 > * + * {
+            margin-top: 0.5rem;
+        }
+
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+
+        .space-x-2 > * + * {
+            margin-left: 0.5rem;
+        }
+
+        .space-x-4 > * + * {
+            margin-left: 1rem;
+        }
+
+        .space-x-6 > * + * {
+            margin-left: 1.5rem;
+        }
+
+        /* 文本样式类 */
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-base {
+            font-size: 1rem;
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+        }
+
+        .font-light {
+            font-weight: 300;
+        }
+
+        .font-normal {
+            font-weight: 400;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .text-primary {
+            color: var(--primary);
+        }
+
+        .text-primary-accent {
+            color: var(--primary-accent);
+        }
+
+        .text-secondary {
+            color: var(--secondary);
+        }
+
+        .text-white {
+            color: var(--white);
+        }
+
+        .text-gray {
+            color: var(--gray);
+        }
+
+        /* 背景与边框类 */
+        .bg-white {
+            background-color: var(--white);
+        }
+
+        .bg-light {
+            background-color: var(--light-bg);
+        }
+
+        .bg-primary {
+            background-color: var(--primary);
+        }
+
+        .bg-primary-accent {
+            background-color: var(--primary-accent);
+        }
+
+        .bg-gray-light {
+            background-color: var(--gray-light);
+        }
+
+        .border {
+            border: 1px solid var(--border-color);
+        }
+
+        .border-b {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .border-r {
+            border-right: 1px solid var(--border-color);
+        }
+
+        .border-l-4 {
+            border-left: 4px solid var(--primary-accent);
+        }
+
+        .rounded {
+            border-radius: 4px;
+        }
+
+        .rounded-md {
+            border-radius: 6px;
+        }
+
+        .rounded-lg {
+            border-radius: 8px;
+        }
+
+        /* 阴影与过渡类 */
+        .shadow {
+            box-shadow: var(--shadow);
+        }
+
+        .shadow-hover {
+            transition: var(--transition);
+        }
+
+        .shadow-hover:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .transition {
+            transition: var(--transition);
+        }
+
+        /* 顶部导航栏 */
+        #top-nav {
+            height: 60px;
+            z-index: 50;
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-link {
+            color: var(--text-medium);
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-accent);
+        }
+
+        .nav-link.active {
+            color: var(--primary-accent);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-accent);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        /* 左侧章节导航 - 始终显示 */
+        #left-sidebar {
+            width: 240px;
+            position: fixed;
+            top: 60px;
+            bottom: 0;
+            background-color: var(--white);
+            border-right: 1px solid var(--border-color);
+            z-index: 40;
+            overflow-y: auto;
+            scrollbar-hide: auto;
+        }
+
+        /* 响应式调整左侧导航宽度 */
+        @media (max-width: 1024px) {
+            #left-sidebar {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #left-sidebar {
+                width: 160px;
+            }
+        }
+
+        .chapter-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chapter-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-medium);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .chapter-link:hover {
+            background-color: var(--light-bg);
+            color: var(--primary-accent);
+        }
+
+        .chapter-link.active {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-accent);
+            border-left-color: var(--primary-accent);
+        }
+
+        /* 主内容区 - 始终为左侧导航留出空间 */
+        .main-content {
+            margin-left: 240px; /* 与左侧导航宽度一致 */
+            padding: 2rem;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* 响应式调整主内容区margin */
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 200px;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 160px;
+                padding: 1rem;
+            }
+        }
+
+        /* 为右侧导航留出空间 */
+        @media (min-width: 1200px) {
+            .main-content {
+                padding-right: 260px; /* 右侧导航宽度+间距 */
+            }
+        }
+
+        .article-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .article-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .article-meta {
+            color: var(--text-medium);
+            font-size: 0.9rem;
+        }
+
+        /* Markdown内容样式 */
+        .markdown-content h2 {
+            font-size: 1.8rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .markdown-content h3 {
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-light);
+        }
+
+        .markdown-content p {
+            margin-bottom: 1.25rem;
+            line-height: 1.7;
+        }
+
+        .markdown-content ul,
+        .markdown-content ol {
+            margin-bottom: 1.25rem;
+            padding-left: 1.5rem;
+        }
+
+        .markdown-content ul {
+            list-style-type: disc;
+        }
+
+        .markdown-content ol {
+            list-style-type: decimal;
+        }
+
+        .markdown-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .markdown-content a {
+            color: var(--primary-accent);
+            text-decoration: none;
+        }
+
+        .markdown-content a:hover {
+            text-decoration: underline;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid var(--primary-accent);
+            padding: 0.5rem 1rem;
+            margin: 1.5rem 0;
+            background-color: rgba(52, 152, 219, 0.05);
+            color: var(--text-medium);
+        }
+
+        /* 代码块样式 */
+        .markdown-content pre {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .markdown-content code {
+            background-color: #edf2f7;
+            color: #2d3748;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.875rem;
+        }
+
+        .markdown-content pre code {
+            background-color: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        .markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .markdown-content th,
+        .markdown-content td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .markdown-content th {
+            background-color: var(--light-bg);
+            font-weight: 600;
+        }
+
+        /* 右侧悬浮二级标题导航 - 始终显示 */
+        #right-sidebar {
+            width: 240px;
+            position: fixed;
+            top: 80px;
+            bottom: 80px;
+            right: 20px;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            overflow-y: auto;
+            z-index: 30;
+        }
+
+        /* 小屏幕下调整右侧导航位置和大小 */
+        @media (max-width: 1199px) and (min-width: 769px) {
+            #right-sidebar {
+                width: 200px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #right-sidebar {
+                width: 140px;
+                right: 10px;
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        .toc-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .toc-link {
+            display: block;
+            padding: 0.35rem 0.5rem;
+            color: var(--text-medium);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .toc-link:hover {
+            background-color: var(--light-bg);
+            color: var(--primary-accent);
+        }
+
+        .toc-link.active {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-accent);
+            font-weight: 500;
+        }
+
+        .toc-level-2 {
+            padding-left: 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* 移除移动端控制按钮 */
+        #toc-toggle, #sidebar-toggle, #overlay {
+            display: none !important;
+        }
+
+        img {
+            max-width: 100%; /* 最大宽度不超过父容器 */
+            height: auto; /* 高度自动计算，保持原始比例 */
+            display: block; /* 移除图片底部默认空白 */
+            margin: 0 auto; /* 可选：让图片居中显示 */
+        }
+    </style>
+</head>
+
+<body>
+<!-- 顶部导航栏 -->
+<header id="top-nav" class="fixed top-0 left-0 right-0 bg-white shadow">
+    <div class="container flex items-center justify-between h-full px-4">
+        <!-- 左侧Logo -->
+        <div class="flex items-center space-x-4">
+            <a href="#" class="logo">
+                <span>SPRIVAL</span>
+            </a>
+        </div>
+
+        <!-- 中间导航链接 -->
+        <nav class="md:flex items-center space-x-6">
+        </nav>
+
+        <!-- 右侧功能区 -->
+        <div class="flex items-center space-x-4">
+            <a href="/sprdoc/blog_index.html" class="nav-link active">Blog</a>
+            <a href="https://github.com/soyokra/sprival" class="nav-link active">Github</a>
+        </div>
+    </div>
+</header>
+
+<!-- 左侧固定章节导航 - 始终显示 -->
+<aside id="left-sidebar" class="overflow-y-auto scrollbar-hide">
+    <div class="p-4">
+        <h2 class="chapter-title mb-4">Sprival</h2>
+        <nav class="space-y-1">
+            <a href="/sprdoc/view/sprival/README.html" class="chapter-link">
+                <span>快速开始</span>
+            </a>
+            <a href="/sprdoc/view/sprival/spring-http-server/README.html" class="chapter-link">
+                <span>HTTP 服务端</span>
+            </a>
+            <a href="/sprdoc/view/sprival/spring-http-client/README.html" class="chapter-link">
+                <span>HTTP 客户端</span>
+            </a>
+            <a href="/sprdoc/view/sprival/spring-mysql/README.html" class="chapter-link">
+                <span>数据库</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-rabbit/README.html" class="chapter-link">
+                <span>RabbitMQ</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-kafka/README.html" class="chapter-link">
+                <span>Kafka</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-mongo/README.html" class="chapter-link">
+                <span>MongoDB</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-ealsticsearch/README.html" class="chapter-link">
+                <span>Elasticsearch</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-clickhouse/README.html" class="chapter-link">
+                <span>Clickhouse</span>
+            </a>
+        </nav>
+    </div>
+</aside>
+
+<!-- 主内容区 -->
+<main class="main-content">
+    <div class="container max-w-4xl">
+        <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
+            <h1>监控组件</h1>
+<h2>简介</h2>
+<p>监控组件为Sprival项目提供完整的应用监控解决方案，基于Spring Boot Actuator、Micrometer、Prometheus和Grafana构建现代化的监控体系，实现应用性能监控、健康检查、告警通知和可视化展示。</p>
+<h2>功能特性</h2>
+<ul>
+<li><strong>应用监控</strong>: 基于Spring Boot Actuator的应用健康检查和指标暴露</li>
+<li><strong>指标收集</strong>: 使用Micrometer统一收集JVM、HTTP、数据库等各类指标</li>
+<li><strong>时序存储</strong>: 基于Prometheus的指标存储和查询</li>
+<li><strong>可视化展示</strong>: 通过Grafana实现监控数据的可视化展示</li>
+<li><strong>智能告警</strong>: 基于AlertManager的告警路由和通知</li>
+<li><strong>日志监控</strong>: 结构化日志收集和分析</li>
+<li><strong>容器化部署</strong>: 支持Docker和Kubernetes部署</li>
+</ul>
+<h2>环境要求</h2>
+<ul>
+<li><strong>Java版本</strong>: 1.8+</li>
+<li><strong>Spring Boot版本</strong>: 2.7.18</li>
+<li><strong>Prometheus版本</strong>: 2.40+</li>
+<li><strong>Grafana版本</strong>: 9.0+</li>
+<li><strong>AlertManager版本</strong>: 0.25+</li>
+</ul>
+<h2>快速开始</h2>
+<h3>安装步骤</h3>
+<ol>
+<li>项目已配置所需依赖，无需额外添加</li>
+<li>启动Prometheus、Grafana、AlertManager服务</li>
+<li>配置application.properties中的监控相关配置</li>
+<li>启动Spring Boot应用</li>
+<li>访问监控面板查看指标</li>
+</ol>
+<h3>基础配置</h3>
+<pre><code class="language-properties"># 启用所有监控端点
+management.endpoints.web.exposure.include = *
+
+# 启用Prometheus指标导出
+management.metrics.export.prometheus.enabled = true
+
+# 自定义Actuator端点路径
+management.endpoints.web.base-path = /api/actuator
+
+# 健康检查详细信息
+management.endpoint.health.show-details = always
+management.endpoint.health.show-components = always
+
+# 应用信息配置
+management.info.env.enabled = true
+management.info.build.enabled = true
+management.info.git.enabled = true
+</code></pre>
+<h3>基础使用</h3>
+<pre><code class="language-java">// 自定义业务指标
+@Component
+public class BusinessMetrics {
+
+    private final MeterRegistry meterRegistry;
+    private final Counter requestCounter;
+
+    public BusinessMetrics(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+        this.requestCounter = Counter.builder(&quot;business.requests.total&quot;)
+            .description(&quot;Total number of business requests&quot;)
+            .register(meterRegistry);
+    }
+
+    public void recordRequest() {
+        requestCounter.increment();
+    }
+}
+</code></pre>
+<h2>配置说明</h2>
+<h3>配置参数</h3>
+<p>| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| <code>management.endpoints.web.exposure.include</code> | String | health,info | 暴露的监控端点 |
+| <code>management.metrics.export.prometheus.enabled</code> | Boolean | false | 是否启用Prometheus指标导出 |
+| <code>management.endpoint.health.show-details</code> | String | never | 健康检查详情显示策略 |
+| <code>management.metrics.tags.application</code> | String | - | 应用标签 |
+| <code>management.metrics.tags.environment</code> | String | - | 环境标签 |</p>
+<h3>高级配置</h3>
+<pre><code class="language-properties"># JVM指标配置
+management.metrics.enable.jvm = true
+management.metrics.enable.process = true
+management.metrics.enable.system = true
+
+# Web指标配置
+management.metrics.web.server.request.autotime.enabled = true
+management.metrics.web.client.request.autotime.enabled = true
+
+# 数据源指标配置
+management.metrics.enable.hikaricp = true
+management.metrics.enable.jdbc = true
+
+# 自定义指标标签
+management.metrics.tags.application = sprival
+management.metrics.tags.environment = ${spring.profiles.active:dev}
+management.metrics.tags.version = @project.version@
+</code></pre>
+<h2>使用示例</h2>
+<h3>基本用法</h3>
+<pre><code class="language-java">// 自定义健康检查
+@Component
+public class CustomHealthIndicator implements HealthIndicator {
+
+    @Override
+    public Health health() {
+        // 检查外部服务连接
+        if (checkExternalService()) {
+            return Health.up()
+                .withDetail(&quot;external-service&quot;, &quot;Available&quot;)
+                .build();
+        } else {
+            return Health.down()
+                .withDetail(&quot;external-service&quot;, &quot;Unavailable&quot;)
+                .build();
+        }
+    }
+
+    private boolean checkExternalService() {
+        // 实际的健康检查逻辑
+        return true;
+    }
+}
+</code></pre>
+<h3>高级用法</h3>
+<pre><code class="language-java">// 自定义指标收集
+@Service
+public class MetricsService {
+
+    private final MeterRegistry meterRegistry;
+    private final Timer businessTimer;
+    private final Counter errorCounter;
+
+    public MetricsService(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+        this.businessTimer = Timer.builder(&quot;business.operation.duration&quot;)
+            .description(&quot;Business operation duration&quot;)
+            .register(meterRegistry);
+        this.errorCounter = Counter.builder(&quot;business.errors.total&quot;)
+            .description(&quot;Total business errors&quot;)
+            .register(meterRegistry);
+    }
+
+    public void recordOperation(Runnable operation) {
+        Timer.Sample sample = Timer.start(meterRegistry);
+        try {
+            operation.run();
+        } catch (Exception e) {
+            errorCounter.increment();
+            throw e;
+        } finally {
+            sample.stop(businessTimer);
+        }
+    }
+}
+</code></pre>
+<h2>监控</h2>
+<h3>健康检查</h3>
+<pre><code class="language-bash"># 查看应用健康状态
+curl http://localhost:8338/api/actuator/health
+
+# 查看所有监控端点
+curl http://localhost:8338/api/actuator
+
+# 查看Prometheus指标
+curl http://localhost:8338/api/actuator/prometheus
+</code></pre>
+<h3>监控指标</h3>
+<p>| 指标名称 | 类型 | 说明 |
+|----------|------|------|
+| <code>jvm_memory_used_bytes</code> | Gauge | JVM内存使用量 |
+| <code>jvm_gc_pause_seconds</code> | Timer | GC暂停时间 |
+| <code>http_server_requests_seconds</code> | Timer | HTTP请求处理时间 |
+| <code>hikaricp_connections_active</code> | Gauge | 数据库连接池活跃连接数 |
+| <code>system_cpu_usage</code> | Gauge | 系统CPU使用率 |
+| <code>process_uptime_seconds</code> | Gauge | 应用运行时间 |</p>
+<h2>常见问题</h2>
+<p><strong>Q: 如何自定义监控指标？</strong>
+A: 通过注入MeterRegistry，使用Counter、Timer、Gauge等指标类型收集自定义业务指标。</p>
+<p><strong>Q: 监控数据如何存储？</strong>
+A: 使用Prometheus作为时序数据库存储监控数据，支持高效查询和聚合。</p>
+<p><strong>Q: 如何配置告警规则？</strong>
+A: 在Prometheus中配置告警规则文件，通过AlertManager处理告警通知。</p>
+<p><strong>Q: 监控数据保留多长时间？</strong>
+A: 默认保留15天，可通过Prometheus配置调整保留策略。</p>
+<p><strong>Q: 如何优化监控性能？</strong>
+A: 合理设置指标收集频率，避免收集过多不必要的指标，使用采样减少数据量。</p>
+<h2>参考文档</h2>
+<ul>
+<li><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html">Spring Boot Actuator官方文档</a></li>
+<li><a href="https://micrometer.io/docs">Micrometer官方文档</a></li>
+<li><a href="https://prometheus.io/docs/">Prometheus官方文档</a></li>
+<li><a href="https://grafana.com/docs/">Grafana官方文档</a></li>
+</ul>
+        </article>
+    </div>
+</main>
+
+<!-- 右侧悬浮二级标题导航 - 始终显示 -->
+<!--  <aside id="right-sidebar" class="scrollbar-hide">-->
+<!--    <h3 class="toc-title">目录导航</h3>-->
+<!--    <nav class="toc-nav space-y-1">-->
+<!--      <a href="/sprdoc/view/sprival/README.html" class="toc-link">1. 快速开始</a>-->
+<!--      <a href="#section-1-1" class="toc-link toc-level-2">1.1 Web开发的定义与重要性</a>-->
+<!--      <a href="/sprdoc/view/sprival/spring-myql/README.html" class="toc-link">2. 数据库</a>-->
+<!--    </nav>-->
+<!--  </aside>-->
+
+<script>
+    // 元素获取
+    const chapterLinks = document.querySelectorAll('.chapter-link');
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const sections = document.querySelectorAll('section, h3[id]');
+
+    // 滚动监听，高亮当前章节和目录项
+    window.addEventListener('scroll', () => {
+        let current = '';
+
+        // 找到当前可见的最高章节
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+
+            if (window.scrollY >= (sectionTop - 150)) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        // 更新左侧章节导航高亮
+        chapterLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').substring(1) === current ||
+                current.startsWith(link.getAttribute('href').substring(1) + '-')) {
+                link.classList.add('active');
+            }
+        });
+
+        // 更新右侧目录导航高亮
+        tocLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').substring(1) === current) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+</body>
+</html>

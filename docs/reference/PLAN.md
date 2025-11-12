@@ -70,93 +70,93 @@
 
 ### 阶段一：基础设施搭建（优先级：高）
 - [ ] **配置中心与注册中心**
-  - 搭建 Nacos 集群（或 Consul）
-  - 集成 Spring Cloud Config/Discovery
-  - 配置多环境（dev/staging/prod）隔离
+    - 搭建 Nacos 集群（或 Consul）
+    - 集成 Spring Cloud Config/Discovery
+    - 配置多环境（dev/staging/prod）隔离
 
 - [ ] **API 网关**
-  - 搭建 Spring Cloud Gateway
-  - 配置统一路由规则
-  - 集成认证鉴权中间件
+    - 搭建 Spring Cloud Gateway
+    - 配置统一路由规则
+    - 集成认证鉴权中间件
 
 - [ ] **消息队列**
-  - 搭建 Kafka 集群（或 RabbitMQ）
-  - 配置 Topic 与分区策略
-  - 实现消息幂等性与死信队列
+    - 搭建 Kafka 集群（或 RabbitMQ）
+    - 配置 Topic 与分区策略
+    - 实现消息幂等性与死信队列
 
 - [ ] **缓存与数据库**
-  - 搭建 Redis Cluster（高可用）
-  - 配置 MySQL 主从复制
-  - 实现读写分离与连接池优化
+    - 搭建 Redis Cluster（高可用）
+    - 配置 MySQL 主从复制
+    - 实现读写分离与连接池优化
 
 ### 阶段二：可观测性建设（优先级：高）
 - [ ] **日志系统**
-  - 搭建 ELK/Vector 日志采集链路
-  - 配置 Kafka 作为日志缓冲
-  - 实现日志分级、索引生命周期管理
+    - 搭建 ELK/Vector 日志采集链路
+    - 配置 Kafka 作为日志缓冲
+    - 实现日志分级、索引生命周期管理
 
 - [ ] **监控告警**
-  - 搭建 Prometheus + Grafana
-  - 配置 Alertmanager 告警规则
-  - 定义核心服务的 SLI/SLO
+    - 搭建 Prometheus + Grafana
+    - 配置 Alertmanager 告警规则
+    - 定义核心服务的 SLI/SLO
 
 - [ ] **分布式追踪**
-  - 集成 OpenTelemetry SDK
-  - 搭建 Tempo/Jaeger 追踪后端
-  - 在 Grafana 中关联指标与追踪
+    - 集成 OpenTelemetry SDK
+    - 搭建 Tempo/Jaeger 追踪后端
+    - 在 Grafana 中关联指标与追踪
 
 ### 阶段三：安全与治理（优先级：中）
 - [ ] **身份认证**
-  - 搭建 Keycloak 或集成 Spring Authorization Server
-  - 实现 OIDC/OAuth2 标准流程
-  - 配置 RBAC/ABAC 权限模型
+    - 搭建 Keycloak 或集成 Spring Authorization Server
+    - 实现 OIDC/OAuth2 标准流程
+    - 配置 RBAC/ABAC 权限模型
 
 - [ ] **秘密管理**
-  - 搭建 Vault 或使用 Kubernetes SealedSecrets
-  - 迁移敏感配置到秘密管理系统
-  - 实现密钥轮换策略
+    - 搭建 Vault 或使用 Kubernetes SealedSecrets
+    - 迁移敏感配置到秘密管理系统
+    - 实现密钥轮换策略
 
 - [ ] **服务治理**
-  - 集成 Resilience4j（限流、熔断、重试）
-  - 配置服务间调用超时与重试策略
-  - 实现接口级限流规则
+    - 集成 Resilience4j（限流、熔断、重试）
+    - 配置服务间调用超时与重试策略
+    - 实现接口级限流规则
 
 ### 阶段四：云原生交付（优先级：中）
 - [ ] **容器化**
-  - 编写 Dockerfile（多阶段构建）
-  - 配置镜像构建与推送到 Docker Hub
-  - 实现镜像安全扫描（Trivy）
+    - 编写 Dockerfile（多阶段构建）
+    - 配置镜像构建与推送到 Docker Hub
+    - 实现镜像安全扫描（Trivy）
 
 - [ ] **Kubernetes 部署**
-  - 编写 Helm Charts
-  - 配置 K8s Deployment/Service/Ingress
-  - 实现 HPA（水平自动扩缩容）
+    - 编写 Helm Charts
+    - 配置 K8s Deployment/Service/Ingress
+    - 实现 HPA（水平自动扩缩容）
 
 - [ ] **CI/CD 流水线**
-  - 配置 GitLab CI Pipeline
-  - 实现自动化测试（单元测试、集成测试）
-  - 集成代码质量检查（SonarQube）
-  - 实现自动化部署到 K8s
+    - 配置 GitLab CI Pipeline
+    - 实现自动化测试（单元测试、集成测试）
+    - 集成代码质量检查（SonarQube）
+    - 实现自动化部署到 K8s
 
 - [ ] **GitOps**
-  - 集成 Argo CD
-  - 实现声明式部署
-  - 配置蓝绿/金丝雀发布策略
+    - 集成 Argo CD
+    - 实现声明式部署
+    - 配置蓝绿/金丝雀发布策略
 
 ### 阶段五：数据治理与优化（优先级：低）
 - [ ] **数据库版本管理**
-  - 集成 Flyway/Liquibase
-  - 建立数据库变更流程
+    - 集成 Flyway/Liquibase
+    - 建立数据库变更流程
 
 - [ ] **数据备份与恢复**
-  - 制定备份策略
-  - 实现定期备份自动化
-  - 演练恢复流程
+    - 制定备份策略
+    - 实现定期备份自动化
+    - 演练恢复流程
 
 - [ ] **性能优化**
-  - 建立性能基线（QPS、延迟、资源）
-  - 识别性能瓶颈并优化
-  - 实现容量规划与成本监控
+    - 建立性能基线（QPS、延迟、资源）
+    - 识别性能瓶颈并优化
+    - 实现容量规划与成本监控
 
 ## 四、技术方案评审总结
 

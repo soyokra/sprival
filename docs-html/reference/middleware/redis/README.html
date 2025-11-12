@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprival</title>
+
+    <style>
+        /* 基础样式与变量定义 */
+        :root {
+            --primary: #2c3e50;
+            --primary-light: #34495e;
+            --primary-accent: #3498db;
+            --secondary: #7f8c8d;
+            --light-bg: #f5f7fa;
+            --white: #ffffff;
+            --gray-light: #ecf0f1;
+            --gray: #bdc3c7;
+            --text-dark: #2c3e50;
+            --text-medium: #7f8c8d;
+            --text-light: #95a5a6;
+            --border-color: #e1e4e8;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 4px 15px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 60px; /* 为顶部导航栏预留空间 */
+        }
+
+        /* 布局基础类 */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .fixed {
+            position: fixed;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .top-0 {
+            top: 0;
+        }
+
+        .left-0 {
+            left: 0;
+        }
+
+        .right-0 {
+            right: 0;
+        }
+
+        .bottom-0 {
+            bottom: 0;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .h-full {
+            height: 100%;
+        }
+
+        .overflow-hidden {
+            overflow: hidden;
+        }
+
+        .overflow-y-auto {
+            overflow-y: auto;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .block {
+            display: block;
+        }
+
+        /* 间距类 */
+        .m-1 {
+            margin: 0.25rem;
+        }
+
+        .m-2 {
+            margin: 0.5rem;
+        }
+
+        .m-4 {
+            margin: 1rem;
+        }
+
+        .m-6 {
+            margin: 1.5rem;
+        }
+
+        .m-8 {
+            margin: 2rem;
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .mt-8 {
+            margin-top: 2rem;
+        }
+
+        .mt-16 {
+            margin-top: 4rem;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .mb-12 {
+            margin-bottom: 3rem;
+        }
+
+        .ml-4 {
+            margin-left: 1rem;
+        }
+
+        .mr-4 {
+            margin-right: 1rem;
+        }
+
+        .p-1 {
+            padding: 0.25rem;
+        }
+
+        .p-2 {
+            padding: 0.5rem;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .p-8 {
+            padding: 2rem;
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .py-6 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        .py-8 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .px-2 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .space-y-1 > * + * {
+            margin-top: 0.25rem;
+        }
+
+        .space-y-2 > * + * {
+            margin-top: 0.5rem;
+        }
+
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+
+        .space-x-2 > * + * {
+            margin-left: 0.5rem;
+        }
+
+        .space-x-4 > * + * {
+            margin-left: 1rem;
+        }
+
+        .space-x-6 > * + * {
+            margin-left: 1.5rem;
+        }
+
+        /* 文本样式类 */
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-base {
+            font-size: 1rem;
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+        }
+
+        .font-light {
+            font-weight: 300;
+        }
+
+        .font-normal {
+            font-weight: 400;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .text-primary {
+            color: var(--primary);
+        }
+
+        .text-primary-accent {
+            color: var(--primary-accent);
+        }
+
+        .text-secondary {
+            color: var(--secondary);
+        }
+
+        .text-white {
+            color: var(--white);
+        }
+
+        .text-gray {
+            color: var(--gray);
+        }
+
+        /* 背景与边框类 */
+        .bg-white {
+            background-color: var(--white);
+        }
+
+        .bg-light {
+            background-color: var(--light-bg);
+        }
+
+        .bg-primary {
+            background-color: var(--primary);
+        }
+
+        .bg-primary-accent {
+            background-color: var(--primary-accent);
+        }
+
+        .bg-gray-light {
+            background-color: var(--gray-light);
+        }
+
+        .border {
+            border: 1px solid var(--border-color);
+        }
+
+        .border-b {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .border-r {
+            border-right: 1px solid var(--border-color);
+        }
+
+        .border-l-4 {
+            border-left: 4px solid var(--primary-accent);
+        }
+
+        .rounded {
+            border-radius: 4px;
+        }
+
+        .rounded-md {
+            border-radius: 6px;
+        }
+
+        .rounded-lg {
+            border-radius: 8px;
+        }
+
+        /* 阴影与过渡类 */
+        .shadow {
+            box-shadow: var(--shadow);
+        }
+
+        .shadow-hover {
+            transition: var(--transition);
+        }
+
+        .shadow-hover:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .transition {
+            transition: var(--transition);
+        }
+
+        /* 顶部导航栏 */
+        #top-nav {
+            height: 60px;
+            z-index: 50;
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-link {
+            color: var(--text-medium);
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-accent);
+        }
+
+        .nav-link.active {
+            color: var(--primary-accent);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-accent);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        /* 左侧章节导航 - 始终显示 */
+        #left-sidebar {
+            width: 240px;
+            position: fixed;
+            top: 60px;
+            bottom: 0;
+            background-color: var(--white);
+            border-right: 1px solid var(--border-color);
+            z-index: 40;
+            overflow-y: auto;
+            scrollbar-hide: auto;
+        }
+
+        /* 响应式调整左侧导航宽度 */
+        @media (max-width: 1024px) {
+            #left-sidebar {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #left-sidebar {
+                width: 160px;
+            }
+        }
+
+        .chapter-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chapter-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-medium);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .chapter-link:hover {
+            background-color: var(--light-bg);
+            color: var(--primary-accent);
+        }
+
+        .chapter-link.active {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-accent);
+            border-left-color: var(--primary-accent);
+        }
+
+        /* 主内容区 - 始终为左侧导航留出空间 */
+        .main-content {
+            margin-left: 240px; /* 与左侧导航宽度一致 */
+            padding: 2rem;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* 响应式调整主内容区margin */
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 200px;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 160px;
+                padding: 1rem;
+            }
+        }
+
+        /* 为右侧导航留出空间 */
+        @media (min-width: 1200px) {
+            .main-content {
+                padding-right: 260px; /* 右侧导航宽度+间距 */
+            }
+        }
+
+        .article-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .article-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .article-meta {
+            color: var(--text-medium);
+            font-size: 0.9rem;
+        }
+
+        /* Markdown内容样式 */
+        .markdown-content h2 {
+            font-size: 1.8rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .markdown-content h3 {
+            font-size: 1.4rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-light);
+        }
+
+        .markdown-content p {
+            margin-bottom: 1.25rem;
+            line-height: 1.7;
+        }
+
+        .markdown-content ul,
+        .markdown-content ol {
+            margin-bottom: 1.25rem;
+            padding-left: 1.5rem;
+        }
+
+        .markdown-content ul {
+            list-style-type: disc;
+        }
+
+        .markdown-content ol {
+            list-style-type: decimal;
+        }
+
+        .markdown-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .markdown-content a {
+            color: var(--primary-accent);
+            text-decoration: none;
+        }
+
+        .markdown-content a:hover {
+            text-decoration: underline;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid var(--primary-accent);
+            padding: 0.5rem 1rem;
+            margin: 1.5rem 0;
+            background-color: rgba(52, 152, 219, 0.05);
+            color: var(--text-medium);
+        }
+
+        /* 代码块样式 */
+        .markdown-content pre {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .markdown-content code {
+            background-color: #edf2f7;
+            color: #2d3748;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.875rem;
+        }
+
+        .markdown-content pre code {
+            background-color: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        .markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .markdown-content th,
+        .markdown-content td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .markdown-content th {
+            background-color: var(--light-bg);
+            font-weight: 600;
+        }
+
+        /* 右侧悬浮二级标题导航 - 始终显示 */
+        #right-sidebar {
+            width: 240px;
+            position: fixed;
+            top: 80px;
+            bottom: 80px;
+            right: 20px;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            overflow-y: auto;
+            z-index: 30;
+        }
+
+        /* 小屏幕下调整右侧导航位置和大小 */
+        @media (max-width: 1199px) and (min-width: 769px) {
+            #right-sidebar {
+                width: 200px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #right-sidebar {
+                width: 140px;
+                right: 10px;
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        .toc-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .toc-link {
+            display: block;
+            padding: 0.35rem 0.5rem;
+            color: var(--text-medium);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .toc-link:hover {
+            background-color: var(--light-bg);
+            color: var(--primary-accent);
+        }
+
+        .toc-link.active {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-accent);
+            font-weight: 500;
+        }
+
+        .toc-level-2 {
+            padding-left: 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* 移除移动端控制按钮 */
+        #toc-toggle, #sidebar-toggle, #overlay {
+            display: none !important;
+        }
+
+        img {
+            max-width: 100%; /* 最大宽度不超过父容器 */
+            height: auto; /* 高度自动计算，保持原始比例 */
+            display: block; /* 移除图片底部默认空白 */
+            margin: 0 auto; /* 可选：让图片居中显示 */
+        }
+    </style>
+</head>
+
+<body>
+<!-- 顶部导航栏 -->
+<header id="top-nav" class="fixed top-0 left-0 right-0 bg-white shadow">
+    <div class="container flex items-center justify-between h-full px-4">
+        <!-- 左侧Logo -->
+        <div class="flex items-center space-x-4">
+            <a href="#" class="logo">
+                <span>SPRIVAL</span>
+            </a>
+        </div>
+
+        <!-- 中间导航链接 -->
+        <nav class="md:flex items-center space-x-6">
+        </nav>
+
+        <!-- 右侧功能区 -->
+        <div class="flex items-center space-x-4">
+            <a href="/sprdoc/blog_index.html" class="nav-link active">Blog</a>
+            <a href="https://github.com/soyokra/sprival" class="nav-link active">Github</a>
+        </div>
+    </div>
+</header>
+
+<!-- 左侧固定章节导航 - 始终显示 -->
+<aside id="left-sidebar" class="overflow-y-auto scrollbar-hide">
+    <div class="p-4">
+        <h2 class="chapter-title mb-4">Sprival</h2>
+        <nav class="space-y-1">
+            <a href="/sprdoc/view/sprival/README.html" class="chapter-link">
+                <span>快速开始</span>
+            </a>
+            <a href="/sprdoc/view/sprival/spring-http-server/README.html" class="chapter-link">
+                <span>HTTP 服务端</span>
+            </a>
+            <a href="/sprdoc/view/sprival/spring-http-client/README.html" class="chapter-link">
+                <span>HTTP 客户端</span>
+            </a>
+            <a href="/sprdoc/view/sprival/spring-mysql/README.html" class="chapter-link">
+                <span>数据库</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-rabbit/README.html" class="chapter-link">
+                <span>RabbitMQ</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-kafka/README.html" class="chapter-link">
+                <span>Kafka</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-mongo/README.html" class="chapter-link">
+                <span>MongoDB</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-ealsticsearch/README.html" class="chapter-link">
+                <span>Elasticsearch</span>
+            </a>
+
+            <a href="/sprdoc/view/sprival/spring-clickhouse/README.html" class="chapter-link">
+                <span>Clickhouse</span>
+            </a>
+        </nav>
+    </div>
+</aside>
+
+<!-- 主内容区 -->
+<main class="main-content">
+    <div class="container max-w-4xl">
+        <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
+            <h1>Redis模块</h1>
+<h2>概述</h2>
+<p>Sprival Redis模块，基于Spring Cache，Spring Data Redis, Redisson实现声明式缓存, Redis操作，分布式锁等功能。</p>
+<h2>核心特性</h2>
+<ul>
+<li><strong>声明式缓存</strong>: 基于Spring Cache的注解式缓存管理</li>
+<li><strong>Redis操作</strong>: 基于Spring Data Redis操作集成</li>
+<li><strong>分布式锁</strong>: 基于Redisson的分布式锁实现</li>
+<li><strong>连接池管理</strong>: 高性能连接池配置和监控</li>
+<li><strong>序列化支持</strong>: 多种序列化方案支持（JSON、JDK、Kryo）</li>
+<li><strong>监控集成</strong>: 与Prometheus + Grafana无缝集成</li>
+<li><strong>集群支持</strong>: 支持Redis单机、哨兵、集群模式</li>
+</ul>
+<h2>组件清单</h2>
+<ul>
+<li><a href="https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#io.caching">Spring Cache</a> - 声明式缓存</li>
+<li><a href="https://docs.spring.io/spring-data/redis/docs/2.7.18/reference/html/">Spring Data Redis</a> - Redis操作集成</li>
+<li><a href="https://redisson.pro/docs/overview/">Redisson</a> - Redis操作增强，支持分布式锁，原子操作</li>
+</ul>
+<h2>配置说明</h2>
+<pre><code class="language-properties">spring.redis.host = localhost
+spring.redis.port = 6379
+spring.redis.password = workdock
+spring.redis.database = 0
+spring.redis.timeout = 2000ms
+spring.redis.connect-timeout = 2000ms
+# Lettuce连接池配置
+spring.redis.lettuce.pool.max-active = 20
+spring.redis.lettuce.pool.max-idle = 10
+spring.redis.lettuce.pool.min-idle = 5
+spring.redis.lettuce.pool.max-wait = 2000ms
+spring.redis.lettuce.pool.time-between-eviction-runs = 30s
+spring.redis.lettuce.shutdown-timeout = 100ms
+# Spring Cache配置
+spring.cache.type = redis
+spring.cache.redis.time-to-live = 600000
+spring.cache.redis.cache-null-values = false
+spring.cache.redis.key-prefix = sprival:
+spring.cache.redis.use-key-prefix = true
+spring.cache.redis.enable-statistics = true
+spring.cache.cache-names = user,product,order,session
+# Redisson配置
+spring.redis.redisson.config.singleServerConfig.address = redis://localhost:6379
+spring.redis.redisson.config.singleServerConfig.password = workdock
+spring.redis.redisson.config.singleServerConfig.database = 0
+spring.redis.redisson.config.singleServerConfig.connectionPoolSize = 20
+spring.redis.redisson.config.singleServerConfig.connectionMinimumIdleSize = 5
+spring.redis.redisson.config.singleServerConfig.idleConnectionTimeout = 10000
+spring.redis.redisson.config.singleServerConfig.connectTimeout = 10000
+spring.redis.redisson.config.singleServerConfig.timeout = 3000
+spring.redis.redisson.config.singleServerConfig.retryAttempts = 3
+spring.redis.redisson.config.singleServerConfig.retryInterval = 1500
+spring.redis.redisson.config.singleServerConfig.keepAlive = true
+spring.redis.redisson.config.singleServerConfig.tcpKeepAlive = true
+spring.redis.redisson.config.threads = 16
+spring.redis.redisson.config.nettyThreads = 32
+spring.redis.redisson.config.transportMode = NIO
+</code></pre>
+<h2>监控指标</h2>
+<h3>spring cache指标</h3>
+<p>|指标名称|类型|描述|监控建议|
+|-------|---|------|------|
+|cache_gets_total|Counter|缓存查找操作的总次数，包括命中（hit，返回缓存值）和未命中（miss，新加载或 null 值）。这是一个累积计数器，可用于计算命中率（hit / total）。|监控缓存效率：查询 rate(cache_gets_total{result="hit"}[5m]) / rate(cache_gets_total[5m]) 计算 5 分钟命中率。如果 miss 率 &gt; 20%，考虑优化缓存策略。|
+|cache_puts_total|Counter|向缓存中添加条目的总次数，包括新插入或覆盖现有值。|跟踪缓存填充速率：高 put 率可能表示数据频繁更新，结合 gets 分析负载。|
+|cache_removals_total|Counter|从缓存中移除条目的总次数，包括手动 evict 或过期清除。|监控缓存清理：如果 removals 率高，检查 TTL 或最大大小设置，避免内存泄漏。|
+|cache_lock_duration_seconds|Counter|缓存等待锁的时间（秒），反映并发访问时的锁竞争开销。主要在 Caffeine 等支持锁的实现中出现。如果无竞争，则值为 0。|诊断并发瓶颈：如果值持续 &gt; 0.1s，优化锁粒度或使用读写锁。适用于高并发场景。|</p>
+<h3>Spring Data Redis指标</h3>
+<p>|指标名称|类型|描述|监控建议|
+|-------|---|------|------|
+|lettuce_command_completion_seconds|Histogram|Redis命令的完整执行延迟（秒），从发送到完全完成的总时间。按命令类型、本地套接字和远程端点跟踪每个完成的命令。|监控命令性能：使用histogram分位数计算p99延迟，如histogram_quantile(0.99, rate(lettuce_command_completion_seconds_bucket[5m]))。如果p99 &gt; 1s，检查网络延迟或Redis负载。|
+|lettuce_command_completion_seconds_bucket|Histogram|命令完成延迟的累积分布函数（CDF）桶，用于生成可聚合的分位数近似。仅在启用histogram时可用，默认桶从1ms到5分钟。|启用histogram以支持分位数查询：监控高分位数桶的增长率，识别尾部延迟问题。结合_count分析命令量。|
+|lettuce_command_completion_seconds_count|Counter|记录的Redis命令完成次数的总计数，按命令类型、本地和远程端点分组。|跟踪命令吞吐量：查询rate(lettuce_command_completion_seconds_count[5m])计算每秒完成率。如果率突然下降，调查连接中断或错误。|
+|lettuce_command_completion_seconds_max|Gauge|观察到的最大命令完成延迟（秒）。受maxLatency设置影响，当启用histogram时。|警报峰值延迟：如果max &gt; 10s，触发警报检查异常，如Redis节点故障或网络分区。定期重置以避免旧峰值影响。|
+|lettuce_command_completion_seconds_sum|Counter|所有记录的命令完成延迟的总和（秒）。用于计算平均延迟（sum / count）。|计算平均完成时间：rate(lettuce_command_completion_seconds_sum[5m]) / rate(lettuce_command_completion_seconds_count[5m])。如果平均 &gt; 0.1s，优化命令批处理或连接池大小。|
+|lettuce_command_firstresponse_seconds|Histogram|Redis命令的首次响应延迟（秒），从发送到第一个字节响应的时间。按命令类型、本地套接字和远程端点跟踪。|监控响应性：使用p95分位数如histogram_quantile(0.95, rate(lettuce_command_firstresponse_seconds_bucket[5m]))。如果p95 &gt; 0.5s，检查Redis查询复杂性或CPU使用。|
+|lettuce_command_firstresponse_seconds_bucket|Histogram|首次响应延迟的累积分布函数（CDF）桶，用于分位数近似。仅在启用histogram时可用，默认范围1ms到5分钟。|利用桶数据分析延迟分布：监控桶填充以检测延迟抖动。启用localDistinction以细粒度跟踪连接。|
+|lettuce_command_firstresponse_seconds_count|Counter|记录的Redis命令首次响应次数的总计数，按命令类型分组。|评估系统响应率：rate(lettuce_command_firstresponse_seconds_count[5m])表示每秒首次响应数。高率结合低延迟表示健康系统。|
+|lettuce_command_firstresponse_seconds_max|Gauge|观察到的最大首次响应延迟（秒）。histogram启用时受maxLatency限制。|检测最坏情况：如果max &gt; 5s，调查阻塞命令或慢查询。设置警报阈值以捕获间歇性问题。|
+|lettuce_command_firstresponse_seconds_sum|Counter|所有记录的首次响应延迟的总和（秒）。用于平均响应时间计算。|监控平均首次响应：rate(lettuce_command_firstresponse_seconds_sum[5m]) / rate(lettuce_command_firstresponse_seconds_count[5m])。如果平均 &gt; 0.05s，考虑增加连接池或优化网络。|</p>
+        </article>
+    </div>
+</main>
+
+<!-- 右侧悬浮二级标题导航 - 始终显示 -->
+<!--  <aside id="right-sidebar" class="scrollbar-hide">-->
+<!--    <h3 class="toc-title">目录导航</h3>-->
+<!--    <nav class="toc-nav space-y-1">-->
+<!--      <a href="/sprdoc/view/sprival/README.html" class="toc-link">1. 快速开始</a>-->
+<!--      <a href="#section-1-1" class="toc-link toc-level-2">1.1 Web开发的定义与重要性</a>-->
+<!--      <a href="/sprdoc/view/sprival/spring-myql/README.html" class="toc-link">2. 数据库</a>-->
+<!--    </nav>-->
+<!--  </aside>-->
+
+<script>
+    // 元素获取
+    const chapterLinks = document.querySelectorAll('.chapter-link');
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const sections = document.querySelectorAll('section, h3[id]');
+
+    // 滚动监听，高亮当前章节和目录项
+    window.addEventListener('scroll', () => {
+        let current = '';
+
+        // 找到当前可见的最高章节
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+
+            if (window.scrollY >= (sectionTop - 150)) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        // 更新左侧章节导航高亮
+        chapterLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').substring(1) === current ||
+                current.startsWith(link.getAttribute('href').substring(1) + '-')) {
+                link.classList.add('active');
+            }
+        });
+
+        // 更新右侧目录导航高亮
+        tocLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').substring(1) === current) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+</body>
+</html>
