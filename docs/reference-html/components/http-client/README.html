@@ -847,23 +847,18 @@
     <div class="container max-w-4xl">
         <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
             <h1>Spring HTTP Client 模块</h1>
-<h2>概述</h2>
-<p>Spring HTTP Client 模块提供了完整的HTTP客户端解决方案，包括高性能传输层、声明式客户端、容错机制和监控集成。该模块旨在为 Sprival 项目提供高效、可靠的HTTP通信能力。负载均衡由服务端控制，客户端专注于高性能通信和容错处理。</p>
 <h2>核心特性</h2>
 <ul>
 <li>✅ <strong>高性能传输</strong>: 采用OkHttp高性能HTTP客户端，支持连接池、HTTP/2</li>
 <li>✅ <strong>声明式编程</strong>: 基于Feign的声明式HTTP客户端，简化开发</li>
 <li>✅ <strong>容错机制</strong>: 集成Resilience4j提供熔断、重试、限流等容错能力</li>
 <li>✅ <strong>监控集成</strong>: 与Micrometer无缝集成，提供完整的性能监控</li>
-<li>✅ <strong>配置灵活</strong>: 支持细粒度的配置和自定义扩展</li>
 </ul>
-<h2>组件</h2>
-<h3>组件架构</h3>
+<h2>组件说明</h2>
 <pre><code>应用代码 → Feign接口 → Resilience4j容错 → OkHttp传输 → 目标服务（服务端负载均衡）
                 ↓
             Micrometer监控 ← Actuator健康检查
 </code></pre>
-<h3>组件说明</h3>
 <h4>1. HTTP传输层</h4>
 <ul>
 <li><strong>OkHttp</strong>: 高性能HTTP客户端，提供连接池、HTTP/2支持、拦截器等企业级特性</li>
@@ -1018,6 +1013,148 @@
 <td><code>resilience4j.retry.instances.feign.retry-exceptions</code></td>
 <td>-</td>
 <td>需要重试的异常类型</td>
+</tr>
+</tbody>
+</table>
+<h2>监控说明</h2>
+<h3>Feign HTTP 客户端指标</h3>
+<table>
+<thead>
+<tr>
+<th>指标名称</th>
+<th>类型</th>
+<th>描述</th>
+<th>监控建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>feign_Client_http_response_code_total</td>
+<td>Counter</td>
+<td>HTTP 响应码统计，包含 method、uri、status 标签</td>
+<td>按 status 分组统计错误率；识别 4xx/5xx 错误；按 uri 分组识别问题接口</td>
+</tr>
+<tr>
+<td>feign_Client_seconds_count</td>
+<td>Counter</td>
+<td>Feign 客户端请求总次数，包含 method、uri、status 标签</td>
+<td>计算 QPS；按 uri 分组识别热点接口；按 status 分组统计成功率</td>
+</tr>
+<tr>
+<td>feign_Client_seconds_sum</td>
+<td>Summary</td>
+<td>Feign 客户端请求处理总耗时（秒），包含 method、uri、status 标签</td>
+<td>配合 count 计算平均响应时间：sum / count；按 uri 分组识别慢接口</td>
+</tr>
+<tr>
+<td>feign_Client_seconds_max</td>
+<td>Gauge</td>
+<td>Feign 客户端最近一段时间的最大请求延迟（秒）</td>
+<td>识别慢请求尖刺，超过阈值（如 3s）需告警；监控 P99/P95 延迟</td>
+</tr>
+<tr>
+<td>feign_Feign_exception_seconds_count</td>
+<td>Counter</td>
+<td>Feign 异常发生次数，包含 exception、method、uri 标签</td>
+<td>监控异常频率；按 exception 类型分组识别常见异常；异常率上升需告警</td>
+</tr>
+<tr>
+<td>feign_Feign_exception_seconds_sum</td>
+<td>Summary</td>
+<td>Feign 异常处理总耗时（秒），包含 exception、method、uri 标签</td>
+<td>评估异常对性能的影响；识别异常处理耗时较长的场景</td>
+</tr>
+<tr>
+<td>feign_Feign_exception_seconds_max</td>
+<td>Gauge</td>
+<td>Feign 异常处理的最大耗时（秒）</td>
+<td>识别异常处理性能瓶颈</td>
+</tr>
+</tbody>
+</table>
+<h3>Resilience4j 熔断器指标</h3>
+<table>
+<thead>
+<tr>
+<th>指标名称</th>
+<th>类型</th>
+<th>描述</th>
+<th>监控建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>resilience4j_circuitbreaker_state</td>
+<td>Gauge</td>
+<td>熔断器状态（0=关闭，1=打开，2=半开）</td>
+<td>监控熔断器状态变化；状态为 OPEN 时需立即告警；半开状态需关注恢复情况</td>
+</tr>
+<tr>
+<td>resilience4j_circuitbreaker_failure_rate</td>
+<td>Gauge</td>
+<td>熔断器失败率（百分比）</td>
+<td>失败率超过阈值（如 50%）需告警；监控失败率趋势，评估服务健康度</td>
+</tr>
+<tr>
+<td>resilience4j_circuitbreaker_slow_call_rate</td>
+<td>Gauge</td>
+<td>熔断器慢调用率（百分比）</td>
+<td>慢调用率持续高位说明服务响应慢，需要优化或扩容</td>
+</tr>
+<tr>
+<td>resilience4j_circuitbreaker_slow_calls</td>
+<td>Gauge</td>
+<td>熔断器慢调用数量</td>
+<td>监控慢调用数量趋势；结合 slow_call_rate 评估服务性能</td>
+</tr>
+<tr>
+<td>resilience4j_circuitbreaker_buffered_calls</td>
+<td>Gauge</td>
+<td>熔断器缓冲的调用数量</td>
+<td>监控缓冲调用数，评估熔断器是否正常工作</td>
+</tr>
+<tr>
+<td>resilience4j_circuitbreaker_calls_seconds_count</td>
+<td>Counter</td>
+<td>熔断器调用总次数，包含 state 标签</td>
+<td>统计通过熔断器的调用量；按 state 分组分析熔断器行为</td>
+</tr>
+<tr>
+<td>resilience4j_circuitbreaker_calls_seconds_sum</td>
+<td>Summary</td>
+<td>熔断器调用总耗时（秒），包含 state 标签</td>
+<td>配合 count 计算平均调用时间；评估熔断器对性能的影响</td>
+</tr>
+<tr>
+<td>resilience4j_circuitbreaker_calls_seconds_max</td>
+<td>Gauge</td>
+<td>熔断器调用的最大耗时（秒）</td>
+<td>识别通过熔断器的慢调用</td>
+</tr>
+<tr>
+<td>resilience4j_circuitbreaker_not_permitted_calls_total</td>
+<td>Counter</td>
+<td>熔断器拒绝的调用总数（OPEN 状态时）</td>
+<td>监控被拒绝的调用数；持续增长说明服务异常，需要排查上游服务</td>
+</tr>
+</tbody>
+</table>
+<h3>Resilience4j 重试指标</h3>
+<table>
+<thead>
+<tr>
+<th>指标名称</th>
+<th>类型</th>
+<th>描述</th>
+<th>监控建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>resilience4j_retry_calls_total</td>
+<td>Counter</td>
+<td>重试调用总次数，包含 result、retry_name 标签</td>
+<td>监控重试频率；重试次数过多说明服务不稳定，需要优化或排查问题；按 result 分组分析重试成功率</td>
 </tr>
 </tbody>
 </table>
