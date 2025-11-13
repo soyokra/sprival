@@ -66,16 +66,16 @@ def convert_md_to_html(src_dir, dest_dir, framework_path):
         #         print(f"已复制: {src_path} -> {dest_path}")
 
 
-def move_readme_to_root(source_file, dest_file):
+def copy_readme_to_root(source_file, dest_file):
     """
-    将README.html文件移动到docs根目录
+    将README.html文件复制到docs根目录
 
     参数:
         source_file: 源文件路径
         dest_file: 目标文件路径
     """
     if not os.path.exists(source_file):
-        print(f"警告: 源文件 '{source_file}' 不存在，跳过移动操作")
+        print(f"警告: 源文件 '{source_file}' 不存在，跳过复制操作")
         return
 
     try:
@@ -83,11 +83,11 @@ def move_readme_to_root(source_file, dest_file):
         dest_dir = os.path.dirname(dest_file)
         os.makedirs(dest_dir, exist_ok=True)
 
-        # 移动文件（如果目标文件已存在则覆盖）
-        shutil.move(source_file, dest_file)
-        print(f"已移动: {source_file} -> {dest_file}")
+        # 复制文件（如果目标文件已存在则覆盖）
+        shutil.copy2(source_file, dest_file)
+        print(f"已复制: {source_file} -> {dest_file}")
     except Exception as e:
-        print(f"移动失败 {source_file} -> {dest_file}: {str(e)}")
+        print(f"复制失败 {source_file} -> {dest_file}: {str(e)}")
 
 
 if __name__ == "__main__":
@@ -108,10 +108,10 @@ if __name__ == "__main__":
 
     print("转换完成!")
 
-    # 将 reference-html/README.html 移动到 docs/README.html
+    # 将 reference-html/README.html 复制到 docs/index.html
     readme_source = os.path.join(destination_directory, "README.html")
     readme_dest = os.path.join(project_root, "docs", "index.html")
-    print(f"\n开始移动README.html文件")
-    move_readme_to_root(readme_source, readme_dest)
+    print(f"\n开始复制README.html文件")
+    copy_readme_to_root(readme_source, readme_dest)
 
     print("\n所有操作完成!")
