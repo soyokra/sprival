@@ -5,13 +5,14 @@ import markdown
 import shutil
 
 
-def convert_md_to_html(src_dir, dest_dir, framework):
+def convert_md_to_html(src_dir, dest_dir, framework_path):
     """
     递归将源目录中的所有Markdown文件转换为HTML文件，并保持目录结构
 
     参数:
         src_dir: 源目录路径，包含.md文件
         dest_dir: 目标目录路径，用于存放转换后的.html文件
+        framework_path: 框架模板文件路径
     """
     # 确保源目录存在
     if not os.path.exists(src_dir):
@@ -21,7 +22,7 @@ def convert_md_to_html(src_dir, dest_dir, framework):
     # 确保目标目录存在
     os.makedirs(dest_dir, exist_ok=True)
 
-    framework_path = os.path.join("", framework + ".html")
+    # 读取框架模板文件
     with open(framework_path, 'r', encoding='utf-8') as framework_file:
         framework_content = framework_file.read()
 
@@ -32,7 +33,7 @@ def convert_md_to_html(src_dir, dest_dir, framework):
 
         # 如果是目录，则递归处理
         if os.path.isdir(src_path):
-            convert_md_to_html(src_path, dest_path, framework)
+            convert_md_to_html(src_path, dest_path, framework_path)
         # 如果是Markdown文件，则进行转换
         elif os.path.isfile(src_path) and item.endswith('.md'):
             # 生成目标HTML文件名
@@ -66,12 +67,19 @@ def convert_md_to_html(src_dir, dest_dir, framework):
 
 
 if __name__ == "__main__":
-    # 源目录和目标目录
-    source_directory = "docs/reference"
-    destination_directory = "docs-html/reference"
-    framework = "docsToHtml"
+    # 获取脚本所在目录的绝对路径
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # 获取项目根目录（scripts的父目录）
+    project_root = os.path.dirname(script_dir)
+    
+    # 源目录和目标目录（相对于项目根目录）
+    source_directory = os.path.join(project_root, "docs", "reference")
+    destination_directory = os.path.join(project_root, "docs", "reference-html")
+    # 框架模板文件路径
+    framework_path = os.path.join(project_root, "docs", "reference-tpl.html")
 
     print(f"开始转换Markdown文件，从 '{source_directory}' 到 '{destination_directory}'")
-    convert_md_to_html(source_directory, destination_directory, framework)
+    convert_md_to_html(source_directory, destination_directory, framework_path)
 
     print("转换完成!")
