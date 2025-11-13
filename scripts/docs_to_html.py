@@ -110,7 +110,7 @@ if __name__ == "__main__":
 
     # 将 reference-html/README.html 移动到 docs/README.html
     readme_source = os.path.join(destination_directory, "README.html")
-    readme_dest = os.path.join(project_root, "docs", "README.html")
+    readme_dest = os.path.join(project_root, "docs", "index.html")
     print(f"\n开始移动README.html文件")
     move_readme_to_root(readme_source, readme_dest)
 
