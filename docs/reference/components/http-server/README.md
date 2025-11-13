@@ -100,7 +100,7 @@ server.compression.min-response-size = 2KB
 | Permissions-Policy | 禁用敏感设备权限 | 限制浏览器功能访问 |
 | Referrer-Policy | strict-origin-when-cross-origin | 控制 Referer 信息泄露 |
 
-## 监控指标
+## 监控说明
 
 ### Jetty 线程池指标
 
