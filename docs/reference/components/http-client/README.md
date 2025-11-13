@@ -4,7 +4,6 @@
 - ✅ **高性能传输**: 采用OkHttp高性能HTTP客户端，支持连接池、HTTP/2
 - ✅ **声明式编程**: 基于Feign的声明式HTTP客户端，简化开发
 - ✅ **容错机制**: 集成Resilience4j提供熔断、重试、限流等容错能力
-- ✅ **监控集成**: 与Micrometer无缝集成，提供完整的性能监控
 
 ## 组件说明
 
@@ -71,7 +70,7 @@
 | `resilience4j.retry.instances.feign.retry-exceptions` | - | 需要重试的异常类型 |
 
 
-## 监控说明
+## 监控指标
 
 ### Feign HTTP 客户端指标
 

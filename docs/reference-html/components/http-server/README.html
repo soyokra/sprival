@@ -847,19 +847,11 @@
     <div class="container max-w-4xl">
         <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
             <h1>HTTP Server 模块</h1>
-<h2>概述</h2>
-<p>Sprival HTTP Server 模块基于 Jetty 嵌入式服务器，提供高性能、轻量级的 Web 服务能力。Jetty 以其低资源占用、高并发处理能力和灵活的可定制性著称，是构建现代微服务应用的理想选择。</p>
 <h2>核心特性</h2>
 <ul>
 <li><strong>高性能 Jetty 服务器</strong>: 轻量级、低内存占用、高并发处理能力，适合云原生部署</li>
-<li><strong>访问日志管理</strong>: 支持 EXTENDED_NCSA 格式访问日志，自动按天轮转，可配置忽略路径</li>
-<li><strong>安全头配置</strong>: 内置 HTTP 安全头，防止 XSS、点击劫持、MIME 嗅探等常见 Web 安全漏洞</li>
-<li><strong>线程池优化</strong>: 灵活的线程池配置，支持动态调整最大/最小线程数和空闲超时</li>
-<li><strong>HTTP 压缩</strong>: 自动压缩 JSON、HTML、CSS 等响应内容，减少网络传输</li>
-<li><strong>优雅关闭</strong>: 支持服务平滑下线，完成处理中的请求后再关闭</li>
-<li><strong>监控集成</strong>: 与 Prometheus + Grafana 无缝集成，提供详细的性能指标</li>
 </ul>
-<h2>组件清单</h2>
+<h2>组件说明</h2>
 <ul>
 <li><a href="https://www.eclipse.org/jetty/">Eclipse Jetty</a> - 嵌入式 Web 服务器和 Servlet 容器</li>
 <li><a href="https://docs.spring.io/spring-boot/docs/2.7.18/reference/html/web.html#web.servlet.embedded-container.jetty">Spring Boot Jetty Starter</a> - Spring Boot Jetty 集成</li>
@@ -926,65 +918,7 @@ server.compression.mime-types = text/html,text/xml,text/plain,text/css,applicati
 # 启用压缩的最小响应大小
 server.compression.min-response-size = 2KB
 </code></pre>
-<h2>安全配置</h2>
-<p>本模块通过 <code>SprivalJettySecurityHeaderCustomizer</code> 自动配置以下 HTTP 安全头：</p>
-<table>
-<thead>
-<tr>
-<th>安全头</th>
-<th>配置值</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>X-Frame-Options</td>
-<td>DENY</td>
-<td>防止点击劫持攻击</td>
-</tr>
-<tr>
-<td>X-Content-Type-Options</td>
-<td>nosniff</td>
-<td>防止 MIME 类型嗅探</td>
-</tr>
-<tr>
-<td>X-XSS-Protection</td>
-<td>1; mode=block</td>
-<td>XSS 防护</td>
-</tr>
-<tr>
-<td>Content-Security-Policy</td>
-<td>限制资源加载来源</td>
-<td>防止内容注入攻击</td>
-</tr>
-<tr>
-<td>Strict-Transport-Security</td>
-<td>max-age=31536000 (仅 HTTPS)</td>
-<td>强制 HTTPS 访问</td>
-</tr>
-<tr>
-<td>Server</td>
-<td>Sprival/1.0</td>
-<td>隐藏服务器真实信息</td>
-</tr>
-<tr>
-<td>Cache-Control</td>
-<td>no-cache (API 接口)</td>
-<td>防止缓存敏感信息</td>
-</tr>
-<tr>
-<td>Permissions-Policy</td>
-<td>禁用敏感设备权限</td>
-<td>限制浏览器功能访问</td>
-</tr>
-<tr>
-<td>Referrer-Policy</td>
-<td>strict-origin-when-cross-origin</td>
-<td>控制 Referer 信息泄露</td>
-</tr>
-</tbody>
-</table>
-<h2>监控说明</h2>
+<h2>监控指标</h2>
 <h3>Jetty 线程池指标</h3>
 <table>
 <thead>

@@ -852,7 +852,6 @@
 <li>✅ <strong>高性能传输</strong>: 采用OkHttp高性能HTTP客户端，支持连接池、HTTP/2</li>
 <li>✅ <strong>声明式编程</strong>: 基于Feign的声明式HTTP客户端，简化开发</li>
 <li>✅ <strong>容错机制</strong>: 集成Resilience4j提供熔断、重试、限流等容错能力</li>
-<li>✅ <strong>监控集成</strong>: 与Micrometer无缝集成，提供完整的性能监控</li>
 </ul>
 <h2>组件说明</h2>
 <pre><code>应用代码 → Feign接口 → Resilience4j容错 → OkHttp传输 → 目标服务（服务端负载均衡）
@@ -1016,7 +1015,7 @@
 </tr>
 </tbody>
 </table>
-<h2>监控说明</h2>
+<h2>监控指标</h2>
 <h3>Feign HTTP 客户端指标</h3>
 <table>
 <thead>
