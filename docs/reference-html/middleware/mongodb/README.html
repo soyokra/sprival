@@ -898,19 +898,84 @@ spring.data.mongodb.uri = mongodb://admin:workdock@localhost:27017/sprival?authS
 </code></pre>
 <h2>📋 配置项详解</h2>
 <h3>Host配置项</h3>
-<p>| 配置项 | 类型 | 默认值 | 说明 |
-|--------|------|--------|------|
-| <code>spring.data.mongodb.host</code> | String | localhost | MongoDB服务器主机地址 |
-| <code>spring.data.mongodb.port</code> | Integer | 27017 | MongoDB服务器端口 |
-| <code>spring.data.mongodb.database</code> | String | test | 数据库名称 |
-| <code>spring.data.mongodb.username</code> | String | - | 认证用户名 |
-| <code>spring.data.mongodb.password</code> | String | - | 认证密码 |
-| <code>spring.data.mongodb.authentication-database</code> | String | admin | 认证数据库 |
-| <code>spring.data.mongodb.replica-set-name</code> | String | - | 副本集名称 |
-| <code>spring.data.mongodb.auto-index-creation</code> | Boolean | true | 是否自动创建索引 |
-| <code>spring.data.mongodb.uuid-representation</code> | String | javaLegacy | UUID表示方式 |
-| <code>spring.data.mongodb.field-naming-strategy</code> | String | - | 字段命名策略类名 |
-| <code>spring.data.mongodb.grid-fs-database</code> | String | - | GridFS数据库名称 |</p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.data.mongodb.host</code></td>
+<td>String</td>
+<td>localhost</td>
+<td>MongoDB服务器主机地址</td>
+</tr>
+<tr>
+<td><code>spring.data.mongodb.port</code></td>
+<td>Integer</td>
+<td>27017</td>
+<td>MongoDB服务器端口</td>
+</tr>
+<tr>
+<td><code>spring.data.mongodb.database</code></td>
+<td>String</td>
+<td>test</td>
+<td>数据库名称</td>
+</tr>
+<tr>
+<td><code>spring.data.mongodb.username</code></td>
+<td>String</td>
+<td>-</td>
+<td>认证用户名</td>
+</tr>
+<tr>
+<td><code>spring.data.mongodb.password</code></td>
+<td>String</td>
+<td>-</td>
+<td>认证密码</td>
+</tr>
+<tr>
+<td><code>spring.data.mongodb.authentication-database</code></td>
+<td>String</td>
+<td>admin</td>
+<td>认证数据库</td>
+</tr>
+<tr>
+<td><code>spring.data.mongodb.replica-set-name</code></td>
+<td>String</td>
+<td>-</td>
+<td>副本集名称</td>
+</tr>
+<tr>
+<td><code>spring.data.mongodb.auto-index-creation</code></td>
+<td>Boolean</td>
+<td>true</td>
+<td>是否自动创建索引</td>
+</tr>
+<tr>
+<td><code>spring.data.mongodb.uuid-representation</code></td>
+<td>String</td>
+<td>javaLegacy</td>
+<td>UUID表示方式</td>
+</tr>
+<tr>
+<td><code>spring.data.mongodb.field-naming-strategy</code></td>
+<td>String</td>
+<td>-</td>
+<td>字段命名策略类名</td>
+</tr>
+<tr>
+<td><code>spring.data.mongodb.grid-fs-database</code></td>
+<td>String</td>
+<td>-</td>
+<td>GridFS数据库名称</td>
+</tr>
+</tbody>
+</table>
 <h3>配置注意事项</h3>
 <blockquote>
 <p><strong>重要</strong>: Host配置和URI配置不能同时使用，选择其中一种方式即可。</p>
@@ -923,59 +988,289 @@ spring.data.mongodb.uri = mongodb://admin:workdock@localhost:27017/sprival?authS
 </ul>
 <h2>🔧 URI参数详解</h2>
 <h3>连接配置</h3>
-<p>| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| <code>connectTimeoutMS</code> | Integer | 10000 | 连接超时时间（毫秒） |
-| <code>socketTimeoutMS</code> | Integer | 0 | Socket超时时间（毫秒） |
-| <code>serverSelectionTimeoutMS</code> | Integer | 30000 | 服务器选择超时时间（毫秒） |
-| <code>maxIdleTimeMS</code> | Integer | 0 | 连接最大空闲时间（毫秒） |
-| <code>maxLifeTimeMS</code> | Integer | 0 | 连接最大生存时间（毫秒） |</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>connectTimeoutMS</code></td>
+<td>Integer</td>
+<td>10000</td>
+<td>连接超时时间（毫秒）</td>
+</tr>
+<tr>
+<td><code>socketTimeoutMS</code></td>
+<td>Integer</td>
+<td>0</td>
+<td>Socket超时时间（毫秒）</td>
+</tr>
+<tr>
+<td><code>serverSelectionTimeoutMS</code></td>
+<td>Integer</td>
+<td>30000</td>
+<td>服务器选择超时时间（毫秒）</td>
+</tr>
+<tr>
+<td><code>maxIdleTimeMS</code></td>
+<td>Integer</td>
+<td>0</td>
+<td>连接最大空闲时间（毫秒）</td>
+</tr>
+<tr>
+<td><code>maxLifeTimeMS</code></td>
+<td>Integer</td>
+<td>0</td>
+<td>连接最大生存时间（毫秒）</td>
+</tr>
+</tbody>
+</table>
 <h3>连接池配置</h3>
-<p>| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| <code>maxPoolSize</code> | Integer | 100 | 连接池最大连接数 |
-| <code>minPoolSize</code> | Integer | 0 | 连接池最小连接数 |
-| <code>waitQueueTimeoutMS</code> | Integer | 120000 | 等待连接超时时间（毫秒） |</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>maxPoolSize</code></td>
+<td>Integer</td>
+<td>100</td>
+<td>连接池最大连接数</td>
+</tr>
+<tr>
+<td><code>minPoolSize</code></td>
+<td>Integer</td>
+<td>0</td>
+<td>连接池最小连接数</td>
+</tr>
+<tr>
+<td><code>waitQueueTimeoutMS</code></td>
+<td>Integer</td>
+<td>120000</td>
+<td>等待连接超时时间（毫秒）</td>
+</tr>
+</tbody>
+</table>
 <h3>副本集配置</h3>
-<p>| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| <code>replicaSet</code> | String | - | 副本集名称 |
-| <code>heartbeatFrequencyMS</code> | Integer | 10000 | 心跳频率（毫秒） |
-| <code>localThresholdMS</code> | Integer | 15 | 本地阈值（毫秒） |</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>replicaSet</code></td>
+<td>String</td>
+<td>-</td>
+<td>副本集名称</td>
+</tr>
+<tr>
+<td><code>heartbeatFrequencyMS</code></td>
+<td>Integer</td>
+<td>10000</td>
+<td>心跳频率（毫秒）</td>
+</tr>
+<tr>
+<td><code>localThresholdMS</code></td>
+<td>Integer</td>
+<td>15</td>
+<td>本地阈值（毫秒）</td>
+</tr>
+</tbody>
+</table>
 <h3>认证配置</h3>
-<p>| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| <code>authSource</code> | String | admin | 认证数据库 |
-| <code>authMechanism</code> | String | - | 认证机制（MONGO-CR/GSSAPI/PLAIN/MONGODB-X509） |
-| <code>authMechanismProperties</code> | String | - | 认证机制属性 |</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>authSource</code></td>
+<td>String</td>
+<td>admin</td>
+<td>认证数据库</td>
+</tr>
+<tr>
+<td><code>authMechanism</code></td>
+<td>String</td>
+<td>-</td>
+<td>认证机制（MONGO-CR/GSSAPI/PLAIN/MONGODB-X509）</td>
+</tr>
+<tr>
+<td><code>authMechanismProperties</code></td>
+<td>String</td>
+<td>-</td>
+<td>认证机制属性</td>
+</tr>
+</tbody>
+</table>
 <h3>读写配置</h3>
-<p>| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| <code>readPreference</code> | String | primary | 读偏好（primary/primaryPreferred/secondary/secondaryPreferred/nearest） |
-| <code>readPreferenceTags</code> | String | - | 读偏好标签 |
-| <code>maxStalenessSeconds</code> | Integer | -1 | 最大延迟时间（秒） |
-| <code>w</code> | String/Integer | 1 | 写关注级别 |
-| <code>wtimeoutMS</code> | Integer | 0 | 写超时时间（毫秒） |
-| <code>journal</code> | Boolean | false | 是否等待日志提交 |</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>readPreference</code></td>
+<td>String</td>
+<td>primary</td>
+<td>读偏好（primary/primaryPreferred/secondary/secondaryPreferred/nearest）</td>
+</tr>
+<tr>
+<td><code>readPreferenceTags</code></td>
+<td>String</td>
+<td>-</td>
+<td>读偏好标签</td>
+</tr>
+<tr>
+<td><code>maxStalenessSeconds</code></td>
+<td>Integer</td>
+<td>-1</td>
+<td>最大延迟时间（秒）</td>
+</tr>
+<tr>
+<td><code>w</code></td>
+<td>String/Integer</td>
+<td>1</td>
+<td>写关注级别</td>
+</tr>
+<tr>
+<td><code>wtimeoutMS</code></td>
+<td>Integer</td>
+<td>0</td>
+<td>写超时时间（毫秒）</td>
+</tr>
+<tr>
+<td><code>journal</code></td>
+<td>Boolean</td>
+<td>false</td>
+<td>是否等待日志提交</td>
+</tr>
+</tbody>
+</table>
 <h3>安全配置</h3>
-<p>| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| <code>ssl</code> | Boolean | false | 是否使用SSL |
-| <code>tls</code> | Boolean | false | 是否使用TLS |
-| <code>tlsInsecure</code> | Boolean | false | 是否允许不安全的TLS连接 |
-| <code>tlsAllowInvalidHostnames</code> | Boolean | false | 是否允许无效主机名 |</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ssl</code></td>
+<td>Boolean</td>
+<td>false</td>
+<td>是否使用SSL</td>
+</tr>
+<tr>
+<td><code>tls</code></td>
+<td>Boolean</td>
+<td>false</td>
+<td>是否使用TLS</td>
+</tr>
+<tr>
+<td><code>tlsInsecure</code></td>
+<td>Boolean</td>
+<td>false</td>
+<td>是否允许不安全的TLS连接</td>
+</tr>
+<tr>
+<td><code>tlsAllowInvalidHostnames</code></td>
+<td>Boolean</td>
+<td>false</td>
+<td>是否允许无效主机名</td>
+</tr>
+</tbody>
+</table>
 <h3>重试配置</h3>
-<p>| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| <code>retryWrites</code> | Boolean | true | 是否重试写操作 |
-| <code>retryReads</code> | Boolean | true | 是否重试读操作 |</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>retryWrites</code></td>
+<td>Boolean</td>
+<td>true</td>
+<td>是否重试写操作</td>
+</tr>
+<tr>
+<td><code>retryReads</code></td>
+<td>Boolean</td>
+<td>true</td>
+<td>是否重试读操作</td>
+</tr>
+</tbody>
+</table>
 <h3>应用配置</h3>
-<p>| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| <code>appName</code> | String | - | 应用程序名称 |
-| <code>compressors</code> | String | - | 压缩器列表（zlib/snappy/zstd） |
-| <code>zlibCompressionLevel</code> | Integer | -1 | zlib压缩级别 |
-| <code>uuidRepresentation</code> | String | javaLegacy | UUID表示方式 |</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>appName</code></td>
+<td>String</td>
+<td>-</td>
+<td>应用程序名称</td>
+</tr>
+<tr>
+<td><code>compressors</code></td>
+<td>String</td>
+<td>-</td>
+<td>压缩器列表（zlib/snappy/zstd）</td>
+</tr>
+<tr>
+<td><code>zlibCompressionLevel</code></td>
+<td>Integer</td>
+<td>-1</td>
+<td>zlib压缩级别</td>
+</tr>
+<tr>
+<td><code>uuidRepresentation</code></td>
+<td>String</td>
+<td>javaLegacy</td>
+<td>UUID表示方式</td>
+</tr>
+</tbody>
+</table>
 <h2>📊 监控与健康检查</h2>
 <h3>健康检查</h3>
 <p>MongoDB组件集成了Spring Boot Actuator健康检查功能。</p>
@@ -987,14 +1282,47 @@ curl http://localhost:8338/api/actuator/health
 </code></pre>
 <h3>监控指标</h3>
 <p>MongoDB驱动提供以下关键监控指标：</p>
-<p>| 指标名称 | 类型 | 说明 |
-|----------|------|------|
-| <code>mongodb_driver_commands_seconds_count</code> | Counter | 命令执行次数 |
-| <code>mongodb_driver_commands_seconds_max</code> | Gauge | 命令最大执行时间 |
-| <code>mongodb_driver_commands_seconds_sum</code> | Gauge | 命令执行时间总和 |
-| <code>mongodb_driver_pool_checkedout</code> | Gauge | 当前使用中的连接数 |
-| <code>mongodb_driver_pool_size</code> | Gauge | 连接池总大小 |
-| <code>mongodb_driver_pool_waitqueuesize</code> | Gauge | 等待连接的请求数量 |</p>
+<table>
+<thead>
+<tr>
+<th>指标名称</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mongodb_driver_commands_seconds_count</code></td>
+<td>Counter</td>
+<td>命令执行次数</td>
+</tr>
+<tr>
+<td><code>mongodb_driver_commands_seconds_max</code></td>
+<td>Gauge</td>
+<td>命令最大执行时间</td>
+</tr>
+<tr>
+<td><code>mongodb_driver_commands_seconds_sum</code></td>
+<td>Gauge</td>
+<td>命令执行时间总和</td>
+</tr>
+<tr>
+<td><code>mongodb_driver_pool_checkedout</code></td>
+<td>Gauge</td>
+<td>当前使用中的连接数</td>
+</tr>
+<tr>
+<td><code>mongodb_driver_pool_size</code></td>
+<td>Gauge</td>
+<td>连接池总大小</td>
+</tr>
+<tr>
+<td><code>mongodb_driver_pool_waitqueuesize</code></td>
+<td>Gauge</td>
+<td>等待连接的请求数量</td>
+</tr>
+</tbody>
+</table>
 <h3>Prometheus查询</h3>
 <pre><code class="language-promql"># 平均响应时间
 avg(rate(mongodb_driver_commands_seconds_sum[5m]) / rate(mongodb_driver_commands_seconds_count[5m])) by (job)
@@ -1059,34 +1387,30 @@ spring.data.mongodb.uri = mongodb://prod_user:prod_password@mongo1:27017,mongo2:
 <h2>🔧 故障排查</h2>
 <h3>常见问题</h3>
 <ol>
-<li><strong>连接超时</strong></li>
-<li>检查网络连接</li>
-<li>验证服务器地址和端口</li>
 <li>
-<p>调整<code>connectTimeoutMS</code>参数</p>
+<p><strong>连接超时</strong><br />
+   - 检查网络连接<br />
+   - 验证服务器地址和端口<br />
+   - 调整<code>connectTimeoutMS</code>参数</p>
 </li>
 <li>
-<p><strong>认证失败</strong></p>
-</li>
-<li>验证用户名和密码</li>
-<li>检查<code>authSource</code>配置</li>
-<li>
-<p>确认用户权限</p>
+<p><strong>认证失败</strong><br />
+   - 验证用户名和密码<br />
+   - 检查<code>authSource</code>配置<br />
+   - 确认用户权限</p>
 </li>
 <li>
-<p><strong>连接池耗尽</strong></p>
-</li>
-<li>增加<code>maxPoolSize</code></li>
-<li>检查连接泄漏</li>
-<li>
-<p>调整<code>waitQueueTimeoutMS</code></p>
+<p><strong>连接池耗尽</strong><br />
+   - 增加<code>maxPoolSize</code><br />
+   - 检查连接泄漏<br />
+   - 调整<code>waitQueueTimeoutMS</code></p>
 </li>
 <li>
-<p><strong>副本集连接问题</strong></p>
+<p><strong>副本集连接问题</strong><br />
+   - 验证<code>replicaSet</code>名称<br />
+   - 检查副本集状态<br />
+   - 调整<code>serverSelectionTimeoutMS</code></p>
 </li>
-<li>验证<code>replicaSet</code>名称</li>
-<li>检查副本集状态</li>
-<li>调整<code>serverSelectionTimeoutMS</code></li>
 </ol>
 <h3>调试命令</h3>
 <pre><code class="language-bash"># 查看MongoDB连接状态

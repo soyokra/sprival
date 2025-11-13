@@ -899,17 +899,72 @@ spring.datasource.dynamic.hikari.connection_init_sql = set session wait_timeout=
 </code></pre>
 <h2>监控指标</h2>
 <h3>hikaricp指标</h3>
-<p>|指标名称|类型|描述|监控建议|
-|-------|---|------|------|
-|hikaricp.connections.acquire|Timer/Histogram|记录从连接池获取连接所花费的时间分布（包括等待和创建时间）。用于检测获取连接的延迟问题，如池耗尽或慢初始化。|监控 P95/P99 分位数；如果持续高于阈值（如 100ms），可能表示池大小不足或数据库响应慢。|
-|hikaricp.connections.active|Gauge|当前正在使用的活动连接数。表示应用代码中占用的连接数量。|警报：如果接近最大连接数（max），可能导致瓶颈；理想情况下保持在 50-80% 利用率。|
-|hikaricp.connections.creation|Timer/Histogram|记录创建新连接所花费的时间分布。帮助识别数据库连接初始化缓慢或网络问题。|警报：突然增加（如 &gt;1s）可能表示数据库负载高或认证延迟；监控平均值和分位数。|
-|hikaricp.connections.idle|Gauge|当前空闲且可用的连接数。表示连接池的备用容量。|警报：如果持续为 0，表示连接耗尽；目标是保持一定空闲以快速响应新请求。|
-|hikaricp.connections.max|Gauge (配置值)|连接池允许的最大连接数。这是静态配置值（如 HikariConfig 的 maximumPoolSize）。|不直接用于警报，但用于计算利用率（如 active / max * 100）。|
-|hikaricp.connections.min|Gauge (配置值)|连接池维护的最小空闲连接数。这是静态配置值（如 HikariConfig 的 minimumIdle）。|不直接用于警报，但确保 min &gt;= 预期最小负载以避免频繁创建。|
-|hikaricp.connections.pending|Gauge|等待连接的线程数。表示连接请求积压，线程在等待可用连接。|警报：任何非零值表示潜在瓶颈；持续 &gt;0 需调查池大小或查询优化。|
-|hikaricp.connections.timeout|Counter|等待获取连接而超时的连接总数。关键指标，指示连接池耗尽。|警报：任何增加都需要立即调查；配置超时（如 connectionTimeout）以控制影响。|
-|hikaricp.connections.usage|Timer/Histogram|记录连接被使用（借出）所花费的时间分布。帮助识别长运行查询或未及时释放的连接。|监控 P95 值；如果高于预期查询时间，可能表示慢 SQL 或锁争用。|</p>
+<table>
+<thead>
+<tr>
+<th>指标名称</th>
+<th>类型</th>
+<th>描述</th>
+<th>监控建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hikaricp.connections.acquire</td>
+<td>Timer/Histogram</td>
+<td>记录从连接池获取连接所花费的时间分布（包括等待和创建时间）。用于检测获取连接的延迟问题，如池耗尽或慢初始化。</td>
+<td>监控 P95/P99 分位数；如果持续高于阈值（如 100ms），可能表示池大小不足或数据库响应慢。</td>
+</tr>
+<tr>
+<td>hikaricp.connections.active</td>
+<td>Gauge</td>
+<td>当前正在使用的活动连接数。表示应用代码中占用的连接数量。</td>
+<td>警报：如果接近最大连接数（max），可能导致瓶颈；理想情况下保持在 50-80% 利用率。</td>
+</tr>
+<tr>
+<td>hikaricp.connections.creation</td>
+<td>Timer/Histogram</td>
+<td>记录创建新连接所花费的时间分布。帮助识别数据库连接初始化缓慢或网络问题。</td>
+<td>警报：突然增加（如 &gt;1s）可能表示数据库负载高或认证延迟；监控平均值和分位数。</td>
+</tr>
+<tr>
+<td>hikaricp.connections.idle</td>
+<td>Gauge</td>
+<td>当前空闲且可用的连接数。表示连接池的备用容量。</td>
+<td>警报：如果持续为 0，表示连接耗尽；目标是保持一定空闲以快速响应新请求。</td>
+</tr>
+<tr>
+<td>hikaricp.connections.max</td>
+<td>Gauge (配置值)</td>
+<td>连接池允许的最大连接数。这是静态配置值（如 HikariConfig 的 maximumPoolSize）。</td>
+<td>不直接用于警报，但用于计算利用率（如 active / max * 100）。</td>
+</tr>
+<tr>
+<td>hikaricp.connections.min</td>
+<td>Gauge (配置值)</td>
+<td>连接池维护的最小空闲连接数。这是静态配置值（如 HikariConfig 的 minimumIdle）。</td>
+<td>不直接用于警报，但确保 min &gt;= 预期最小负载以避免频繁创建。</td>
+</tr>
+<tr>
+<td>hikaricp.connections.pending</td>
+<td>Gauge</td>
+<td>等待连接的线程数。表示连接请求积压，线程在等待可用连接。</td>
+<td>警报：任何非零值表示潜在瓶颈；持续 &gt;0 需调查池大小或查询优化。</td>
+</tr>
+<tr>
+<td>hikaricp.connections.timeout</td>
+<td>Counter</td>
+<td>等待获取连接而超时的连接总数。关键指标，指示连接池耗尽。</td>
+<td>警报：任何增加都需要立即调查；配置超时（如 connectionTimeout）以控制影响。</td>
+</tr>
+<tr>
+<td>hikaricp.connections.usage</td>
+<td>Timer/Histogram</td>
+<td>记录连接被使用（借出）所花费的时间分布。帮助识别长运行查询或未及时释放的连接。</td>
+<td>监控 P95 值；如果高于预期查询时间，可能表示慢 SQL 或锁争用。</td>
+</tr>
+</tbody>
+</table>
         </article>
     </div>
 </main>

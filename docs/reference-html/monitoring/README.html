@@ -917,13 +917,48 @@ public class BusinessMetrics {
 </code></pre>
 <h2>配置说明</h2>
 <h3>配置参数</h3>
-<p>| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| <code>management.endpoints.web.exposure.include</code> | String | health,info | 暴露的监控端点 |
-| <code>management.metrics.export.prometheus.enabled</code> | Boolean | false | 是否启用Prometheus指标导出 |
-| <code>management.endpoint.health.show-details</code> | String | never | 健康检查详情显示策略 |
-| <code>management.metrics.tags.application</code> | String | - | 应用标签 |
-| <code>management.metrics.tags.environment</code> | String | - | 环境标签 |</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>management.endpoints.web.exposure.include</code></td>
+<td>String</td>
+<td>health,info</td>
+<td>暴露的监控端点</td>
+</tr>
+<tr>
+<td><code>management.metrics.export.prometheus.enabled</code></td>
+<td>Boolean</td>
+<td>false</td>
+<td>是否启用Prometheus指标导出</td>
+</tr>
+<tr>
+<td><code>management.endpoint.health.show-details</code></td>
+<td>String</td>
+<td>never</td>
+<td>健康检查详情显示策略</td>
+</tr>
+<tr>
+<td><code>management.metrics.tags.application</code></td>
+<td>String</td>
+<td>-</td>
+<td>应用标签</td>
+</tr>
+<tr>
+<td><code>management.metrics.tags.environment</code></td>
+<td>String</td>
+<td>-</td>
+<td>环境标签</td>
+</tr>
+</tbody>
+</table>
 <h3>高级配置</h3>
 <pre><code class="language-properties"># JVM指标配置
 management.metrics.enable.jvm = true
@@ -1013,24 +1048,57 @@ curl http://localhost:8338/api/actuator
 curl http://localhost:8338/api/actuator/prometheus
 </code></pre>
 <h3>监控指标</h3>
-<p>| 指标名称 | 类型 | 说明 |
-|----------|------|------|
-| <code>jvm_memory_used_bytes</code> | Gauge | JVM内存使用量 |
-| <code>jvm_gc_pause_seconds</code> | Timer | GC暂停时间 |
-| <code>http_server_requests_seconds</code> | Timer | HTTP请求处理时间 |
-| <code>hikaricp_connections_active</code> | Gauge | 数据库连接池活跃连接数 |
-| <code>system_cpu_usage</code> | Gauge | 系统CPU使用率 |
-| <code>process_uptime_seconds</code> | Gauge | 应用运行时间 |</p>
+<table>
+<thead>
+<tr>
+<th>指标名称</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>jvm_memory_used_bytes</code></td>
+<td>Gauge</td>
+<td>JVM内存使用量</td>
+</tr>
+<tr>
+<td><code>jvm_gc_pause_seconds</code></td>
+<td>Timer</td>
+<td>GC暂停时间</td>
+</tr>
+<tr>
+<td><code>http_server_requests_seconds</code></td>
+<td>Timer</td>
+<td>HTTP请求处理时间</td>
+</tr>
+<tr>
+<td><code>hikaricp_connections_active</code></td>
+<td>Gauge</td>
+<td>数据库连接池活跃连接数</td>
+</tr>
+<tr>
+<td><code>system_cpu_usage</code></td>
+<td>Gauge</td>
+<td>系统CPU使用率</td>
+</tr>
+<tr>
+<td><code>process_uptime_seconds</code></td>
+<td>Gauge</td>
+<td>应用运行时间</td>
+</tr>
+</tbody>
+</table>
 <h2>常见问题</h2>
-<p><strong>Q: 如何自定义监控指标？</strong>
+<p><strong>Q: 如何自定义监控指标？</strong><br />
 A: 通过注入MeterRegistry，使用Counter、Timer、Gauge等指标类型收集自定义业务指标。</p>
-<p><strong>Q: 监控数据如何存储？</strong>
+<p><strong>Q: 监控数据如何存储？</strong><br />
 A: 使用Prometheus作为时序数据库存储监控数据，支持高效查询和聚合。</p>
-<p><strong>Q: 如何配置告警规则？</strong>
+<p><strong>Q: 如何配置告警规则？</strong><br />
 A: 在Prometheus中配置告警规则文件，通过AlertManager处理告警通知。</p>
-<p><strong>Q: 监控数据保留多长时间？</strong>
+<p><strong>Q: 监控数据保留多长时间？</strong><br />
 A: 默认保留15天，可通过Prometheus配置调整保留策略。</p>
-<p><strong>Q: 如何优化监控性能？</strong>
+<p><strong>Q: 如何优化监控性能？</strong><br />
 A: 合理设置指标收集频率，避免收集过多不必要的指标，使用采样减少数据量。</p>
 <h2>参考文档</h2>
 <ul>

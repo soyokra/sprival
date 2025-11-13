@@ -924,11 +924,32 @@ kafka-console-consumer.sh --bootstrap-server localhost:9092 \
 </code></pre>
 <h2>配置说明</h2>
 <h3>输出目标配置</h3>
-<p>| 配置值 | 说明 | 使用场景 |
-|--------|------|----------|
-| <code>file</code> | 仅输出到本地文件 | 开发环境、测试环境 |
-| <code>kafka</code> | 仅输出到 Kafka | 生产环境（日志集中管理） |
-| <code>both</code> | 同时输出到文件和 Kafka | 生产环境（保留本地备份） |</p>
+<table>
+<thead>
+<tr>
+<th>配置值</th>
+<th>说明</th>
+<th>使用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>file</code></td>
+<td>仅输出到本地文件</td>
+<td>开发环境、测试环境</td>
+</tr>
+<tr>
+<td><code>kafka</code></td>
+<td>仅输出到 Kafka</td>
+<td>生产环境（日志集中管理）</td>
+</tr>
+<tr>
+<td><code>both</code></td>
+<td>同时输出到文件和 Kafka</td>
+<td>生产环境（保留本地备份）</td>
+</tr>
+</tbody>
+</table>
 <h3>应用日志配置</h3>
 <pre><code class="language-properties"># 输出目标
 sprival.logging.application.output-target=both
@@ -965,21 +986,96 @@ sprival.logging.jetty-access.linger-ms=5
 sprival.logging.jetty-access.compression-type=gzip
 </code></pre>
 <h3>完整配置参数</h3>
-<p>| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| <code>output-target</code> | String | file | 输出目标：file, kafka, both |
-| <code>bootstrap-servers</code> | String | localhost:9092 | Kafka 服务器地址列表 |
-| <code>topic</code> | String | application-logs / jetty-access-logs | Kafka 主题名称 |
-| <code>client-id</code> | String | *-log-producer | Kafka 客户端 ID |
-| <code>acks</code> | String | 1 | 确认机制：0, 1, all |
-| <code>retries</code> | int | 3 | 重试次数 |
-| <code>batch-size</code> | int | 16384 | 批处理大小（字节） |
-| <code>linger-ms</code> | int | 1 | 批处理延迟时间（毫秒） |
-| <code>buffer-memory</code> | long | 33554432 | 缓冲区内存大小（字节） |
-| <code>compression-type</code> | String | none | 压缩类型：none, gzip, snappy, lz4, zstd |
-| <code>request-timeout-ms</code> | int | 30000 | 请求超时时间（毫秒） |
-| <code>delivery-timeout-ms</code> | int | 120000 | 投递超时时间（毫秒） |
-| <code>max-block-ms</code> | int | 60000 | 最大阻塞时间（毫秒） |</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>output-target</code></td>
+<td>String</td>
+<td>file</td>
+<td>输出目标：file, kafka, both</td>
+</tr>
+<tr>
+<td><code>bootstrap-servers</code></td>
+<td>String</td>
+<td>localhost:9092</td>
+<td>Kafka 服务器地址列表</td>
+</tr>
+<tr>
+<td><code>topic</code></td>
+<td>String</td>
+<td>application-logs / jetty-access-logs</td>
+<td>Kafka 主题名称</td>
+</tr>
+<tr>
+<td><code>client-id</code></td>
+<td>String</td>
+<td>*-log-producer</td>
+<td>Kafka 客户端 ID</td>
+</tr>
+<tr>
+<td><code>acks</code></td>
+<td>String</td>
+<td>1</td>
+<td>确认机制：0, 1, all</td>
+</tr>
+<tr>
+<td><code>retries</code></td>
+<td>int</td>
+<td>3</td>
+<td>重试次数</td>
+</tr>
+<tr>
+<td><code>batch-size</code></td>
+<td>int</td>
+<td>16384</td>
+<td>批处理大小（字节）</td>
+</tr>
+<tr>
+<td><code>linger-ms</code></td>
+<td>int</td>
+<td>1</td>
+<td>批处理延迟时间（毫秒）</td>
+</tr>
+<tr>
+<td><code>buffer-memory</code></td>
+<td>long</td>
+<td>33554432</td>
+<td>缓冲区内存大小（字节）</td>
+</tr>
+<tr>
+<td><code>compression-type</code></td>
+<td>String</td>
+<td>none</td>
+<td>压缩类型：none, gzip, snappy, lz4, zstd</td>
+</tr>
+<tr>
+<td><code>request-timeout-ms</code></td>
+<td>int</td>
+<td>30000</td>
+<td>请求超时时间（毫秒）</td>
+</tr>
+<tr>
+<td><code>delivery-timeout-ms</code></td>
+<td>int</td>
+<td>120000</td>
+<td>投递超时时间（毫秒）</td>
+</tr>
+<tr>
+<td><code>max-block-ms</code></td>
+<td>int</td>
+<td>60000</td>
+<td>最大阻塞时间（毫秒）</td>
+</tr>
+</tbody>
+</table>
 <h2>日志消息格式</h2>
 <h3>应用日志消息格式</h3>
 <p>发送到 Kafka 的应用日志消息为 JSON 格式：</p>
@@ -1153,11 +1249,11 @@ sprival.logging.application.compression-type=gzip
 # 或使用 snappy 压缩（速度快）
 sprival.logging.application.compression-type=snappy
 </code></pre>
-<p><strong>压缩比对比</strong>:
-- none: 无压缩，传输速度快但流量大
-- gzip: 压缩比约 4-6 倍，CPU 占用中等
-- snappy: 压缩比约 2-3 倍，CPU 占用低
-- lz4: 压缩比约 2-3 倍，速度最快
+<p><strong>压缩比对比</strong>:<br />
+- none: 无压缩，传输速度快但流量大<br />
+- gzip: 压缩比约 4-6 倍，CPU 占用中等<br />
+- snappy: 压缩比约 2-3 倍，CPU 占用低<br />
+- lz4: 压缩比约 2-3 倍，速度最快<br />
 - zstd: 压缩比约 4-5 倍，速度较快（推荐）</p>
 <h3>3. 异步 Appender</h3>
 <p>使用 Logback 的 AsyncAppender 避免阻塞业务线程：</p>
@@ -1170,10 +1266,10 @@ sprival.logging.application.compression-type=snappy
     &lt;neverBlock&gt;true&lt;/neverBlock&gt;
 &lt;/appender&gt;
 </code></pre>
-<p><strong>参数说明</strong>:
-- <code>queueSize</code>: 队列大小，建议 1024-4096
-- <code>discardingThreshold</code>: 丢弃阈值，设为 0 不丢弃
-- <code>includeCallerData</code>: 是否包含调用者信息，建议 false（性能）
+<p><strong>参数说明</strong>:<br />
+- <code>queueSize</code>: 队列大小，建议 1024-4096<br />
+- <code>discardingThreshold</code>: 丢弃阈值，设为 0 不丢弃<br />
+- <code>includeCallerData</code>: 是否包含调用者信息，建议 false（性能）<br />
 - <code>neverBlock</code>: 队列满时不阻塞，建议 true</p>
 <h3>4. 过滤不重要的日志</h3>
 <p>通过日志级别过滤减少日志量：</p>
@@ -1232,17 +1328,17 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
 <pre><code class="language-properties">sprival.logging.application.output-target=kafka  # 确认是 kafka 或 both
 sprival.logging.application.bootstrap-servers=localhost:9092  # 确认地址正确
 </code></pre>
-<ol>
+<ol start="2">
 <li>检查 Kafka 服务器是否可访问：</li>
 </ol>
 <pre><code class="language-bash">telnet localhost 9092
 </code></pre>
-<ol>
+<ol start="3">
 <li>查看应用日志是否有错误信息：</li>
 </ol>
 <pre><code>grep -i &quot;kafka&quot; logs/application.log
 </code></pre>
-<ol>
+<ol start="4">
 <li>启用 Kafka 客户端调试日志：</li>
 </ol>
 <pre><code class="language-properties">logging.level.org.apache.kafka=DEBUG
@@ -1255,12 +1351,12 @@ sprival.logging.application.bootstrap-servers=localhost:9092  # 确认地址正�
 </ol>
 <pre><code class="language-properties">sprival.logging.application.linger-ms=1
 </code></pre>
-<ol>
+<ol start="2">
 <li>减少 <code>batch-size</code>：</li>
 </ol>
 <pre><code class="language-properties">sprival.logging.application.batch-size=8192
 </code></pre>
-<ol>
+<ol start="3">
 <li>增加 Kafka 分区数提高并发</li>
 </ol>
 <h3>问题 3: 日志丢失</h3>
@@ -1275,12 +1371,12 @@ sprival.logging.application.bootstrap-servers=localhost:9092  # 确认地址正�
     &lt;neverBlock&gt;false&lt;/neverBlock&gt;  &lt;!-- 改为 false --&gt;
 &lt;/appender&gt;
 </code></pre>
-<ol>
+<ol start="2">
 <li>增加重试次数：</li>
 </ol>
 <pre><code class="language-properties">sprival.logging.application.retries=5
 </code></pre>
-<ol>
+<ol start="3">
 <li>使用更可靠的 acks 设置：</li>
 </ol>
 <pre><code class="language-properties">sprival.logging.application.acks=all

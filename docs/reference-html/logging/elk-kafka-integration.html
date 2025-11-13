@@ -1030,19 +1030,19 @@ mvn spring-boot:run
 <li>点击 "Create visualization"</li>
 <li>选择 "Line" 图表类型</li>
 <li>选择 Index Pattern: <code>application-logs-*</code></li>
-<li>配置：</li>
-<li>X-axis: Date Histogram (@timestamp)</li>
-<li>Y-axis: Count</li>
-<li>Filter: level: ERROR</li>
+<li>配置：<br />
+   - X-axis: Date Histogram (@timestamp)<br />
+   - Y-axis: Count<br />
+   - Filter: level: ERROR</li>
 <li>保存为 "Error Logs Trend"</li>
 </ol>
 <p><strong>示例：HTTP 状态码分布</strong></p>
 <ol>
 <li>选择 "Pie" 图表</li>
 <li>Index Pattern: <code>jetty-access-logs-*</code></li>
-<li>配置：</li>
-<li>Slice by: Terms (statusCode)</li>
-<li>Metric: Count</li>
+<li>配置：<br />
+   - Slice by: Terms (statusCode)<br />
+   - Metric: Count</li>
 <li>保存为 "HTTP Status Distribution"</li>
 </ol>
 <h4>2. 组合 Dashboard</h4>
@@ -1058,20 +1058,20 @@ mvn spring-boot:run
 <p>在 Discover 中搜索：</p>
 <pre><code>processingTime &gt; 5000
 </code></pre>
-<p>添加字段：
-- uri
-- statusCode
-- processingTime
+<p>添加字段：<br />
+- uri<br />
+- statusCode<br />
+- processingTime<br />
 - clientIp</p>
 <p>排序：按 processingTime 降序</p>
 <h4>场景 2: 分析错误日志</h4>
 <p>搜索：</p>
 <pre><code>level: ERROR AND NOT message: *SocketTimeoutException*
 </code></pre>
-<p>查看：
-- 错误消息
-- 异常堆栈
-- 发生时间
+<p>查看：<br />
+- 错误消息<br />
+- 异常堆栈<br />
+- 发生时间<br />
 - 相关上下文（MDC）</p>
 <h4>场景 3: 用户行为追踪</h4>
 <p>使用 MDC 中的 userId：</p>
@@ -1082,9 +1082,9 @@ mvn spring-boot:run
 <p>在 <code>jetty-access-logs-*</code> 中：</p>
 <pre><code>uri: /api/users/* AND processingTime &gt; 1000
 </code></pre>
-<p>创建聚合：
-- Avg processingTime by uri
-- Max processingTime by uri
+<p>创建聚合：<br />
+- Avg processingTime by uri<br />
+- Max processingTime by uri<br />
 - 95th percentile</p>
 <h2>性能优化</h2>
 <h3>Logstash 优化</h3>
@@ -1120,9 +1120,9 @@ pipeline.batch.delay: 50     # 调整延迟
 }'
 </code></pre>
 <h3>Kafka 优化</h3>
-<p>已有配置已优化，建议监控：
-- Consumer lag
-- Partition 分布
+<p>已有配置已优化，建议监控：<br />
+- Consumer lag<br />
+- Partition 分布<br />
 - 磁盘使用</p>
 <h2>监控和维护</h2>
 <h3>监控指标</h3>
@@ -1206,19 +1206,19 @@ done
   --bootstrap-server localhost:29092 \
   --topic application-logs --max-messages 10
 </code></pre>
-<ol>
+<ol start="2">
 <li>检查 Logstash Pipeline 状态：</li>
 </ol>
 <pre><code class="language-bash">curl http://localhost:9600/_node/stats/pipelines?pretty
 </code></pre>
-<ol>
+<ol start="3">
 <li>查看 Logstash 日志：</li>
 </ol>
 <pre><code class="language-bash">docker-compose logs logstash | tail -100
 </code></pre>
-<p><strong>解决方案</strong>:
-- 确认 Kafka 地址正确（kafka:29092）
-- 检查网络连通性
+<p><strong>解决方案</strong>:<br />
+- 确认 Kafka 地址正确（kafka:29092）<br />
+- 检查网络连通性<br />
 - 重启 Logstash</p>
 <h3>问题 2: Elasticsearch 内存不足</h3>
 <p><strong>症状</strong>: 服务崩溃或响应慢</p>
@@ -1238,12 +1238,12 @@ elasticsearch:
 <pre><code class="language-bash">docker-compose ps elasticsearch
 curl http://localhost:9201/_cluster/health
 </code></pre>
-<ol>
+<ol start="2">
 <li>检查 Kibana 配置：</li>
 </ol>
 <pre><code class="language-bash">docker-compose exec kibana cat /usr/share/kibana/config/kibana.yml
 </code></pre>
-<ol>
+<ol start="3">
 <li>重启 Kibana：</li>
 </ol>
 <pre><code class="language-bash">docker-compose restart kibana
@@ -1263,20 +1263,20 @@ filter {
 </code></pre>
 <h2>最佳实践</h2>
 <h3>1. 索引命名</h3>
-<p>使用时间后缀，便于管理和清理：
-- <code>application-logs-2025.10.22</code>
+<p>使用时间后缀，便于管理和清理：<br />
+- <code>application-logs-2025.10.22</code><br />
 - <code>jetty-access-logs-2025.10.22</code></p>
 <h3>2. 字段映射</h3>
-<p>明确定义字段类型，避免动态映射：
-- IP 地址使用 <code>ip</code> 类型
-- 数值使用 <code>long</code> 或 <code>integer</code>
-- 关键词使用 <code>keyword</code>
+<p>明确定义字段类型，避免动态映射：<br />
+- IP 地址使用 <code>ip</code> 类型<br />
+- 数值使用 <code>long</code> 或 <code>integer</code><br />
+- 关键词使用 <code>keyword</code><br />
 - 全文搜索使用 <code>text</code></p>
 <h3>3. 日志级别</h3>
-<p>合理使用日志级别：
-- ERROR: 严重错误，需要立即处理
-- WARN: 警告信息，需要关注
-- INFO: 重要信息
+<p>合理使用日志级别：<br />
+- ERROR: 严重错误，需要立即处理<br />
+- WARN: 警告信息，需要关注<br />
+- INFO: 重要信息<br />
 - DEBUG: 调试信息（生产环境慎用）</p>
 <h3>4. MDC 使用</h3>
 <p>在业务代码中使用 MDC 添加上下文：</p>
@@ -1285,10 +1285,10 @@ MDC.put(&quot;requestId&quot;, requestId);
 MDC.put(&quot;action&quot;, &quot;createOrder&quot;);
 </code></pre>
 <h3>5. 性能监控</h3>
-<p>定期监控：
-- Consumer lag
-- 磁盘使用率
-- JVM 内存使用
+<p>定期监控：<br />
+- Consumer lag<br />
+- 磁盘使用率<br />
+- JVM 内存使用<br />
 - 查询响应时间</p>
 <h2>安全建议</h2>
 <h3>开发环境（当前配置）</h3>
@@ -1306,25 +1306,25 @@ MDC.put(&quot;action&quot;, &quot;createOrder&quot;);
     - xpack.security.enabled=true
     - ELASTIC_PASSWORD=strongpassword
 </code></pre>
-<ol>
+<ol start="2">
 <li><strong>使用 HTTPS</strong>:</li>
 </ol>
 <pre><code class="language-yaml">elasticsearch:
   environment:
     - xpack.security.http.ssl.enabled=true
 </code></pre>
-<ol>
-<li><strong>网络隔离</strong>:</li>
-<li>仅暴露 Kibana 端口</li>
-<li>ES 和 Logstash 使用内部网络</li>
+<ol start="3">
 <li>
-<p>使用反向代理</p>
+<p><strong>网络隔离</strong>:<br />
+- 仅暴露 Kibana 端口<br />
+- ES 和 Logstash 使用内部网络<br />
+- 使用反向代理</p>
 </li>
 <li>
-<p><strong>访问控制</strong>:</p>
+<p><strong>访问控制</strong>:<br />
+- 配置 Kibana 用户认证<br />
+- 使用角色和权限管理</p>
 </li>
-<li>配置 Kibana 用户认证</li>
-<li>使用角色和权限管理</li>
 </ol>
 <h2>相关文档</h2>
 <ul>

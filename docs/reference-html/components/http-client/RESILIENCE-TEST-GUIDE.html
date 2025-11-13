@@ -865,98 +865,94 @@ Feign 客户端 → SprivalClient
 <h2>测试接口说明</h2>
 <h3>1. 熔断器测试</h3>
 <p><strong>客户端接口</strong>: <code>GET /api/client/test/circuit-breaker</code></p>
-<p><strong>参数</strong>:
-- <code>shouldFail</code>: 是否失败（默认 false）
+<p><strong>参数</strong>:<br />
+- <code>shouldFail</code>: 是否失败（默认 false）<br />
 - <code>delay</code>: 延迟时间（毫秒，默认 0）</p>
 <p><strong>测试步骤</strong>:</p>
 <ol>
 <li>
-<p><strong>触发熔断器打开</strong>
-   <code>bash
+<p><strong>触发熔断器打开</strong><br />
+<code>bash
    # 连续调用 5-10 次失败场景
    curl "http://127.0.0.1:8338/api/client/test/circuit-breaker?shouldFail=true"</code></p>
 </li>
 <li>
-<p><strong>观察熔断器状态</strong></p>
-</li>
-<li>前几次：正常调用服务，返回异常</li>
-<li>失败率达到 50% 后：熔断器打开，直接返回降级响应</li>
-<li>
-<p>降级响应的 <code>fallback</code> 字段为 <code>true</code></p>
+<p><strong>观察熔断器状态</strong><br />
+   - 前几次：正常调用服务，返回异常<br />
+   - 失败率达到 50% 后：熔断器打开，直接返回降级响应<br />
+   - 降级响应的 <code>fallback</code> 字段为 <code>true</code></p>
 </li>
 <li>
-<p><strong>等待熔断器恢复</strong></p>
-</li>
-<li>等待 30 秒（配置的 <code>wait-duration-in-open-state</code>）</li>
-<li>熔断器进入半开状态，允许少量请求尝试</li>
-<li>
-<p>如果请求成功，熔断器关闭；否则继续打开</p>
+<p><strong>等待熔断器恢复</strong><br />
+   - 等待 30 秒（配置的 <code>wait-duration-in-open-state</code>）<br />
+   - 熔断器进入半开状态，允许少量请求尝试<br />
+   - 如果请求成功，熔断器关闭；否则继续打开</p>
 </li>
 <li>
-<p><strong>测试成功场景</strong>
-   <code>bash
+<p><strong>测试成功场景</strong><br />
+<code>bash
    # 调用成功场景，熔断器关闭后正常工作
    curl "http://127.0.0.1:8338/api/client/test/circuit-breaker?shouldFail=false"</code></p>
 </li>
 </ol>
 <h3>2. 重试测试</h3>
 <p><strong>客户端接口</strong>: <code>GET /api/client/test/retry</code></p>
-<p><strong>参数</strong>:
-- <code>shouldFail</code>: 是否失败（默认 false）
+<p><strong>参数</strong>:<br />
+- <code>shouldFail</code>: 是否失败（默认 false）<br />
 - <code>failTimes</code>: 失败次数，前 N 次失败，第 N+1 次成功（默认 2）</p>
 <p><strong>测试步骤</strong>:</p>
 <ol>
-<li><strong>测试重试成功</strong>
-   <code>bash
-   # 前 2 次失败，第 3 次成功
-   curl "http://127.0.0.1:8338/api/client/test/retry?shouldFail=true&amp;failTimes=2"</code></li>
-<li>观察日志，可以看到 3 次调用记录</li>
 <li>
-<p>最终返回成功响应，<code>attemptCount=3</code></p>
+<p><strong>测试重试成功</strong><br />
+<code>bash
+   # 前 2 次失败，第 3 次成功
+   curl "http://127.0.0.1:8338/api/client/test/retry?shouldFail=true&amp;failTimes=2"</code><br />
+   - 观察日志，可以看到 3 次调用记录<br />
+   - 最终返回成功响应，<code>attemptCount=3</code></p>
 </li>
 <li>
-<p><strong>重置计数器</strong>
-   <code>bash
+<p><strong>重置计数器</strong><br />
+<code>bash
    # 重置服务端的重试计数器
    curl "http://127.0.0.1:8338/api/test/resilience/reset"</code></p>
 </li>
 <li>
-<p><strong>测试重试失败（触发降级）</strong>
-   <code>bash
+<p><strong>测试重试失败（触发降级）</strong><br />
+<code>bash
    # 失败次数 &gt; 重试次数，触发降级
-   curl "http://127.0.0.1:8338/api/client/test/retry?shouldFail=true&amp;failTimes=5"</code></p>
+   curl "http://127.0.0.1:8338/api/client/test/retry?shouldFail=true&amp;failTimes=5"</code><br />
+   - 重试 3 次后仍失败<br />
+   - 触发降级逻辑，返回 <code>fallback=true</code></p>
 </li>
-<li>重试 3 次后仍失败</li>
-<li>触发降级逻辑，返回 <code>fallback=true</code></li>
 </ol>
 <h3>3. 超时测试</h3>
 <p><strong>客户端接口</strong>: <code>GET /api/client/test/timeout</code></p>
-<p><strong>参数</strong>:
+<p><strong>参数</strong>:<br />
 - <code>delay</code>: 延迟时间（毫秒，默认 0）</p>
 <p><strong>测试步骤</strong>:</p>
 <ol>
 <li>
-<p><strong>测试正常响应（未超时）</strong>
-   <code>bash
+<p><strong>测试正常响应（未超时）</strong><br />
+<code>bash
    # 延迟 2 秒，未超过读取超时（5 秒）
    curl "http://127.0.0.1:8338/api/client/test/timeout?delay=2000"</code></p>
 </li>
 <li>
-<p><strong>测试超时降级</strong>
-   <code>bash
+<p><strong>测试超时降级</strong><br />
+<code>bash
    # 延迟 6 秒，超过读取超时（5 秒）
-   curl "http://127.0.0.1:8338/api/client/test/timeout?delay=6000"</code></p>
+   curl "http://127.0.0.1:8338/api/client/test/timeout?delay=6000"</code><br />
+   - 请求超时后触发降级逻辑<br />
+   - 返回 <code>fallback=true</code></p>
 </li>
-<li>请求超时后触发降级逻辑</li>
-<li>返回 <code>fallback=true</code></li>
 </ol>
 <h3>4. 组合测试</h3>
 <p><strong>客户端接口</strong>: <code>GET /api/client/test/combined</code></p>
-<p><strong>参数</strong>:
+<p><strong>参数</strong>:<br />
 - <code>shouldFail</code>: 是否失败（默认 true）</p>
-<p><strong>测试说明</strong>:
-- 同时测试重试和熔断器的协作
-- 先触发重试机制，重试失败后计入熔断器统计
+<p><strong>测试说明</strong>:<br />
+- 同时测试重试和熔断器的协作<br />
+- 先触发重试机制，重试失败后计入熔断器统计<br />
 - 观察多个容错机制如何协同工作</p>
 <h2>配置说明</h2>
 <h3>Feign 客户端配置</h3>
@@ -1015,32 +1011,32 @@ ERROR - Feign 调用失败 - 方法: SprivalClient#testCircuitBreaker(boolean,lo
 <h2>常见问题</h2>
 <h3>1. 熔断器不触发</h3>
 <p><strong>问题</strong>: 调用多次失败后，熔断器仍未打开</p>
-<p><strong>原因</strong>:
-- 调用次数未达到 <code>minimum-number-of-calls</code>（最小 5 次）
+<p><strong>原因</strong>:<br />
+- 调用次数未达到 <code>minimum-number-of-calls</code>（最小 5 次）<br />
 - 失败率未达到阈值（50%）</p>
 <p><strong>解决</strong>: 确保至少调用 5 次，且失败率超过 50%</p>
 <h3>2. 重试不生效</h3>
 <p><strong>问题</strong>: 只调用了一次，没有重试</p>
-<p><strong>原因</strong>:
-- 服务端的重试计数器没有重置
+<p><strong>原因</strong>:<br />
+- 服务端的重试计数器没有重置<br />
 - <code>failTimes</code> 参数设置为 0</p>
 <p><strong>解决</strong>: 调用 <code>/api/test/resilience/reset</code> 重置计数器</p>
 <h3>3. 降级逻辑不执行</h3>
 <p><strong>问题</strong>: 调用失败但没有返回降级响应</p>
-<p><strong>原因</strong>:
-- Fallback 类没有被 Spring 管理（缺少 <code>@Component</code>）
+<p><strong>原因</strong>:<br />
+- Fallback 类没有被 Spring 管理（缺少 <code>@Component</code>）<br />
 - 配置中没有指定 <code>fallback</code> 参数</p>
 <p><strong>解决</strong>: 检查 <code>SprivalClientFallback</code> 是否有 <code>@Component</code> 注解</p>
 <h2>最佳实践</h2>
 <ol>
-<li><strong>测试前重置状态</strong></li>
-<li>调用 <code>/api/test/resilience/reset</code> 重置重试计数器</li>
 <li>
-<p>等待熔断器关闭（30 秒后）</p>
+<p><strong>测试前重置状态</strong><br />
+   - 调用 <code>/api/test/resilience/reset</code> 重置重试计数器<br />
+   - 等待熔断器关闭（30 秒后）</p>
 </li>
 <li>
-<p><strong>循环测试熔断器</strong>
-   <code>bash
+<p><strong>循环测试熔断器</strong><br />
+<code>bash
    # 连续调用 10 次观察熔断器状态变化
    for i in {1..10}; do 
      echo "请求 $i:"
@@ -1049,17 +1045,15 @@ ERROR - Feign 调用失败 - 方法: SprivalClient#testCircuitBreaker(boolean,lo
    done</code></p>
 </li>
 <li>
-<p><strong>观察日志</strong></p>
-</li>
-<li>开启 DEBUG 日志级别：<code>logging.level.com.soyokra.sprival=DEBUG</code></li>
-<li>
-<p>查看 Feign 完整日志：<code>feign.client.config.sprival-service.logger-level=FULL</code></p>
+<p><strong>观察日志</strong><br />
+   - 开启 DEBUG 日志级别：<code>logging.level.com.soyokra.sprival=DEBUG</code><br />
+   - 查看 Feign 完整日志：<code>feign.client.config.sprival-service.logger-level=FULL</code></p>
 </li>
 <li>
-<p><strong>监控指标</strong></p>
+<p><strong>监控指标</strong><br />
+   - 使用 Prometheus + Grafana 可视化监控<br />
+   - 配置告警规则，熔断器打开时通知</p>
 </li>
-<li>使用 Prometheus + Grafana 可视化监控</li>
-<li>配置告警规则，熔断器打开时通知</li>
 </ol>
 <h2>参考资料</h2>
 <ul>

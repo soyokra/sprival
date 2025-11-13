@@ -1360,33 +1360,33 @@ groups:
 </code></pre>
 <h2>常见问题</h2>
 <h3>Q1: 如何选择序列化方式？</h3>
-<p>A: 根据数据特点选择：
-- <strong>StringSerializer</strong>: 简单字符串消息
-- <strong>JsonSerializer</strong>: 复杂对象，可读性好
-- <strong>AvroSerializer</strong>: 高性能，需要Schema注册中心
+<p>A: 根据数据特点选择：<br />
+- <strong>StringSerializer</strong>: 简单字符串消息<br />
+- <strong>JsonSerializer</strong>: 复杂对象，可读性好<br />
+- <strong>AvroSerializer</strong>: 高性能，需要Schema注册中心<br />
 - <strong>ProtobufSerializer</strong>: 高性能，跨语言兼容</p>
 <h3>Q2: 如何处理消息重复消费？</h3>
-<p>A: 
-- 使用幂等性设计
-- 在消息中添加唯一ID
-- 使用数据库唯一约束
+<p>A: <br />
+- 使用幂等性设计<br />
+- 在消息中添加唯一ID<br />
+- 使用数据库唯一约束<br />
 - 实现分布式锁</p>
 <h3>Q3: 如何优化 Kafka 性能？</h3>
-<p>A: 
-- 合理配置批量大小和等待时间
-- 使用压缩减少网络传输
-- 调整分区数量提高并行度
+<p>A: <br />
+- 合理配置批量大小和等待时间<br />
+- 使用压缩减少网络传输<br />
+- 调整分区数量提高并行度<br />
 - 优化消费者组配置</p>
 <h3>Q4: 事务和幂等性的区别？</h3>
-<p>A: 
-- <strong>事务</strong>: 保证多个操作的原子性
-- <strong>幂等性</strong>: 保证重复操作的结果一致
+<p>A: <br />
+- <strong>事务</strong>: 保证多个操作的原子性<br />
+- <strong>幂等性</strong>: 保证重复操作的结果一致<br />
 - 事务可以包含多个操作，幂等性针对单个操作</p>
 <h3>Q5: 如何监控 Kafka 性能？</h3>
-<p>A: 
-- 监控生产者发送速率和错误率
-- 监控消费者消费延迟和吞吐量
-- 监控连接数和网络IO
+<p>A: <br />
+- 监控生产者发送速率和错误率<br />
+- 监控消费者消费延迟和吞吐量<br />
+- 监控连接数和网络IO<br />
 - 设置合理的告警阈值</p>
 <h2>最佳实践</h2>
 <h3>1. 消息设计原则</h3>

@@ -46,7 +46,23 @@ def convert_md_to_html(src_dir, dest_dir, framework_path):
                     md_content = md_file.read()
 
                 # 转换为HTML
-                html_content = markdown.markdown(md_content, extensions=['fenced_code'])
+                # 扩展说明：
+                # - fenced_code: 支持围栏代码块（```代码```）
+                # - tables: 支持Markdown表格语法
+                # - codehilite: 代码语法高亮（需要Pygments库，可选）
+                # - nl2br: 单行换行转换为<br>标签（GitHub风格）
+                # - sane_lists: 智能列表处理，改进嵌套列表解析
+                # - attr_list: 支持为HTML元素添加属性（如id、class）
+                html_content = markdown.markdown(
+                    md_content,
+                    extensions=[
+                        'fenced_code',
+                        'tables',
+                        'nl2br',
+                        'sane_lists',
+                        'attr_list'
+                    ]
+                )
                 html_content = framework_content.replace('{content}', html_content)
                 # 写入HTML文件
                 with open(html_dest_path, 'w', encoding='utf-8') as html_file:

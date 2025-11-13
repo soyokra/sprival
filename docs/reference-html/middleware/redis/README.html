@@ -906,25 +906,115 @@ spring.redis.redisson.config.transportMode = NIO
 </code></pre>
 <h2>监控指标</h2>
 <h3>spring cache指标</h3>
-<p>|指标名称|类型|描述|监控建议|
-|-------|---|------|------|
-|cache_gets_total|Counter|缓存查找操作的总次数，包括命中（hit，返回缓存值）和未命中（miss，新加载或 null 值）。这是一个累积计数器，可用于计算命中率（hit / total）。|监控缓存效率：查询 rate(cache_gets_total{result="hit"}[5m]) / rate(cache_gets_total[5m]) 计算 5 分钟命中率。如果 miss 率 &gt; 20%，考虑优化缓存策略。|
-|cache_puts_total|Counter|向缓存中添加条目的总次数，包括新插入或覆盖现有值。|跟踪缓存填充速率：高 put 率可能表示数据频繁更新，结合 gets 分析负载。|
-|cache_removals_total|Counter|从缓存中移除条目的总次数，包括手动 evict 或过期清除。|监控缓存清理：如果 removals 率高，检查 TTL 或最大大小设置，避免内存泄漏。|
-|cache_lock_duration_seconds|Counter|缓存等待锁的时间（秒），反映并发访问时的锁竞争开销。主要在 Caffeine 等支持锁的实现中出现。如果无竞争，则值为 0。|诊断并发瓶颈：如果值持续 &gt; 0.1s，优化锁粒度或使用读写锁。适用于高并发场景。|</p>
+<table>
+<thead>
+<tr>
+<th>指标名称</th>
+<th>类型</th>
+<th>描述</th>
+<th>监控建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cache_gets_total</td>
+<td>Counter</td>
+<td>缓存查找操作的总次数，包括命中（hit，返回缓存值）和未命中（miss，新加载或 null 值）。这是一个累积计数器，可用于计算命中率（hit / total）。</td>
+<td>监控缓存效率：查询 rate(cache_gets_total{result="hit"}[5m]) / rate(cache_gets_total[5m]) 计算 5 分钟命中率。如果 miss 率 &gt; 20%，考虑优化缓存策略。</td>
+</tr>
+<tr>
+<td>cache_puts_total</td>
+<td>Counter</td>
+<td>向缓存中添加条目的总次数，包括新插入或覆盖现有值。</td>
+<td>跟踪缓存填充速率：高 put 率可能表示数据频繁更新，结合 gets 分析负载。</td>
+</tr>
+<tr>
+<td>cache_removals_total</td>
+<td>Counter</td>
+<td>从缓存中移除条目的总次数，包括手动 evict 或过期清除。</td>
+<td>监控缓存清理：如果 removals 率高，检查 TTL 或最大大小设置，避免内存泄漏。</td>
+</tr>
+<tr>
+<td>cache_lock_duration_seconds</td>
+<td>Counter</td>
+<td>缓存等待锁的时间（秒），反映并发访问时的锁竞争开销。主要在 Caffeine 等支持锁的实现中出现。如果无竞争，则值为 0。</td>
+<td>诊断并发瓶颈：如果值持续 &gt; 0.1s，优化锁粒度或使用读写锁。适用于高并发场景。</td>
+</tr>
+</tbody>
+</table>
 <h3>Spring Data Redis指标</h3>
-<p>|指标名称|类型|描述|监控建议|
-|-------|---|------|------|
-|lettuce_command_completion_seconds|Histogram|Redis命令的完整执行延迟（秒），从发送到完全完成的总时间。按命令类型、本地套接字和远程端点跟踪每个完成的命令。|监控命令性能：使用histogram分位数计算p99延迟，如histogram_quantile(0.99, rate(lettuce_command_completion_seconds_bucket[5m]))。如果p99 &gt; 1s，检查网络延迟或Redis负载。|
-|lettuce_command_completion_seconds_bucket|Histogram|命令完成延迟的累积分布函数（CDF）桶，用于生成可聚合的分位数近似。仅在启用histogram时可用，默认桶从1ms到5分钟。|启用histogram以支持分位数查询：监控高分位数桶的增长率，识别尾部延迟问题。结合_count分析命令量。|
-|lettuce_command_completion_seconds_count|Counter|记录的Redis命令完成次数的总计数，按命令类型、本地和远程端点分组。|跟踪命令吞吐量：查询rate(lettuce_command_completion_seconds_count[5m])计算每秒完成率。如果率突然下降，调查连接中断或错误。|
-|lettuce_command_completion_seconds_max|Gauge|观察到的最大命令完成延迟（秒）。受maxLatency设置影响，当启用histogram时。|警报峰值延迟：如果max &gt; 10s，触发警报检查异常，如Redis节点故障或网络分区。定期重置以避免旧峰值影响。|
-|lettuce_command_completion_seconds_sum|Counter|所有记录的命令完成延迟的总和（秒）。用于计算平均延迟（sum / count）。|计算平均完成时间：rate(lettuce_command_completion_seconds_sum[5m]) / rate(lettuce_command_completion_seconds_count[5m])。如果平均 &gt; 0.1s，优化命令批处理或连接池大小。|
-|lettuce_command_firstresponse_seconds|Histogram|Redis命令的首次响应延迟（秒），从发送到第一个字节响应的时间。按命令类型、本地套接字和远程端点跟踪。|监控响应性：使用p95分位数如histogram_quantile(0.95, rate(lettuce_command_firstresponse_seconds_bucket[5m]))。如果p95 &gt; 0.5s，检查Redis查询复杂性或CPU使用。|
-|lettuce_command_firstresponse_seconds_bucket|Histogram|首次响应延迟的累积分布函数（CDF）桶，用于分位数近似。仅在启用histogram时可用，默认范围1ms到5分钟。|利用桶数据分析延迟分布：监控桶填充以检测延迟抖动。启用localDistinction以细粒度跟踪连接。|
-|lettuce_command_firstresponse_seconds_count|Counter|记录的Redis命令首次响应次数的总计数，按命令类型分组。|评估系统响应率：rate(lettuce_command_firstresponse_seconds_count[5m])表示每秒首次响应数。高率结合低延迟表示健康系统。|
-|lettuce_command_firstresponse_seconds_max|Gauge|观察到的最大首次响应延迟（秒）。histogram启用时受maxLatency限制。|检测最坏情况：如果max &gt; 5s，调查阻塞命令或慢查询。设置警报阈值以捕获间歇性问题。|
-|lettuce_command_firstresponse_seconds_sum|Counter|所有记录的首次响应延迟的总和（秒）。用于平均响应时间计算。|监控平均首次响应：rate(lettuce_command_firstresponse_seconds_sum[5m]) / rate(lettuce_command_firstresponse_seconds_count[5m])。如果平均 &gt; 0.05s，考虑增加连接池或优化网络。|</p>
+<table>
+<thead>
+<tr>
+<th>指标名称</th>
+<th>类型</th>
+<th>描述</th>
+<th>监控建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lettuce_command_completion_seconds</td>
+<td>Histogram</td>
+<td>Redis命令的完整执行延迟（秒），从发送到完全完成的总时间。按命令类型、本地套接字和远程端点跟踪每个完成的命令。</td>
+<td>监控命令性能：使用histogram分位数计算p99延迟，如histogram_quantile(0.99, rate(lettuce_command_completion_seconds_bucket[5m]))。如果p99 &gt; 1s，检查网络延迟或Redis负载。</td>
+</tr>
+<tr>
+<td>lettuce_command_completion_seconds_bucket</td>
+<td>Histogram</td>
+<td>命令完成延迟的累积分布函数（CDF）桶，用于生成可聚合的分位数近似。仅在启用histogram时可用，默认桶从1ms到5分钟。</td>
+<td>启用histogram以支持分位数查询：监控高分位数桶的增长率，识别尾部延迟问题。结合_count分析命令量。</td>
+</tr>
+<tr>
+<td>lettuce_command_completion_seconds_count</td>
+<td>Counter</td>
+<td>记录的Redis命令完成次数的总计数，按命令类型、本地和远程端点分组。</td>
+<td>跟踪命令吞吐量：查询rate(lettuce_command_completion_seconds_count[5m])计算每秒完成率。如果率突然下降，调查连接中断或错误。</td>
+</tr>
+<tr>
+<td>lettuce_command_completion_seconds_max</td>
+<td>Gauge</td>
+<td>观察到的最大命令完成延迟（秒）。受maxLatency设置影响，当启用histogram时。</td>
+<td>警报峰值延迟：如果max &gt; 10s，触发警报检查异常，如Redis节点故障或网络分区。定期重置以避免旧峰值影响。</td>
+</tr>
+<tr>
+<td>lettuce_command_completion_seconds_sum</td>
+<td>Counter</td>
+<td>所有记录的命令完成延迟的总和（秒）。用于计算平均延迟（sum / count）。</td>
+<td>计算平均完成时间：rate(lettuce_command_completion_seconds_sum[5m]) / rate(lettuce_command_completion_seconds_count[5m])。如果平均 &gt; 0.1s，优化命令批处理或连接池大小。</td>
+</tr>
+<tr>
+<td>lettuce_command_firstresponse_seconds</td>
+<td>Histogram</td>
+<td>Redis命令的首次响应延迟（秒），从发送到第一个字节响应的时间。按命令类型、本地套接字和远程端点跟踪。</td>
+<td>监控响应性：使用p95分位数如histogram_quantile(0.95, rate(lettuce_command_firstresponse_seconds_bucket[5m]))。如果p95 &gt; 0.5s，检查Redis查询复杂性或CPU使用。</td>
+</tr>
+<tr>
+<td>lettuce_command_firstresponse_seconds_bucket</td>
+<td>Histogram</td>
+<td>首次响应延迟的累积分布函数（CDF）桶，用于分位数近似。仅在启用histogram时可用，默认范围1ms到5分钟。</td>
+<td>利用桶数据分析延迟分布：监控桶填充以检测延迟抖动。启用localDistinction以细粒度跟踪连接。</td>
+</tr>
+<tr>
+<td>lettuce_command_firstresponse_seconds_count</td>
+<td>Counter</td>
+<td>记录的Redis命令首次响应次数的总计数，按命令类型分组。</td>
+<td>评估系统响应率：rate(lettuce_command_firstresponse_seconds_count[5m])表示每秒首次响应数。高率结合低延迟表示健康系统。</td>
+</tr>
+<tr>
+<td>lettuce_command_firstresponse_seconds_max</td>
+<td>Gauge</td>
+<td>观察到的最大首次响应延迟（秒）。histogram启用时受maxLatency限制。</td>
+<td>检测最坏情况：如果max &gt; 5s，调查阻塞命令或慢查询。设置警报阈值以捕获间歇性问题。</td>
+</tr>
+<tr>
+<td>lettuce_command_firstresponse_seconds_sum</td>
+<td>Counter</td>
+<td>所有记录的首次响应延迟的总和（秒）。用于平均响应时间计算。</td>
+<td>监控平均首次响应：rate(lettuce_command_firstresponse_seconds_sum[5m]) / rate(lettuce_command_firstresponse_seconds_count[5m])。如果平均 &gt; 0.05s，考虑增加连接池或优化网络。</td>
+</tr>
+</tbody>
+</table>
         </article>
     </div>
 </main>

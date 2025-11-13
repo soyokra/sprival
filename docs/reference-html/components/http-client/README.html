@@ -883,36 +883,144 @@
 </ul>
 <h2>配置说明</h2>
 <h3>Feign配置</h3>
-<p>| 配置项 | 默认值 | 说明 |
-|--------|--------|------|
-| <code>feign.okhttp.enabled</code> | <code>false</code> | 启用OkHttp作为底层HTTP客户端 |
-| <code>feign.client.config.default.connect-timeout</code> | <code>10000</code> | 连接超时时间(毫秒) |
-| <code>feign.client.config.default.read-timeout</code> | <code>60000</code> | 读取超时时间(毫秒) |
-| <code>feign.client.config.default.logger-level</code> | <code>NONE</code> | 日志级别 |
-| <code>feign.compression.request.enabled</code> | <code>false</code> | 启用请求压缩 |
-| <code>feign.compression.response.enabled</code> | <code>false</code> | 启用响应压缩 |</p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>feign.okhttp.enabled</code></td>
+<td><code>false</code></td>
+<td>启用OkHttp作为底层HTTP客户端</td>
+</tr>
+<tr>
+<td><code>feign.client.config.default.connect-timeout</code></td>
+<td><code>10000</code></td>
+<td>连接超时时间(毫秒)</td>
+</tr>
+<tr>
+<td><code>feign.client.config.default.read-timeout</code></td>
+<td><code>60000</code></td>
+<td>读取超时时间(毫秒)</td>
+</tr>
+<tr>
+<td><code>feign.client.config.default.logger-level</code></td>
+<td><code>NONE</code></td>
+<td>日志级别</td>
+</tr>
+<tr>
+<td><code>feign.compression.request.enabled</code></td>
+<td><code>false</code></td>
+<td>启用请求压缩</td>
+</tr>
+<tr>
+<td><code>feign.compression.response.enabled</code></td>
+<td><code>false</code></td>
+<td>启用响应压缩</td>
+</tr>
+</tbody>
+</table>
 <h3>OkHttp配置</h3>
-<p>| 配置项 | 默认值 | 说明 |
-|--------|--------|------|
-| <code>okhttp.connection-pool.max-idle-connections</code> | <code>5</code> | 最大空闲连接数 |
-| <code>okhttp.connection-pool.keep-alive-duration</code> | <code>300s</code> | 连接保持活跃时间 |
-| <code>okhttp.connect-timeout</code> | <code>10s</code> | 连接超时时间 |
-| <code>okhttp.read-timeout</code> | <code>30s</code> | 读取超时时间 |
-| <code>okhttp.write-timeout</code> | <code>30s</code> | 写入超时时间 |</p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>okhttp.connection-pool.max-idle-connections</code></td>
+<td><code>5</code></td>
+<td>最大空闲连接数</td>
+</tr>
+<tr>
+<td><code>okhttp.connection-pool.keep-alive-duration</code></td>
+<td><code>300s</code></td>
+<td>连接保持活跃时间</td>
+</tr>
+<tr>
+<td><code>okhttp.connect-timeout</code></td>
+<td><code>10s</code></td>
+<td>连接超时时间</td>
+</tr>
+<tr>
+<td><code>okhttp.read-timeout</code></td>
+<td><code>30s</code></td>
+<td>读取超时时间</td>
+</tr>
+<tr>
+<td><code>okhttp.write-timeout</code></td>
+<td><code>30s</code></td>
+<td>写入超时时间</td>
+</tr>
+</tbody>
+</table>
 <h3>Resilience4j配置</h3>
 <h4>熔断器配置</h4>
-<p>| 配置项 | 默认值 | 说明 |
-|--------|--------|------|
-| <code>resilience4j.circuitbreaker.instances.feign.failure-rate-threshold</code> | <code>50</code> | 失败率阈值(%) |
-| <code>resilience4j.circuitbreaker.instances.feign.wait-duration-in-open-state</code> | <code>60s</code> | 熔断器打开后等待时间 |
-| <code>resilience4j.circuitbreaker.instances.feign.sliding-window-size</code> | <code>100</code> | 滑动窗口大小 |
-| <code>resilience4j.circuitbreaker.instances.feign.minimum-number-of-calls</code> | <code>100</code> | 最小调用次数 |</p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>resilience4j.circuitbreaker.instances.feign.failure-rate-threshold</code></td>
+<td><code>50</code></td>
+<td>失败率阈值(%)</td>
+</tr>
+<tr>
+<td><code>resilience4j.circuitbreaker.instances.feign.wait-duration-in-open-state</code></td>
+<td><code>60s</code></td>
+<td>熔断器打开后等待时间</td>
+</tr>
+<tr>
+<td><code>resilience4j.circuitbreaker.instances.feign.sliding-window-size</code></td>
+<td><code>100</code></td>
+<td>滑动窗口大小</td>
+</tr>
+<tr>
+<td><code>resilience4j.circuitbreaker.instances.feign.minimum-number-of-calls</code></td>
+<td><code>100</code></td>
+<td>最小调用次数</td>
+</tr>
+</tbody>
+</table>
 <h4>重试配置</h4>
-<p>| 配置项 | 默认值 | 说明 |
-|--------|--------|------|
-| <code>resilience4j.retry.instances.feign.max-attempts</code> | <code>3</code> | 最大重试次数 |
-| <code>resilience4j.retry.instances.feign.wait-duration</code> | <code>500ms</code> | 重试间隔时间 |
-| <code>resilience4j.retry.instances.feign.retry-exceptions</code> | - | 需要重试的异常类型 |</p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>resilience4j.retry.instances.feign.max-attempts</code></td>
+<td><code>3</code></td>
+<td>最大重试次数</td>
+</tr>
+<tr>
+<td><code>resilience4j.retry.instances.feign.wait-duration</code></td>
+<td><code>500ms</code></td>
+<td>重试间隔时间</td>
+</tr>
+<tr>
+<td><code>resilience4j.retry.instances.feign.retry-exceptions</code></td>
+<td>-</td>
+<td>需要重试的异常类型</td>
+</tr>
+</tbody>
+</table>
         </article>
     </div>
 </main>

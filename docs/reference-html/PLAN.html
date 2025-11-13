@@ -889,25 +889,102 @@
 </ul>
 <h2>二、选型建议</h2>
 <h3>核心选型（已确认）</h3>
-<p>| 组件类型 | 推荐方案 | 备选方案 |
-|---------|---------|---------|
-| 微服务框架 | Spring Boot | - |
-| 关系数据库 | MySQL | PostgreSQL |
-| 缓存 | Redis Cluster | Redis Sentinel |
-| 消息队列 | Kafka | RabbitMQ（仅复杂路由场景） |
-| 全文搜索 | Elasticsearch | OpenSearch |
-| 数据分析 | ClickHouse | - |
-| 配置/注册中心 | Nacos | Consul + Spring Cloud Config |
-| API 网关 | Spring Cloud Gateway | Kong, NGINX |
-| 服务治理 | Resilience4j | Sentinel |
-| 分布式追踪 | OpenTelemetry + Tempo | OpenTelemetry + Jaeger |
-| 身份认证 | Keycloak | Spring Authorization Server |
-| 秘密管理 | Vault | Kubernetes SealedSecrets |
-| 日志采集 | ELK + Kafka | Vector + OpenSearch |
-| 监控告警 | Prometheus + Grafana | - |
-| CI/CD | GitLab CI | Jenkins, GitHub Actions |
-| 容器编排 | Kubernetes | Docker Swarm（小规模） |
-| GitOps | Argo CD | Flux |</p>
+<table>
+<thead>
+<tr>
+<th>组件类型</th>
+<th>推荐方案</th>
+<th>备选方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>微服务框架</td>
+<td>Spring Boot</td>
+<td>-</td>
+</tr>
+<tr>
+<td>关系数据库</td>
+<td>MySQL</td>
+<td>PostgreSQL</td>
+</tr>
+<tr>
+<td>缓存</td>
+<td>Redis Cluster</td>
+<td>Redis Sentinel</td>
+</tr>
+<tr>
+<td>消息队列</td>
+<td>Kafka</td>
+<td>RabbitMQ（仅复杂路由场景）</td>
+</tr>
+<tr>
+<td>全文搜索</td>
+<td>Elasticsearch</td>
+<td>OpenSearch</td>
+</tr>
+<tr>
+<td>数据分析</td>
+<td>ClickHouse</td>
+<td>-</td>
+</tr>
+<tr>
+<td>配置/注册中心</td>
+<td>Nacos</td>
+<td>Consul + Spring Cloud Config</td>
+</tr>
+<tr>
+<td>API 网关</td>
+<td>Spring Cloud Gateway</td>
+<td>Kong, NGINX</td>
+</tr>
+<tr>
+<td>服务治理</td>
+<td>Resilience4j</td>
+<td>Sentinel</td>
+</tr>
+<tr>
+<td>分布式追踪</td>
+<td>OpenTelemetry + Tempo</td>
+<td>OpenTelemetry + Jaeger</td>
+</tr>
+<tr>
+<td>身份认证</td>
+<td>Keycloak</td>
+<td>Spring Authorization Server</td>
+</tr>
+<tr>
+<td>秘密管理</td>
+<td>Vault</td>
+<td>Kubernetes SealedSecrets</td>
+</tr>
+<tr>
+<td>日志采集</td>
+<td>ELK + Kafka</td>
+<td>Vector + OpenSearch</td>
+</tr>
+<tr>
+<td>监控告警</td>
+<td>Prometheus + Grafana</td>
+<td>-</td>
+</tr>
+<tr>
+<td>CI/CD</td>
+<td>GitLab CI</td>
+<td>Jenkins, GitHub Actions</td>
+</tr>
+<tr>
+<td>容器编排</td>
+<td>Kubernetes</td>
+<td>Docker Swarm（小规模）</td>
+</tr>
+<tr>
+<td>GitOps</td>
+<td>Argo CD</td>
+<td>Flux</td>
+</tr>
+</tbody>
+</table>
 <h3>选型原则</h3>
 <ol>
 <li><strong>技术统一性</strong> - 优先选择 Spring 生态组件，降低学习成本</li>
@@ -1089,7 +1166,7 @@
 <li><strong>文档完善</strong> - 维护技术文档、运维手册、故障处理手册</li>
 </ol>
 <hr />
-<p><strong>最后更新</strong>: 2024年
+<p><strong>最后更新</strong>: 2024年<br />
 <strong>维护者</strong>: Sprival 团队</p>
         </article>
     </div>

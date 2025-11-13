@@ -1181,56 +1181,230 @@ GET /api/clickhouse/test-data
 <h2>Java类型映射参考</h2>
 <p>ClickHouse 数据类型与 Java 类型的映射关系：</p>
 <h3>整数类型</h3>
-<p>| ClickHouse 类型 | Java 类型 | 说明 |
-|----------------|-----------|------|
-| Int8 | byte | 8位有符号整数 |
-| Int16 | short | 16位有符号整数 |
-| Int32 | int | 32位有符号整数 |
-| Int64 | long | 64位有符号整数 |
-| Int128 | String | 128位有符号整数 |
-| Int256 | String | 256位有符号整数 |
-| UInt8 | short | 8位无符号整数 |
-| UInt16 | int | 16位无符号整数 |
-| UInt32 | long | 32位无符号整数 |
-| UInt64 | String | 64位无符号整数 |
-| UInt128 | String | 128位无符号整数 |
-| UInt256 | String | 256位无符号整数 |</p>
+<table>
+<thead>
+<tr>
+<th>ClickHouse 类型</th>
+<th>Java 类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Int8</td>
+<td>byte</td>
+<td>8位有符号整数</td>
+</tr>
+<tr>
+<td>Int16</td>
+<td>short</td>
+<td>16位有符号整数</td>
+</tr>
+<tr>
+<td>Int32</td>
+<td>int</td>
+<td>32位有符号整数</td>
+</tr>
+<tr>
+<td>Int64</td>
+<td>long</td>
+<td>64位有符号整数</td>
+</tr>
+<tr>
+<td>Int128</td>
+<td>String</td>
+<td>128位有符号整数</td>
+</tr>
+<tr>
+<td>Int256</td>
+<td>String</td>
+<td>256位有符号整数</td>
+</tr>
+<tr>
+<td>UInt8</td>
+<td>short</td>
+<td>8位无符号整数</td>
+</tr>
+<tr>
+<td>UInt16</td>
+<td>int</td>
+<td>16位无符号整数</td>
+</tr>
+<tr>
+<td>UInt32</td>
+<td>long</td>
+<td>32位无符号整数</td>
+</tr>
+<tr>
+<td>UInt64</td>
+<td>String</td>
+<td>64位无符号整数</td>
+</tr>
+<tr>
+<td>UInt128</td>
+<td>String</td>
+<td>128位无符号整数</td>
+</tr>
+<tr>
+<td>UInt256</td>
+<td>String</td>
+<td>256位无符号整数</td>
+</tr>
+</tbody>
+</table>
 <h3>浮点类型</h3>
-<p>| ClickHouse 类型 | Java 类型 | 说明 |
-|----------------|-----------|------|
-| Float32 | float/String | 32位浮点数 |
-| Float64 | double/String | 64位浮点数 |
-| BFloat16 | String | 16位浮点数 |</p>
+<table>
+<thead>
+<tr>
+<th>ClickHouse 类型</th>
+<th>Java 类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Float32</td>
+<td>float/String</td>
+<td>32位浮点数</td>
+</tr>
+<tr>
+<td>Float64</td>
+<td>double/String</td>
+<td>64位浮点数</td>
+</tr>
+<tr>
+<td>BFloat16</td>
+<td>String</td>
+<td>16位浮点数</td>
+</tr>
+</tbody>
+</table>
 <blockquote>
 <p><strong>注意</strong>: ClickHouse 的浮点型支持 NaN 和 Inf 值，这些特殊值只能用字符串表示。</p>
 </blockquote>
 <h3>小数类型</h3>
-<p>| ClickHouse 类型 | Java 类型 | 说明 |
-|----------------|-----------|------|
-| Decimal32 | BigDecimal | 32位小数 |
-| Decimal64 | BigDecimal | 64位小数 |
-| Decimal128 | BigDecimal | 128位小数 |
-| Decimal256 | BigDecimal | 256位小数 |</p>
+<table>
+<thead>
+<tr>
+<th>ClickHouse 类型</th>
+<th>Java 类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Decimal32</td>
+<td>BigDecimal</td>
+<td>32位小数</td>
+</tr>
+<tr>
+<td>Decimal64</td>
+<td>BigDecimal</td>
+<td>64位小数</td>
+</tr>
+<tr>
+<td>Decimal128</td>
+<td>BigDecimal</td>
+<td>128位小数</td>
+</tr>
+<tr>
+<td>Decimal256</td>
+<td>BigDecimal</td>
+<td>256位小数</td>
+</tr>
+</tbody>
+</table>
 <h3>字符串类型</h3>
-<p>| ClickHouse 类型 | Java 类型 | 说明 |
-|----------------|-----------|------|
-| String | String | 变长字符串 |
-| FixedString | String | 定长字符串 |</p>
+<table>
+<thead>
+<tr>
+<th>ClickHouse 类型</th>
+<th>Java 类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>String</td>
+<td>String</td>
+<td>变长字符串</td>
+</tr>
+<tr>
+<td>FixedString</td>
+<td>String</td>
+<td>定长字符串</td>
+</tr>
+</tbody>
+</table>
 <h3>日期时间类型</h3>
-<p>| ClickHouse 类型 | Java 类型 | 说明 |
-|----------------|-----------|------|
-| Date | Date | 日期 |
-| Date32 | Date | 32位日期 |
-| DateTime | Timestamp | 日期时间 |
-| DateTime64 | Timestamp | 64位日期时间 |</p>
+<table>
+<thead>
+<tr>
+<th>ClickHouse 类型</th>
+<th>Java 类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Date</td>
+<td>Date</td>
+<td>日期</td>
+</tr>
+<tr>
+<td>Date32</td>
+<td>Date</td>
+<td>32位日期</td>
+</tr>
+<tr>
+<td>DateTime</td>
+<td>Timestamp</td>
+<td>日期时间</td>
+</tr>
+<tr>
+<td>DateTime64</td>
+<td>Timestamp</td>
+<td>64位日期时间</td>
+</tr>
+</tbody>
+</table>
 <h3>其他类型</h3>
-<p>| ClickHouse 类型 | Java 类型 | 说明 |
-|----------------|-----------|------|
-| Enum | String | 枚举类型 |
-| Bool | boolean | 布尔类型 |
-| UUID | String | UUID类型 |
-| Array | List | 数组类型 |
-| Map | Map | 映射类型 |</p>
+<table>
+<thead>
+<tr>
+<th>ClickHouse 类型</th>
+<th>Java 类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enum</td>
+<td>String</td>
+<td>枚举类型</td>
+</tr>
+<tr>
+<td>Bool</td>
+<td>boolean</td>
+<td>布尔类型</td>
+</tr>
+<tr>
+<td>UUID</td>
+<td>String</td>
+<td>UUID类型</td>
+</tr>
+<tr>
+<td>Array</td>
+<td>List</td>
+<td>数组类型</td>
+</tr>
+<tr>
+<td>Map</td>
+<td>Map</td>
+<td>映射类型</td>
+</tr>
+</tbody>
+</table>
 <h2>性能优化</h2>
 <h3>1. 连接池优化</h3>
 <pre><code class="language-properties"># 连接池配置优化
@@ -1363,9 +1537,24 @@ spec:
             cpu: &quot;2000m&quot;
 </code></pre>
 <h2>更新历史</h2>
-<p>| 日期 | 版本 | 更新内容 | 更新人 |
-|------|------|----------|--------|
-| 2025-01-08 | 1.0 | 初始创建，完整的 ClickHouse 集成方案 | AI Assistant |</p>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>版本</th>
+<th>更新内容</th>
+<th>更新人</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2025-01-08</td>
+<td>1.0</td>
+<td>初始创建，完整的 ClickHouse 集成方案</td>
+<td>AI Assistant</td>
+</tr>
+</tbody>
+</table>
 <h2>相关链接</h2>
 <ul>
 <li><a href="https://clickhouse.com/docs/">ClickHouse 官方文档</a></li>

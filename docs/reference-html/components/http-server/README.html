@@ -928,49 +928,234 @@ server.compression.min-response-size = 2KB
 </code></pre>
 <h2>安全配置</h2>
 <p>本模块通过 <code>SprivalJettySecurityHeaderCustomizer</code> 自动配置以下 HTTP 安全头：</p>
-<p>| 安全头 | 配置值 | 作用 |
-|-------|--------|------|
-| X-Frame-Options | DENY | 防止点击劫持攻击 |
-| X-Content-Type-Options | nosniff | 防止 MIME 类型嗅探 |
-| X-XSS-Protection | 1; mode=block | XSS 防护 |
-| Content-Security-Policy | 限制资源加载来源 | 防止内容注入攻击 |
-| Strict-Transport-Security | max-age=31536000 (仅 HTTPS) | 强制 HTTPS 访问 |
-| Server | Sprival/1.0 | 隐藏服务器真实信息 |
-| Cache-Control | no-cache (API 接口) | 防止缓存敏感信息 |
-| Permissions-Policy | 禁用敏感设备权限 | 限制浏览器功能访问 |
-| Referrer-Policy | strict-origin-when-cross-origin | 控制 Referer 信息泄露 |</p>
+<table>
+<thead>
+<tr>
+<th>安全头</th>
+<th>配置值</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>X-Frame-Options</td>
+<td>DENY</td>
+<td>防止点击劫持攻击</td>
+</tr>
+<tr>
+<td>X-Content-Type-Options</td>
+<td>nosniff</td>
+<td>防止 MIME 类型嗅探</td>
+</tr>
+<tr>
+<td>X-XSS-Protection</td>
+<td>1; mode=block</td>
+<td>XSS 防护</td>
+</tr>
+<tr>
+<td>Content-Security-Policy</td>
+<td>限制资源加载来源</td>
+<td>防止内容注入攻击</td>
+</tr>
+<tr>
+<td>Strict-Transport-Security</td>
+<td>max-age=31536000 (仅 HTTPS)</td>
+<td>强制 HTTPS 访问</td>
+</tr>
+<tr>
+<td>Server</td>
+<td>Sprival/1.0</td>
+<td>隐藏服务器真实信息</td>
+</tr>
+<tr>
+<td>Cache-Control</td>
+<td>no-cache (API 接口)</td>
+<td>防止缓存敏感信息</td>
+</tr>
+<tr>
+<td>Permissions-Policy</td>
+<td>禁用敏感设备权限</td>
+<td>限制浏览器功能访问</td>
+</tr>
+<tr>
+<td>Referrer-Policy</td>
+<td>strict-origin-when-cross-origin</td>
+<td>控制 Referer 信息泄露</td>
+</tr>
+</tbody>
+</table>
 <h2>监控指标</h2>
 <h3>Jetty 线程池指标</h3>
-<p>| 指标名称 | 类型 | 描述 | 监控建议 |
-|---------|------|------|---------|
-| jetty_threads_config_max | Gauge | 配置的最大线程数 | 对比实际使用情况，评估是否需要调整 |
-| jetty_threads_config_min | Gauge | 配置的最小线程数 | 确保最小线程数满足基础负载 |
-| jetty_threads_current | Gauge | 当前线程池中的线程总数 | 监控线程池规模变化趋势 |
-| jetty_threads_idle | Gauge | 当前空闲线程数 | 持续为 0 说明线程池不足，需要增加 max |
-| jetty_threads_busy | Gauge | 当前正在处理请求的线程数 | 接近 max 时需要告警，表示负载高 |
-| jetty_threads_jobs | Gauge | 队列中等待执行的任务数 | 持续 &gt;0 说明线程不足，请求在排队 |</p>
+<table>
+<thead>
+<tr>
+<th>指标名称</th>
+<th>类型</th>
+<th>描述</th>
+<th>监控建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>jetty_threads_config_max</td>
+<td>Gauge</td>
+<td>配置的最大线程数</td>
+<td>对比实际使用情况，评估是否需要调整</td>
+</tr>
+<tr>
+<td>jetty_threads_config_min</td>
+<td>Gauge</td>
+<td>配置的最小线程数</td>
+<td>确保最小线程数满足基础负载</td>
+</tr>
+<tr>
+<td>jetty_threads_current</td>
+<td>Gauge</td>
+<td>当前线程池中的线程总数</td>
+<td>监控线程池规模变化趋势</td>
+</tr>
+<tr>
+<td>jetty_threads_idle</td>
+<td>Gauge</td>
+<td>当前空闲线程数</td>
+<td>持续为 0 说明线程池不足，需要增加 max</td>
+</tr>
+<tr>
+<td>jetty_threads_busy</td>
+<td>Gauge</td>
+<td>当前正在处理请求的线程数</td>
+<td>接近 max 时需要告警，表示负载高</td>
+</tr>
+<tr>
+<td>jetty_threads_jobs</td>
+<td>Gauge</td>
+<td>队列中等待执行的任务数</td>
+<td>持续 &gt;0 说明线程不足，请求在排队</td>
+</tr>
+</tbody>
+</table>
 <h3>HTTP 请求指标</h3>
-<p>| 指标名称 | 类型 | 描述 | 监控建议 |
-|---------|------|------|---------|
-| http_server_requests_seconds_count | Counter | HTTP 请求总数，包含 uri、method、status、exception 标签 | 计算 QPS；按 status 分组统计错误率；按 uri 分组识别热点接口 |
-| http_server_requests_seconds_sum | Summary | HTTP 请求处理总耗时（秒） | 配合 count 计算平均响应时间：sum / count |
-| http_server_requests_seconds_max | Gauge | 最近一段时间的最大请求延迟（秒） | 识别慢请求尖刺，超过阈值（如 5s）需告警 |</p>
+<table>
+<thead>
+<tr>
+<th>指标名称</th>
+<th>类型</th>
+<th>描述</th>
+<th>监控建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>http_server_requests_seconds_count</td>
+<td>Counter</td>
+<td>HTTP 请求总数，包含 uri、method、status、exception 标签</td>
+<td>计算 QPS；按 status 分组统计错误率；按 uri 分组识别热点接口</td>
+</tr>
+<tr>
+<td>http_server_requests_seconds_sum</td>
+<td>Summary</td>
+<td>HTTP 请求处理总耗时（秒）</td>
+<td>配合 count 计算平均响应时间：sum / count</td>
+</tr>
+<tr>
+<td>http_server_requests_seconds_max</td>
+<td>Gauge</td>
+<td>最近一段时间的最大请求延迟（秒）</td>
+<td>识别慢请求尖刺，超过阈值（如 5s）需告警</td>
+</tr>
+</tbody>
+</table>
 <h3>Jetty 连接指标</h3>
-<p>| 指标名称 | 类型 | 描述 | 监控建议 |
-|---------|------|------|---------|
-| jetty_connections_current_connections | Gauge | 当前活动 TCP 连接数 | 监控连接数趋势，异常增长需要排查；持续高位可能是连接泄露 |
-| jetty_connections_max_connections | Gauge | 历史最大连接数 | 用于容量规划，评估峰值负载 |
-| jetty_connections_messages_in_messages_total | Counter | 接收的 HTTP 消息总数 | 结合 messages_out 识别流量模式；异常比例需排查 |
-| jetty_connections_messages_out_messages_total | Counter | 发送的 HTTP 消息总数 | 监控响应吞吐量；正常情况应与 messages_in 接近 |
-| jetty_connections_bytes_in_bytes_count | Counter | 接收的请求次数（用于计算字节统计） | 配合 sum 计算平均请求大小 |
-| jetty_connections_bytes_in_bytes_sum | Summary | 接收的字节总数 | 监控入站流量；平均请求大小 = sum / count；识别大请求攻击 |
-| jetty_connections_bytes_in_bytes_max | Gauge | 最近一段时间接收的最大字节数 | 识别异常大请求，可能是上传攻击或误用 |
-| jetty_connections_bytes_out_bytes_count | Counter | 发送的响应次数（用于计算字节统计） | 配合 sum 计算平均响应大小 |
-| jetty_connections_bytes_out_bytes_sum | Summary | 发送的字节总数 | 监控出站流量；评估压缩效果；计算带宽使用 |
-| jetty_connections_bytes_out_bytes_max | Gauge | 最近一段时间发送的最大字节数 | 识别大响应接口，优化序列化或分页 |
-| jetty_connections_request_seconds_count | Counter | 连接级别请求处理次数 | 与 http_server_requests_seconds_count 对比，识别连接复用情况 |
-| jetty_connections_request_seconds_sum | Summary | 连接级别请求处理总耗时 | 监控连接层面的性能，包含网络传输时间 |
-| jetty_connections_request_seconds_max | Gauge | 连接级别最大请求处理时间 | 识别网络层面的慢请求 |</p>
+<table>
+<thead>
+<tr>
+<th>指标名称</th>
+<th>类型</th>
+<th>描述</th>
+<th>监控建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>jetty_connections_current_connections</td>
+<td>Gauge</td>
+<td>当前活动 TCP 连接数</td>
+<td>监控连接数趋势，异常增长需要排查；持续高位可能是连接泄露</td>
+</tr>
+<tr>
+<td>jetty_connections_max_connections</td>
+<td>Gauge</td>
+<td>历史最大连接数</td>
+<td>用于容量规划，评估峰值负载</td>
+</tr>
+<tr>
+<td>jetty_connections_messages_in_messages_total</td>
+<td>Counter</td>
+<td>接收的 HTTP 消息总数</td>
+<td>结合 messages_out 识别流量模式；异常比例需排查</td>
+</tr>
+<tr>
+<td>jetty_connections_messages_out_messages_total</td>
+<td>Counter</td>
+<td>发送的 HTTP 消息总数</td>
+<td>监控响应吞吐量；正常情况应与 messages_in 接近</td>
+</tr>
+<tr>
+<td>jetty_connections_bytes_in_bytes_count</td>
+<td>Counter</td>
+<td>接收的请求次数（用于计算字节统计）</td>
+<td>配合 sum 计算平均请求大小</td>
+</tr>
+<tr>
+<td>jetty_connections_bytes_in_bytes_sum</td>
+<td>Summary</td>
+<td>接收的字节总数</td>
+<td>监控入站流量；平均请求大小 = sum / count；识别大请求攻击</td>
+</tr>
+<tr>
+<td>jetty_connections_bytes_in_bytes_max</td>
+<td>Gauge</td>
+<td>最近一段时间接收的最大字节数</td>
+<td>识别异常大请求，可能是上传攻击或误用</td>
+</tr>
+<tr>
+<td>jetty_connections_bytes_out_bytes_count</td>
+<td>Counter</td>
+<td>发送的响应次数（用于计算字节统计）</td>
+<td>配合 sum 计算平均响应大小</td>
+</tr>
+<tr>
+<td>jetty_connections_bytes_out_bytes_sum</td>
+<td>Summary</td>
+<td>发送的字节总数</td>
+<td>监控出站流量；评估压缩效果；计算带宽使用</td>
+</tr>
+<tr>
+<td>jetty_connections_bytes_out_bytes_max</td>
+<td>Gauge</td>
+<td>最近一段时间发送的最大字节数</td>
+<td>识别大响应接口，优化序列化或分页</td>
+</tr>
+<tr>
+<td>jetty_connections_request_seconds_count</td>
+<td>Counter</td>
+<td>连接级别请求处理次数</td>
+<td>与 http_server_requests_seconds_count 对比，识别连接复用情况</td>
+</tr>
+<tr>
+<td>jetty_connections_request_seconds_sum</td>
+<td>Summary</td>
+<td>连接级别请求处理总耗时</td>
+<td>监控连接层面的性能，包含网络传输时间</td>
+</tr>
+<tr>
+<td>jetty_connections_request_seconds_max</td>
+<td>Gauge</td>
+<td>连接级别最大请求处理时间</td>
+<td>识别网络层面的慢请求</td>
+</tr>
+</tbody>
+</table>
         </article>
     </div>
 </main>

@@ -1102,8 +1102,8 @@ done
 
 echo &quot;✅ 基础健康检查完成，请查看 Grafana 各面板是否有数据&quot;
 </code></pre>
-<p><strong>预期结果</strong>：
-- 所有 5 个监控面板都有数据显示
+<p><strong>预期结果</strong>：<br />
+- 所有 5 个监控面板都有数据显示<br />
 - 各项指标在健康范围内（绿色）</p>
 <hr />
 <h3>场景2：高并发压测 🔥</h3>
@@ -1120,14 +1120,14 @@ ab -n 10000 -c 100 \
 # wrk -t 10 -c 100 -d 60s \
 #     http://localhost:8338/api/monitor-test/http/fast
 </code></pre>
-<p><strong>观测指标</strong>：
-- <code>jetty_threads_busy</code> - 活动线程数应该上升
-- <code>http_server_requests_seconds_count</code> - QPS 统计
-- <code>jetty_connections_current_connections</code> - 当前连接数
+<p><strong>观测指标</strong>：<br />
+- <code>jetty_threads_busy</code> - 活动线程数应该上升<br />
+- <code>http_server_requests_seconds_count</code> - QPS 统计<br />
+- <code>jetty_connections_current_connections</code> - 当前连接数<br />
 - 平均响应延迟应保持 &lt;50ms</p>
-<p><strong>预期结果</strong>：
-- QPS 达到 1000+ (取决于硬件)
-- 线程池利用率 &lt;80%
+<p><strong>预期结果</strong>：<br />
+- QPS 达到 1000+ (取决于硬件)<br />
+- 线程池利用率 &lt;80%<br />
 - 无 HTTP 5xx 错误</p>
 <hr />
 <h3>场景3：连接池压力测试 💥</h3>
@@ -1140,14 +1140,14 @@ echo &quot;=== 场景3：连接池压力测试 ===&quot;
 ab -n 50 -c 30 \
    &quot;http://localhost:8338/api/monitor-test/db/slow-query?timeout=3000&quot;
 </code></pre>
-<p><strong>观测指标</strong>：
-- <code>hikaricp_connections_pending</code> - 等待线程数应该 &gt;0
-- <code>hikaricp_connections_active</code> - 接近 max (20)
-- 连接池利用率应该 &gt;90%（红色告警）
+<p><strong>观测指标</strong>：<br />
+- <code>hikaricp_connections_pending</code> - 等待线程数应该 &gt;0<br />
+- <code>hikaricp_connections_active</code> - 接近 max (20)<br />
+- 连接池利用率应该 &gt;90%（红色告警）<br />
 - <code>hikaricp_connections_acquire_seconds</code> - 获取连接延迟增加</p>
-<p><strong>预期结果</strong>：
-- 连接池健康度指标变为黄色或红色
-- 部分请求可能超时
+<p><strong>预期结果</strong>：<br />
+- 连接池健康度指标变为黄色或红色<br />
+- 部分请求可能超时<br />
 - 压测结束后连接池恢复正常</p>
 <hr />
 <h3>场景4：内存压力测试 🧠</h3>
@@ -1165,16 +1165,16 @@ done
 echo &quot;触发 GC...&quot;
 curl -s &quot;http://localhost:8338/api/monitor-test/jvm/trigger-gc&quot; &gt; /dev/null
 </code></pre>
-<p><strong>观测指标</strong>：
-- <code>jvm_memory_used_bytes</code> - 堆内存使用量上升
-- <code>jvm_gc_pause_seconds</code> - GC 暂停时间
-- <code>jvm_gc_pause_seconds_count</code> - GC 次数增加
-- <code>jvm_gc_overhead_percent</code> - GC 开销百分比
+<p><strong>观测指标</strong>：<br />
+- <code>jvm_memory_used_bytes</code> - 堆内存使用量上升<br />
+- <code>jvm_gc_pause_seconds</code> - GC 暂停时间<br />
+- <code>jvm_gc_pause_seconds_count</code> - GC 次数增加<br />
+- <code>jvm_gc_overhead_percent</code> - GC 开销百分比<br />
 - 堆内存使用率应该 &gt;70%（黄色）</p>
-<p><strong>预期结果</strong>：
-- 内存使用率上升到 70-85%
-- 触发多次 GC
-- GC 后内存使用率下降
+<p><strong>预期结果</strong>：<br />
+- 内存使用率上升到 70-85%<br />
+- 触发多次 GC<br />
+- GC 后内存使用率下降<br />
 - 无 OutOfMemoryError</p>
 <hr />
 <h3>场景5：缓存性能测试 📦</h3>
@@ -1205,14 +1205,14 @@ done
 
 echo &quot;✅ 缓存测试完成&quot;
 </code></pre>
-<p><strong>观测指标</strong>：
-- <code>cache_gets_total{result="hit"}</code> - 命中次数应为 100
-- <code>cache_gets_total{result="miss"}</code> - 未命中次数应为 100
-- 缓存命中率应为 50%
+<p><strong>观测指标</strong>：<br />
+- <code>cache_gets_total{result="hit"}</code> - 命中次数应为 100<br />
+- <code>cache_gets_total{result="miss"}</code> - 未命中次数应为 100<br />
+- 缓存命中率应为 50%<br />
 - <code>cache_puts_total</code> - 写入次数应为 100</p>
-<p><strong>预期结果</strong>：
-- 步骤2 命中率 100%
-- 步骤3 命中率 0%
+<p><strong>预期结果</strong>：<br />
+- 步骤2 命中率 100%<br />
+- 步骤3 命中率 0%<br />
 - 总体命中率 50%</p>
 <hr />
 <h3>场景6：消息队列压测 📨</h3>
@@ -1238,15 +1238,15 @@ curl -s &quot;$BASE_URL/consume-stats&quot;
 echo &quot;测试发布失败...&quot;
 curl -s &quot;$BASE_URL/publish-fail&quot; &gt; /dev/null
 </code></pre>
-<p><strong>观测指标</strong>：
-- <code>rabbitmq_published_total</code> - 发布消息数应增加 1000
-- <code>rabbitmq_acknowledged_published_total</code> - 确认数应接近 1000
-- 发布确认率应 &gt;99%（绿色）
-- <code>rabbitmq_consumed_total</code> - 消费消息数
+<p><strong>观测指标</strong>：<br />
+- <code>rabbitmq_published_total</code> - 发布消息数应增加 1000<br />
+- <code>rabbitmq_acknowledged_published_total</code> - 确认数应接近 1000<br />
+- 发布确认率应 &gt;99%（绿色）<br />
+- <code>rabbitmq_consumed_total</code> - 消费消息数<br />
 - <code>rabbitmq_failed_to_publish_total</code> - 发布失败应增加</p>
-<p><strong>预期结果</strong>：
-- 发布成功率 &gt;99%
-- 消费成功率 &gt;95%
+<p><strong>预期结果</strong>：<br />
+- 发布成功率 &gt;99%<br />
+- 消费成功率 &gt;95%<br />
 - 发布失败测试时失败率上升</p>
 <hr />
 <h2>4. 测试工具准备</h2>
@@ -1299,8 +1299,8 @@ wrk -t 10 -c 100 -d 60s http://localhost:8338/api/monitor-test/http/fast
 <ul>
 <li>访问：http://localhost:9090</li>
 <li>直接查询指标验证数据</li>
-<li>示例查询：
-  <code>promql
+<li>示例查询：<br />
+<code>promql
   rate(http_server_requests_seconds_count[1m])
   hikaricp_connections_active
   cache_gets_total</code></li>
@@ -1518,8 +1518,8 @@ wrk -t 10 -c 100 -d 60s http://localhost:8338/api/monitor-test/http/fast
 <ol>
 <li>创建 <code>MonitorTestController.java</code></li>
 <li>实现所有 18 个测试接口</li>
-<li>启动应用并验证接口可访问
-   <code>bash
+<li>启动应用并验证接口可访问<br />
+<code>bash
    curl http://localhost:8338/api/monitor-test/http/fast</code></li>
 </ol>
 <h3>步骤3：配置监控</h3>
@@ -1558,22 +1558,102 @@ wrk -t 10 -c 100 -d 60s http://localhost:8338/api/monitor-test/http/fast
 <hr />
 <h2>7. 预期性能基线</h2>
 <p>基于典型配置的预期指标：</p>
-<p>| 指标类别 | 指标名称 | 预期值 | 告警阈值 |
-|---------|---------|--------|---------|
-| <strong>HikariCP</strong> | 连接池利用率 | &lt;70% | &gt;90% |
-| | 平均获取延迟 | &lt;5ms | &gt;50ms |
-| | 等待线程数 | 0 | &gt;0 |
-| <strong>Jetty</strong> | 线程池利用率 | &lt;70% | &gt;90% |
-| | 平均响应延迟 | &lt;50ms | &gt;500ms |
-| | QPS | 1000+ | - |
-| <strong>RabbitMQ</strong> | 发布确认率 | &gt;99% | &lt;95% |
-| | 消费确认率 | &gt;95% | &lt;90% |
-| | 发布失败率 | 0% | &gt;1% |
-| <strong>JVM</strong> | 堆内存使用率 | &lt;70% | &gt;85% |
-| | GC 平均暂停 | &lt;50ms | &gt;200ms |
-| | 进程 CPU | &lt;70% | &gt;90% |
-| <strong>Lettuce</strong> | 命令平均延迟 | &lt;5ms | &gt;50ms |
-| | 缓存命中率 | &gt;80% | &lt;60% |</p>
+<table>
+<thead>
+<tr>
+<th>指标类别</th>
+<th>指标名称</th>
+<th>预期值</th>
+<th>告警阈值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>HikariCP</strong></td>
+<td>连接池利用率</td>
+<td>&lt;70%</td>
+<td>&gt;90%</td>
+</tr>
+<tr>
+<td></td>
+<td>平均获取延迟</td>
+<td>&lt;5ms</td>
+<td>&gt;50ms</td>
+</tr>
+<tr>
+<td></td>
+<td>等待线程数</td>
+<td>0</td>
+<td>&gt;0</td>
+</tr>
+<tr>
+<td><strong>Jetty</strong></td>
+<td>线程池利用率</td>
+<td>&lt;70%</td>
+<td>&gt;90%</td>
+</tr>
+<tr>
+<td></td>
+<td>平均响应延迟</td>
+<td>&lt;50ms</td>
+<td>&gt;500ms</td>
+</tr>
+<tr>
+<td></td>
+<td>QPS</td>
+<td>1000+</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>RabbitMQ</strong></td>
+<td>发布确认率</td>
+<td>&gt;99%</td>
+<td>&lt;95%</td>
+</tr>
+<tr>
+<td></td>
+<td>消费确认率</td>
+<td>&gt;95%</td>
+<td>&lt;90%</td>
+</tr>
+<tr>
+<td></td>
+<td>发布失败率</td>
+<td>0%</td>
+<td>&gt;1%</td>
+</tr>
+<tr>
+<td><strong>JVM</strong></td>
+<td>堆内存使用率</td>
+<td>&lt;70%</td>
+<td>&gt;85%</td>
+</tr>
+<tr>
+<td></td>
+<td>GC 平均暂停</td>
+<td>&lt;50ms</td>
+<td>&gt;200ms</td>
+</tr>
+<tr>
+<td></td>
+<td>进程 CPU</td>
+<td>&lt;70%</td>
+<td>&gt;90%</td>
+</tr>
+<tr>
+<td><strong>Lettuce</strong></td>
+<td>命令平均延迟</td>
+<td>&lt;5ms</td>
+<td>&gt;50ms</td>
+</tr>
+<tr>
+<td></td>
+<td>缓存命中率</td>
+<td>&gt;80%</td>
+<td>&lt;60%</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2>8. 常见问题</h2>
 <h3>Q1: 测试接口响应 404</h3>
@@ -1581,41 +1661,41 @@ wrk -t 10 -c 100 -d 60s http://localhost:8338/api/monitor-test/http/fast
 <strong>解决</strong>：检查 Controller 是否正确创建，确认 context-path 配置</p>
 <h3>Q2: Grafana 面板无数据</h3>
 <p><strong>原因</strong>：Prometheus 未采集到指标<br />
-<strong>解决</strong>：
-1. 访问 <code>/actuator/prometheus</code> 确认指标暴露
-2. 检查 Prometheus 配置和 targets 状态
+<strong>解决</strong>：<br />
+1. 访问 <code>/actuator/prometheus</code> 确认指标暴露<br />
+2. 检查 Prometheus 配置和 targets 状态<br />
 3. 验证指标名称是否正确</p>
 <h3>Q3: 压测时应用崩溃</h3>
 <p><strong>原因</strong>：资源不足或配置不当<br />
-<strong>解决</strong>：
-1. 降低并发数
-2. 增加 JVM 堆内存
-3. 调整连接池大小
+<strong>解决</strong>：<br />
+1. 降低并发数<br />
+2. 增加 JVM 堆内存<br />
+3. 调整连接池大小<br />
 4. 检查错误日志</p>
 <h3>Q4: 缓存命中率为 0</h3>
 <p><strong>原因</strong>：缓存未启用或配置错误<br />
-<strong>解决</strong>：
-1. 确认 <code>spring.cache.type=redis</code>
-2. 检查 Redis 连接
+<strong>解决</strong>：<br />
+1. 确认 <code>spring.cache.type=redis</code><br />
+2. 检查 Redis 连接<br />
 3. 验证 <code>@Cacheable</code> 注解使用</p>
 <h3>Q5: RabbitMQ 指标不更新</h3>
 <p><strong>原因</strong>：消息未被消费或监听器未启动<br />
-<strong>解决</strong>：
-1. 确认消费者监听器正常运行
-2. 检查队列绑定关系
+<strong>解决</strong>：<br />
+1. 确认消费者监听器正常运行<br />
+2. 检查队列绑定关系<br />
 3. 验证 RabbitMQ 连接状态</p>
 <hr />
 <h2>9. 总结</h2>
-<p>本测试方案提供了：
-- ✅ 18 个测试接口，覆盖 5 大监控面板
-- ✅ 6 个压测场景，从基础到高级
-- ✅ 完整的验证清单，确保监控有效
+<p>本测试方案提供了：<br />
+- ✅ 18 个测试接口，覆盖 5 大监控面板<br />
+- ✅ 6 个压测场景，从基础到高级<br />
+- ✅ 完整的验证清单，确保监控有效<br />
 - ✅ 性能基线参考，便于对比分析</p>
-<p>通过执行本方案，可以：
-1. 验证监控系统完整性和准确性
-2. 建立性能基线数据
-3. 识别系统瓶颈和优化点
-4. 调整告警阈值配置
+<p>通过执行本方案，可以：<br />
+1. 验证监控系统完整性和准确性<br />
+2. 建立性能基线数据<br />
+3. 识别系统瓶颈和优化点<br />
+4. 调整告警阈值配置<br />
 5. 为生产环境监控提供参考</p>
 <hr />
 <p><strong>文档版本</strong>: 1.0<br />
