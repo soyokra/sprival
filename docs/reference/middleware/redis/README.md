@@ -1,34 +1,48 @@
-# Redis模块
+# Redis
 
-## 概述
+## 组件说明
+- [Spring Cache](https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#io.caching)
+- [Spring Data Redis](https://docs.spring.io/spring-data/redis/docs/2.7.18/reference/html/)
+- [Redisson](https://redisson.pro/docs/overview/)
 
-Sprival Redis模块，基于Spring Cache，Spring Data Redis, Redisson实现声明式缓存, Redis操作，分布式锁等功能。
+```
+Spring Cache (注解抽象: @Cacheable 等)
+    ↓ (使用 CacheManager 接口)
+RedisCacheManager (Spring Data Redis 提供)
+    ↓ (依赖 RedisConnectionFactory)
+RedissonConnectionFactory (Redisson 提供)
+    ↓ (底层客户端)
+Redisson (高级 Redis 客户端: 分布式锁、异步等)
+```
 
-## 核心特性
+### Spring Cache
+- 声明式缓存
 
-- **声明式缓存**: 基于Spring Cache的注解式缓存管理
-- **Redis操作**: 基于Spring Data Redis操作集成
-- **分布式锁**: 基于Redisson的分布式锁实现
-- **连接池管理**: 高性能连接池配置和监控
-- **序列化支持**: 多种序列化方案支持（JSON、JDK、Kryo）
-- **监控集成**: 与Prometheus + Grafana无缝集成
-- **集群支持**: 支持Redis单机、哨兵、集群模式
+### Spring Data Redis
+- 数据访问层抽象，简化 Redis 操作和 Spring 集成
 
-
-## 组件清单
-- [Spring Cache](https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#io.caching) - 声明式缓存
-- [Spring Data Redis](https://docs.spring.io/spring-data/redis/docs/2.7.18/reference/html/) - Redis操作集成
-- [Redisson](https://redisson.pro/docs/overview/) - Redis操作增强，支持分布式锁，原子操作
-
+### Redisson
+- 分布式框架，提供高级数据结构和服务，抽象 Redis 复杂性
 
 ## 配置说明
+
+### 配置方式
+
+Spring Data Redis支持两种配置方式：**Host配置**和**URI配置**。
+
+#### 1. Host配置（推荐用于单点模式）
+
+Host配置适用于单点模式的Redis服务，配置简单直观。
+
 ```properties
+# 基础连接配置
 spring.redis.host = localhost
 spring.redis.port = 6379
 spring.redis.password = workdock
 spring.redis.database = 0
 spring.redis.timeout = 2000ms
 spring.redis.connect-timeout = 2000ms
+
 # Lettuce连接池配置
 spring.redis.lettuce.pool.max-active = 20
 spring.redis.lettuce.pool.max-idle = 10
@@ -36,6 +50,7 @@ spring.redis.lettuce.pool.min-idle = 5
 spring.redis.lettuce.pool.max-wait = 2000ms
 spring.redis.lettuce.pool.time-between-eviction-runs = 30s
 spring.redis.lettuce.shutdown-timeout = 100ms
+
 # Spring Cache配置
 spring.cache.type = redis
 spring.cache.redis.time-to-live = 600000
@@ -44,6 +59,53 @@ spring.cache.redis.key-prefix = sprival:
 spring.cache.redis.use-key-prefix = true
 spring.cache.redis.enable-statistics = true
 spring.cache.cache-names = user,product,order,session
+```
+
+#### 2. URI配置（推荐用于集群和哨兵模式）
+
+URI配置支持集群、哨兵模式和丰富的连接参数，适合生产环境。
+
+```properties
+# 单点配置示例
+spring.redis.uri = redis://:workdock@localhost:6379/0
+
+# 哨兵模式配置示例
+spring.redis.sentinel.master = mymaster
+spring.redis.sentinel.nodes = sentinel1:26379,sentinel2:26379,sentinel3:26379
+spring.redis.sentinel.password = workdock
+
+# 集群模式配置示例
+spring.redis.cluster.nodes = node1:6379,node2:6379,node3:6379
+spring.redis.cluster.password = workdock
+spring.redis.cluster.max-redirects = 3
+
+# Lettuce连接池配置
+spring.redis.lettuce.pool.max-active = 20
+spring.redis.lettuce.pool.max-idle = 10
+spring.redis.lettuce.pool.min-idle = 5
+spring.redis.lettuce.pool.max-wait = 2000ms
+
+# Spring Cache配置
+spring.cache.type = redis
+spring.cache.redis.time-to-live = 600000
+spring.cache.redis.cache-null-values = false
+spring.cache.redis.key-prefix = sprival:
+spring.cache.redis.use-key-prefix = true
+spring.cache.redis.enable-statistics = true
+spring.cache.cache-names = user,product,order,session
+```
+
+#### 3. Redisson配置（高级功能）
+
+Redisson配置适用于需要分布式锁、分布式对象等高级功能的场景。
+
+```properties
+# 基础连接配置
+spring.redis.host = localhost
+spring.redis.port = 6379
+spring.redis.password = workdock
+spring.redis.database = 0
+
 # Redisson配置
 spring.redis.redisson.config.singleServerConfig.address = redis://localhost:6379
 spring.redis.redisson.config.singleServerConfig.password = workdock
@@ -61,6 +123,137 @@ spring.redis.redisson.config.threads = 16
 spring.redis.redisson.config.nettyThreads = 32
 spring.redis.redisson.config.transportMode = NIO
 ```
+
+### 标准URI格式
+
+```plaintext
+redis://[password@]host[:port][/database]
+rediss://[password@]host[:port][/database]  (SSL连接)
+```
+
+## 配置项详解
+
+### Spring Data Redis配置项
+
+| 配置项 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `spring.redis.host` | String | localhost | Redis服务器主机地址 |
+| `spring.redis.port` | Integer | 6379 | Redis服务器端口 |
+| `spring.redis.password` | String | - | Redis认证密码 |
+| `spring.redis.database` | Integer | 0 | 数据库索引（0-15） |
+| `spring.redis.timeout` | Duration | - | 命令超时时间 |
+| `spring.redis.connect-timeout` | Duration | - | 连接超时时间 |
+| `spring.redis.uri` | String | - | Redis连接URI（优先级高于host/port） |
+| `spring.redis.ssl.enabled` | Boolean | false | 是否启用SSL连接 |
+| `spring.redis.ssl.bundle` | String | - | SSL Bundle名称 |
+
+### Lettuce连接池配置项
+
+| 配置项 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `spring.redis.lettuce.pool.max-active` | Integer | 8 | 连接池最大连接数 |
+| `spring.redis.lettuce.pool.max-idle` | Integer | 8 | 连接池最大空闲连接数 |
+| `spring.redis.lettuce.pool.min-idle` | Integer | 0 | 连接池最小空闲连接数 |
+| `spring.redis.lettuce.pool.max-wait` | Duration | -1 | 获取连接最大等待时间 |
+| `spring.redis.lettuce.pool.time-between-eviction-runs` | Duration | - | 空闲连接回收运行间隔 |
+| `spring.redis.lettuce.shutdown-timeout` | Duration | 100ms | 关闭超时时间 |
+| `spring.redis.lettuce.cluster.refresh.adaptive` | Boolean | false | 是否启用自适应集群拓扑刷新 |
+| `spring.redis.lettuce.cluster.refresh.period` | Duration | - | 集群拓扑刷新周期 |
+
+### Spring Cache配置项
+
+| 配置项 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `spring.cache.type` | String | - | 缓存类型（redis） |
+| `spring.cache.redis.time-to-live` | Duration | - | 缓存过期时间（毫秒） |
+| `spring.cache.redis.cache-null-values` | Boolean | true | 是否缓存null值 |
+| `spring.cache.redis.key-prefix` | String | - | 缓存键前缀 |
+| `spring.cache.redis.use-key-prefix` | Boolean | true | 是否使用键前缀 |
+| `spring.cache.redis.enable-statistics` | Boolean | false | 是否启用统计 |
+| `spring.cache.cache-names` | List<String> | - | 缓存名称列表 |
+
+### Redisson配置项
+
+| 配置项 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `spring.redis.redisson.config.singleServerConfig.address` | String | - | 单服务器地址 |
+| `spring.redis.redisson.config.singleServerConfig.password` | String | - | 认证密码 |
+| `spring.redis.redisson.config.singleServerConfig.database` | Integer | 0 | 数据库索引 |
+| `spring.redis.redisson.config.singleServerConfig.connectionPoolSize` | Integer | 64 | 连接池大小 |
+| `spring.redis.redisson.config.singleServerConfig.connectionMinimumIdleSize` | Integer | 24 | 最小空闲连接数 |
+| `spring.redis.redisson.config.singleServerConfig.idleConnectionTimeout` | Integer | 10000 | 空闲连接超时（毫秒） |
+| `spring.redis.redisson.config.singleServerConfig.connectTimeout` | Integer | 10000 | 连接超时（毫秒） |
+| `spring.redis.redisson.config.singleServerConfig.timeout` | Integer | 3000 | 命令超时（毫秒） |
+| `spring.redis.redisson.config.singleServerConfig.retryAttempts` | Integer | 3 | 重试次数 |
+| `spring.redis.redisson.config.singleServerConfig.retryInterval` | Integer | 1500 | 重试间隔（毫秒） |
+| `spring.redis.redisson.config.singleServerConfig.keepAlive` | Boolean | false | 是否保持连接 |
+| `spring.redis.redisson.config.singleServerConfig.tcpKeepAlive` | Boolean | false | 是否启用TCP KeepAlive |
+| `spring.redis.redisson.config.threads` | Integer | 16 | 线程数 |
+| `spring.redis.redisson.config.nettyThreads` | Integer | 32 | Netty线程数 |
+| `spring.redis.redisson.config.transportMode` | String | NIO | 传输模式（NIO/EPOLL/KQUEUE） |
+
+### 配置注意事项
+
+> **重要**: Host配置和URI配置不能同时使用，选择其中一种方式即可。
+
+- **Host配置**: 适用于单点模式，配置简单，但功能有限
+- **URI配置**: 适用于集群、哨兵模式和生产环境，功能丰富，支持更多参数
+- **认证配置**: 生产环境建议使用密码认证
+- **连接池配置**: 生产环境建议根据实际负载配置合适的连接池大小
+- **Spring Cache vs Redisson**: 
+  - Spring Cache适合简单的缓存场景，使用注解即可
+  - Redisson适合需要分布式锁、分布式对象等高级功能的场景
+- **SSL配置**: 生产环境建议启用SSL加密连接
+
+## Redis URI参数详解
+
+### 连接配置
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `timeout` | Integer | 0 | 命令超时时间（秒），0表示无超时 |
+| `connectTimeout` | Integer | 0 | 连接超时时间（秒），0表示无超时 |
+| `socketTimeout` | Integer | 0 | Socket超时时间（秒），0表示无超时 |
+
+### 连接池配置
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `maxActive` | Integer | 8 | 连接池最大连接数 |
+| `maxIdle` | Integer | 8 | 连接池最大空闲连接数 |
+| `minIdle` | Integer | 0 | 连接池最小空闲连接数 |
+| `maxWait` | Integer | -1 | 获取连接最大等待时间（毫秒），-1表示无限等待 |
+
+### SSL/TLS配置
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `ssl` | Boolean | false | 是否使用SSL连接（rediss://协议） |
+| `tls` | Boolean | false | 是否使用TLS连接 |
+| `insecure` | Boolean | false | 是否允许不安全的SSL连接 |
+
+### 认证配置
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `password` | String | - | 认证密码（在URI中通过@符号前指定） |
+| `database` | Integer | 0 | 数据库索引（0-15，在URI中通过/符号后指定） |
+
+### 集群配置
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `maxRedirects` | Integer | 3 | 集群模式下最大重定向次数 |
+| `refresh` | Boolean | false | 是否启用集群拓扑自动刷新 |
+| `refreshPeriod` | Integer | - | 集群拓扑刷新周期（毫秒） |
+
+### 哨兵配置
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `master` | String | - | 哨兵模式下的主节点名称 |
+| `sentinels` | String | - | 哨兵节点列表（逗号分隔） |
+| `sentinelPassword` | String | - | 哨兵节点认证密码 |
 
 ## 监控指标
 

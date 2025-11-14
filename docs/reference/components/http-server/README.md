@@ -1,20 +1,10 @@
 # HTTP Server 模块
 
-## 概述
-
-Sprival HTTP Server 模块基于 Jetty 嵌入式服务器，提供高性能、轻量级的 Web 服务能力。Jetty 以其低资源占用、高并发处理能力和灵活的可定制性著称，是构建现代微服务应用的理想选择。
-
 ## 核心特性
 
 - **高性能 Jetty 服务器**: 轻量级、低内存占用、高并发处理能力，适合云原生部署
-- **访问日志管理**: 支持 EXTENDED_NCSA 格式访问日志，自动按天轮转，可配置忽略路径
-- **安全头配置**: 内置 HTTP 安全头，防止 XSS、点击劫持、MIME 嗅探等常见 Web 安全漏洞
-- **线程池优化**: 灵活的线程池配置，支持动态调整最大/最小线程数和空闲超时
-- **HTTP 压缩**: 自动压缩 JSON、HTML、CSS 等响应内容，减少网络传输
-- **优雅关闭**: 支持服务平滑下线，完成处理中的请求后再关闭
-- **监控集成**: 与 Prometheus + Grafana 无缝集成，提供详细的性能指标
 
-## 组件清单
+## 组件说明
 
 - [Eclipse Jetty](https://www.eclipse.org/jetty/) - 嵌入式 Web 服务器和 Servlet 容器
 - [Spring Boot Jetty Starter](https://docs.spring.io/spring-boot/docs/2.7.18/reference/html/web.html#web.servlet.embedded-container.jetty) - Spring Boot Jetty 集成
@@ -84,23 +74,7 @@ server.compression.mime-types = text/html,text/xml,text/plain,text/css,applicati
 server.compression.min-response-size = 2KB
 ```
 
-## 安全配置
-
-本模块通过 `SprivalJettySecurityHeaderCustomizer` 自动配置以下 HTTP 安全头：
-
-| 安全头 | 配置值 | 作用 |
-|-------|--------|------|
-| X-Frame-Options | DENY | 防止点击劫持攻击 |
-| X-Content-Type-Options | nosniff | 防止 MIME 类型嗅探 |
-| X-XSS-Protection | 1; mode=block | XSS 防护 |
-| Content-Security-Policy | 限制资源加载来源 | 防止内容注入攻击 |
-| Strict-Transport-Security | max-age=31536000 (仅 HTTPS) | 强制 HTTPS 访问 |
-| Server | Sprival/1.0 | 隐藏服务器真实信息 |
-| Cache-Control | no-cache (API 接口) | 防止缓存敏感信息 |
-| Permissions-Policy | 禁用敏感设备权限 | 限制浏览器功能访问 |
-| Referrer-Policy | strict-origin-when-cross-origin | 控制 Referer 信息泄露 |
-
-## 监控说明
+## 监控指标
 
 ### Jetty 线程池指标
 
