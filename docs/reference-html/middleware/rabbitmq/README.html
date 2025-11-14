@@ -846,45 +846,407 @@
 <main class="main-content">
     <div class="container max-w-4xl">
         <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
-            <h1>Spring RabbitMQ 模块</h1>
-<h2>核心特性</h2>
-<ul>
-<li>✅ <strong>消息发布订阅</strong>: 支持多种交换器类型（Direct、Topic、Fanout、Headers）</li>
-<li>✅ <strong>队列管理</strong>: 自动创建队列、绑定关系、死信队列</li>
-<li>✅ <strong>消息确认机制</strong>: 支持手动确认和自动确认</li>
-<li>✅ <strong>重试机制</strong>: 消息发送失败自动重试</li>
-<li>✅ <strong>死信处理</strong>: 死信队列和死信交换器支持</li>
-<li>✅ <strong>连接池管理</strong>: 高性能连接池配置</li>
-</ul>
+            <h1>RabbitMQ</h1>
 <h2>组件说明</h2>
 <ul>
-<li><a href="https://spring.io/projects/spring-amqp">spring-boot-starter-amqp</a> - Spring AMQP 集成</li>
-<li><a href="https://github.com/spring-projects/spring-amqp">spring-rabbit</a> - RabbitMQ 客户端实现</li>
-<li><a href="https://github.com/rabbitmq/rabbitmq-java-client">rabbitmq-java-client</a> - RabbitMQ Java 客户端</li>
+<li><a href="https://spring.io/projects/spring-amqp">spring-boot-starter-amqp</a></li>
+<li><a href="https://github.com/spring-projects/spring-amqp">spring-rabbit</a> </li>
+<li><a href="https://github.com/rabbitmq/rabbitmq-java-client">rabbitmq-java-client</a></li>
 </ul>
 <h2>配置说明</h2>
-<pre><code class="language-properties">spring.rabbitmq.host = localhost
+<h3>配置方式</h3>
+<p>Spring AMQP支持两种配置方式：<strong>Host配置</strong>和<strong>URI配置</strong>。</p>
+<h4>1. Host配置（推荐用于单点模式）</h4>
+<p>Host配置适用于单点模式的RabbitMQ服务，配置简单直观。</p>
+<pre><code class="language-properties"># 基础连接配置
+spring.rabbitmq.host = localhost
 spring.rabbitmq.port = 5672
 spring.rabbitmq.username = guest
 spring.rabbitmq.password = guest
 spring.rabbitmq.virtual-host = /
-# RabbitMQ 连接池配置
+spring.rabbitmq.connection-timeout = 15000
+
+# 连接池配置
 spring.rabbitmq.cache.connection.mode = connection
 spring.rabbitmq.cache.connection.size = 10
 spring.rabbitmq.cache.channel.size = 25
 spring.rabbitmq.cache.channel.checkout-timeout = 30000
-spring.rabbitmq.connection-timeout = 15000
-# RabbitMQ 消息确认配置
+
+# 消息确认配置
 spring.rabbitmq.publisher-confirm-type = correlated
 spring.rabbitmq.publisher-returns = true
 spring.rabbitmq.listener.simple.acknowledge-mode = manual
-# RabbitMQ 重试配置
+
+# 重试配置
 spring.rabbitmq.listener.simple.retry.enabled = true
 spring.rabbitmq.listener.simple.retry.max-attempts = 3
 spring.rabbitmq.listener.simple.retry.initial-interval = 1000
 spring.rabbitmq.listener.simple.retry.multiplier = 2
 spring.rabbitmq.listener.simple.retry.max-interval = 10000
 </code></pre>
+<h4>2. URI配置（推荐用于生产环境）</h4>
+<p>URI配置支持SSL和丰富的连接参数，适合生产环境。</p>
+<pre><code class="language-properties"># URI配置示例
+spring.rabbitmq.uri = amqp://guest:guest@localhost:5672/
+
+# SSL配置示例
+spring.rabbitmq.uri = amqps://guest:guest@localhost:5671/
+spring.rabbitmq.ssl.enabled = true
+spring.rabbitmq.ssl.algorithm = TLSv1.2
+
+# 连接池配置
+spring.rabbitmq.cache.connection.mode = connection
+spring.rabbitmq.cache.connection.size = 10
+spring.rabbitmq.cache.channel.size = 25
+spring.rabbitmq.cache.channel.checkout-timeout = 30000
+
+# 消息确认配置
+spring.rabbitmq.publisher-confirm-type = correlated
+spring.rabbitmq.publisher-returns = true
+spring.rabbitmq.listener.simple.acknowledge-mode = manual
+
+# 重试配置
+spring.rabbitmq.listener.simple.retry.enabled = true
+spring.rabbitmq.listener.simple.retry.max-attempts = 3
+spring.rabbitmq.listener.simple.retry.initial-interval = 1000
+spring.rabbitmq.listener.simple.retry.multiplier = 2
+spring.rabbitmq.listener.simple.retry.max-interval = 10000
+</code></pre>
+<h3>标准URI格式</h3>
+<pre><code class="language-plaintext">amqp://[username:password@]host[:port][/virtual-host]
+amqps://[username:password@]host[:port][/virtual-host]  (SSL连接)
+</code></pre>
+<h2>配置项详解</h2>
+<h3>基础连接配置项</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.rabbitmq.host</code></td>
+<td>String</td>
+<td>localhost</td>
+<td>RabbitMQ服务器主机地址</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.port</code></td>
+<td>Integer</td>
+<td>5672</td>
+<td>RabbitMQ服务器端口（AMQP）</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.username</code></td>
+<td>String</td>
+<td>guest</td>
+<td>认证用户名</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.password</code></td>
+<td>String</td>
+<td>guest</td>
+<td>认证密码</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.virtual-host</code></td>
+<td>String</td>
+<td>/</td>
+<td>虚拟主机名称</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.uri</code></td>
+<td>String</td>
+<td>-</td>
+<td>RabbitMQ连接URI（优先级高于host/port）</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.connection-timeout</code></td>
+<td>Duration</td>
+<td>-</td>
+<td>连接超时时间（毫秒）</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.requested-heartbeat</code></td>
+<td>Duration</td>
+<td>-</td>
+<td>请求心跳间隔（秒）</td>
+</tr>
+</tbody>
+</table>
+<h3>连接池配置项</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.rabbitmq.cache.connection.mode</code></td>
+<td>String</td>
+<td>channel</td>
+<td>连接缓存模式（channel/connection）</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.cache.connection.size</code></td>
+<td>Integer</td>
+<td>1</td>
+<td>连接缓存大小</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.cache.channel.size</code></td>
+<td>Integer</td>
+<td>25</td>
+<td>通道缓存大小</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.cache.channel.checkout-timeout</code></td>
+<td>Duration</td>
+<td>-</td>
+<td>通道检出超时时间（毫秒）</td>
+</tr>
+</tbody>
+</table>
+<h3>消息确认配置项</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.rabbitmq.publisher-confirm-type</code></td>
+<td>String</td>
+<td>none</td>
+<td>发布确认类型（none/simple/correlated）</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.publisher-returns</code></td>
+<td>Boolean</td>
+<td>false</td>
+<td>是否启用发布返回</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.acknowledge-mode</code></td>
+<td>String</td>
+<td>auto</td>
+<td>消费者确认模式（none/manual/auto）</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.prefetch</code></td>
+<td>Integer</td>
+<td>-</td>
+<td>消费者预取数量</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.concurrency</code></td>
+<td>Integer</td>
+<td>1</td>
+<td>消费者并发数</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.max-concurrency</code></td>
+<td>Integer</td>
+<td>-</td>
+<td>消费者最大并发数</td>
+</tr>
+</tbody>
+</table>
+<h3>重试配置项</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.retry.enabled</code></td>
+<td>Boolean</td>
+<td>false</td>
+<td>是否启用重试</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.retry.max-attempts</code></td>
+<td>Integer</td>
+<td>3</td>
+<td>最大重试次数</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.retry.initial-interval</code></td>
+<td>Duration</td>
+<td>1000ms</td>
+<td>初始重试间隔（毫秒）</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.retry.multiplier</code></td>
+<td>Double</td>
+<td>1.0</td>
+<td>重试间隔倍数</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.retry.max-interval</code></td>
+<td>Duration</td>
+<td>10000ms</td>
+<td>最大重试间隔（毫秒）</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.retry.stateless</code></td>
+<td>Boolean</td>
+<td>true</td>
+<td>是否无状态重试</td>
+</tr>
+</tbody>
+</table>
+<h3>监听器配置项</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.auto-startup</code></td>
+<td>Boolean</td>
+<td>true</td>
+<td>是否自动启动监听器</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.default-requeue-rejected</code></td>
+<td>Boolean</td>
+<td>true</td>
+<td>是否默认重新入队被拒绝的消息</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.idle-event-interval</code></td>
+<td>Duration</td>
+<td>-</td>
+<td>空闲事件间隔</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.transaction-size</code></td>
+<td>Integer</td>
+<td>-</td>
+<td>事务大小</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.missing-queues-fatal</code></td>
+<td>Boolean</td>
+<td>true</td>
+<td>队列不存在时是否致命错误</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.listener.simple.consumer-batch-size</code></td>
+<td>Integer</td>
+<td>-</td>
+<td>消费者批处理大小</td>
+</tr>
+</tbody>
+</table>
+<h3>SSL/TLS配置项</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.rabbitmq.ssl.enabled</code></td>
+<td>Boolean</td>
+<td>false</td>
+<td>是否启用SSL</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.ssl.algorithm</code></td>
+<td>String</td>
+<td>-</td>
+<td>SSL算法（如：TLSv1.2）</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.ssl.key-store</code></td>
+<td>String</td>
+<td>-</td>
+<td>密钥库路径</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.ssl.key-store-password</code></td>
+<td>String</td>
+<td>-</td>
+<td>密钥库密码</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.ssl.key-store-type</code></td>
+<td>String</td>
+<td>-</td>
+<td>密钥库类型</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.ssl.trust-store</code></td>
+<td>String</td>
+<td>-</td>
+<td>信任库路径</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.ssl.trust-store-password</code></td>
+<td>String</td>
+<td>-</td>
+<td>信任库密码</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.ssl.trust-store-type</code></td>
+<td>String</td>
+<td>-</td>
+<td>信任库类型</td>
+</tr>
+<tr>
+<td><code>spring.rabbitmq.ssl.verify-hostname</code></td>
+<td>Boolean</td>
+<td>true</td>
+<td>是否验证主机名</td>
+</tr>
+</tbody>
+</table>
+<h3>配置注意事项</h3>
+<blockquote>
+<p><strong>重要</strong>: Host配置和URI配置不能同时使用，选择其中一种方式即可。</p>
+</blockquote>
+<ul>
+<li><strong>Host配置</strong>: 适用于单点模式，配置简单，但功能有限</li>
+<li><strong>URI配置</strong>: 适用于生产环境，功能丰富，支持SSL等高级参数</li>
+<li><strong>认证配置</strong>: 生产环境必须修改默认用户名和密码</li>
+<li><strong>连接池配置</strong>: 生产环境建议根据实际负载配置合适的连接池和通道缓存大小</li>
+<li><strong>消息确认</strong>: </li>
+<li>生产环境建议启用<code>publisher-confirm-type</code>和<code>publisher-returns</code>确保消息可靠投递</li>
+<li>消费者建议使用<code>manual</code>确认模式，确保消息处理完成后再确认</li>
+<li><strong>重试配置</strong>: </li>
+<li>建议启用重试机制，但需要合理设置重试次数和间隔</li>
+<li>注意幂等性处理，避免重复处理导致数据问题</li>
+<li><strong>SSL配置</strong>: 生产环境建议启用SSL加密连接</li>
+<li><strong>并发配置</strong>: 根据消息处理能力和服务器性能合理设置消费者并发数</li>
+</ul>
 <h2>监控指标</h2>
 <table>
 <thead>

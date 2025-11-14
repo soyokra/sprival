@@ -846,27 +846,13 @@
 <main class="main-content">
     <div class="container max-w-4xl">
         <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
-            <h1>MongoDB 组件</h1>
-<h2>概述</h2>
-<p>MongoDB是Sprival项目中的文档数据库组件，提供高性能的文档存储和查询能力。本文档详细说明了MongoDB的配置、使用和监控方法。</p>
-<h2>🎯 功能特性</h2>
-<ul>
-<li><strong>文档存储</strong>: 支持灵活的文档结构存储</li>
-<li><strong>副本集支持</strong>: 支持MongoDB副本集配置</li>
-<li><strong>连接池管理</strong>: 自动管理数据库连接池</li>
-<li><strong>健康检查</strong>: 集成Spring Boot Actuator健康检查</li>
-<li><strong>监控指标</strong>: 提供详细的性能监控指标</li>
-</ul>
-<h2>⚙️ 配置说明</h2>
+            <h1>MongoDB</h1>
+<h2>配置说明</h2>
 <h3>配置方式</h3>
 <p>MongoDB支持两种配置方式：<strong>Host配置</strong>和<strong>URI配置</strong>。</p>
 <h4>1. Host配置（推荐用于单点模式）</h4>
 <p>Host配置适用于单点模式的MongoDB服务，配置简单直观。</p>
-<pre><code class="language-properties"># ===========================================
-# MongoDB Host配置
-# ===========================================
-
-# 基础连接配置
+<pre><code class="language-properties"># 基础连接配置
 spring.data.mongodb.host = localhost
 spring.data.mongodb.port = 27017
 spring.data.mongodb.database = sprival
@@ -883,11 +869,7 @@ spring.data.mongodb.field-naming-strategy = org.springframework.data.mongodb.cor
 </code></pre>
 <h4>2. URI配置（推荐用于副本集）</h4>
 <p>URI配置支持副本集和丰富的连接参数，适合生产环境。</p>
-<pre><code class="language-properties"># ===========================================
-# MongoDB URI配置
-# ===========================================
-
-# 副本集配置示例
+<pre><code class="language-properties"># 副本集配置示例
 spring.data.mongodb.uri = mongodb://admin:workdock@localhost:27017/sprival?authSource=admin&amp;maxPoolSize=20&amp;minPoolSize=5&amp;connectTimeoutMS=10000&amp;socketTimeoutMS=30000&amp;serverSelectionTimeoutMS=5000&amp;heartbeatFrequencyMS=10000&amp;retryWrites=true&amp;retryReads=true
 
 # 单点配置示例
@@ -896,7 +878,7 @@ spring.data.mongodb.uri = mongodb://admin:workdock@localhost:27017/sprival?authS
 <h3>标准URI格式</h3>
 <pre><code class="language-plaintext">mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
 </code></pre>
-<h2>📋 配置项详解</h2>
+<h2>配置项详解</h2>
 <h3>Host配置项</h3>
 <table>
 <thead>
@@ -986,7 +968,7 @@ spring.data.mongodb.uri = mongodb://admin:workdock@localhost:27017/sprival?authS
 <li><strong>认证配置</strong>: 生产环境建议使用认证，开发环境可以跳过</li>
 <li><strong>连接池</strong>: 生产环境建议配置合适的连接池大小</li>
 </ul>
-<h2>🔧 URI参数详解</h2>
+<h2>URI参数详解</h2>
 <h3>连接配置</h3>
 <table>
 <thead>
@@ -1271,15 +1253,6 @@ spring.data.mongodb.uri = mongodb://admin:workdock@localhost:27017/sprival?authS
 </tr>
 </tbody>
 </table>
-<h2>📊 监控与健康检查</h2>
-<h3>健康检查</h3>
-<p>MongoDB组件集成了Spring Boot Actuator健康检查功能。</p>
-<pre><code class="language-bash"># 检查MongoDB健康状态
-curl http://localhost:8338/api/actuator/health/mongo
-
-# 检查整体健康状态
-curl http://localhost:8338/api/actuator/health
-</code></pre>
 <h3>监控指标</h3>
 <p>MongoDB驱动提供以下关键监控指标：</p>
 <table>
@@ -1323,114 +1296,6 @@ curl http://localhost:8338/api/actuator/health
 </tr>
 </tbody>
 </table>
-<h3>Prometheus查询</h3>
-<pre><code class="language-promql"># 平均响应时间
-avg(rate(mongodb_driver_commands_seconds_sum[5m]) / rate(mongodb_driver_commands_seconds_count[5m])) by (job)
-
-# 响应时间TOP 20
-topk(20, mongodb_driver_commands_seconds_max)
-
-# 连接池使用率
-(sum(mongodb_driver_pool_checkedout) by (job) / sum(mongodb_driver_pool_size) by (job)) * 100
-
-# 等待连接数
-sum(mongodb_driver_pool_waitqueuesize) by (job)
-
-# 连接池大小
-sum(mongodb_driver_pool_size) by (job)
-</code></pre>
-<h3>告警规则</h3>
-<pre><code class="language-yaml"># MongoDB连接池使用率过高
-- alert: MongoDBConnectionPoolHighUsage
-  expr: (sum(mongodb_driver_pool_checkedout) by (job) / sum(mongodb_driver_pool_size) by (job)) * 100 &gt; 80
-  for: 5m
-  labels:
-    severity: warning
-  annotations:
-    summary: &quot;MongoDB连接池使用率过高&quot;
-    description: &quot;MongoDB连接池使用率超过80%，当前值: {{ $value }}%&quot;
-
-# MongoDB响应时间过长
-- alert: MongoDBSlowResponse
-  expr: mongodb_driver_commands_seconds_max &gt; 1
-  for: 2m
-  labels:
-    severity: warning
-  annotations:
-    summary: &quot;MongoDB响应时间过长&quot;
-    description: &quot;MongoDB命令执行时间超过1秒，当前值: {{ $value }}秒&quot;
-
-# MongoDB等待连接数过多
-- alert: MongoDBHighWaitQueue
-  expr: sum(mongodb_driver_pool_waitqueuesize) by (job) &gt; 10
-  for: 3m
-  labels:
-    severity: critical
-  annotations:
-    summary: &quot;MongoDB等待连接数过多&quot;
-    description: &quot;MongoDB等待连接的请求数超过10个，当前值: {{ $value }}&quot;
-</code></pre>
-<h2>🚀 使用示例</h2>
-<h3>基础配置示例</h3>
-<pre><code class="language-properties"># 开发环境配置
-spring.data.mongodb.host = localhost
-spring.data.mongodb.port = 27017
-spring.data.mongodb.database = sprival_dev
-spring.data.mongodb.username = dev_user
-spring.data.mongodb.password = dev_password
-spring.data.mongodb.authentication-database = admin
-</code></pre>
-<h3>生产环境配置示例</h3>
-<pre><code class="language-properties"># 生产环境配置（副本集）
-spring.data.mongodb.uri = mongodb://prod_user:prod_password@mongo1:27017,mongo2:27017,mongo3:27017/sprival_prod?replicaSet=rs0&amp;authSource=admin&amp;maxPoolSize=50&amp;minPoolSize=10&amp;connectTimeoutMS=10000&amp;socketTimeoutMS=30000&amp;serverSelectionTimeoutMS=5000&amp;heartbeatFrequencyMS=10000&amp;retryWrites=true&amp;retryReads=true&amp;readPreference=secondaryPreferred&amp;w=majority&amp;wtimeoutMS=5000
-</code></pre>
-<h2>🔧 故障排查</h2>
-<h3>常见问题</h3>
-<ol>
-<li>
-<p><strong>连接超时</strong><br />
-   - 检查网络连接<br />
-   - 验证服务器地址和端口<br />
-   - 调整<code>connectTimeoutMS</code>参数</p>
-</li>
-<li>
-<p><strong>认证失败</strong><br />
-   - 验证用户名和密码<br />
-   - 检查<code>authSource</code>配置<br />
-   - 确认用户权限</p>
-</li>
-<li>
-<p><strong>连接池耗尽</strong><br />
-   - 增加<code>maxPoolSize</code><br />
-   - 检查连接泄漏<br />
-   - 调整<code>waitQueueTimeoutMS</code></p>
-</li>
-<li>
-<p><strong>副本集连接问题</strong><br />
-   - 验证<code>replicaSet</code>名称<br />
-   - 检查副本集状态<br />
-   - 调整<code>serverSelectionTimeoutMS</code></p>
-</li>
-</ol>
-<h3>调试命令</h3>
-<pre><code class="language-bash"># 查看MongoDB连接状态
-curl http://localhost:8338/api/actuator/health/mongo
-
-# 查看详细监控指标
-curl http://localhost:8338/api/actuator/prometheus | grep mongodb
-
-# 查看应用日志
-tail -f logs/application.log | grep -i mongo
-</code></pre>
-<h2>📚 相关文档</h2>
-<ul>
-<li><strong>配置格式规范</strong>: <code>docs/ai-development/configuration-format-standards.md</code></li>
-<li><strong>开发规范</strong>: <code>docs/ai-development/development-standards.md</code></li>
-<li><strong>监控组件</strong>: <code>docs/components/monitoring/README.md</code></li>
-<li><strong>Spring Data MongoDB</strong>: <a href="https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/">官方文档</a></li>
-</ul>
-<hr />
-<p><em>本文档遵循Sprival项目配置格式规范，使用扁平化Properties格式进行配置管理</em></p>
         </article>
     </div>
 </main>
