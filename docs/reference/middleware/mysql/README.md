@@ -1,45 +1,50 @@
 # MySQL
 
 ## 组件说明
-- [MyBatis](https://mybatis.org/mybatis-3/)
-- [MyBatis-Plus](https://mybatis.plus)
-- [Dynamic-Datasource](https://github.com/baomidou/dynamic-datasource) 
-- [HikariCP](https://github.com/brettwooldridge/HikariCP)
-- [P6Spy](https://p6spy.readthedocs.io/)
 
-### MyBatis
-将XML或注解转为SQL，通过SqlSession操作JDBC，执行SQL，将查询返回值映射成Java对象
+### 技术选型
+
+采用「ORM 框架 + 多数据源管理 + 连接池 + 可观测性工具」的组合方案，覆盖 MySQL 操作全场景需求。
+
+| 组件 | 选型理由 |
+|------|---------|
+| [MyBatis](https://mybatis.org/mybatis-3/) | 成熟的半自动 ORM 框架，提供灵活的 SQL 映射能力，支持复杂查询场景 |
+| [MyBatis-Plus](https://mybatis.plus) | MyBatis 增强工具，提供单表 CRUD 无代码化、自动分页、代码生成等能力，提升开发效率 |
+| [Dynamic-Datasource](https://github.com/baomidou/dynamic-datasource) | 轻量级多数据源管理框架，支持主从分离、读写分离等场景，与 MyBatis-Plus 深度集成 |
+| [HikariCP](https://github.com/brettwooldridge/HikariCP) | 高性能 JDBC 连接池，Spring Boot 默认连接池，零开销特性保障连接管理效率 |
+| [P6Spy](https://p6spy.readthedocs.io/) | 无侵入式 SQL 监控工具，自动记录 SQL 执行日志，辅助调试与性能分析 |
+
+### 架构设计
+
+采用分层架构设计，各层职责清晰，组件协作紧密：
+
 ```
-XML/注解 (Mapper) → Configuration (解析) → MappedStatement (SQL 模板)
-                          ↓
-                   SqlSession (入口)
-                          ↓
-                   Executor → StatementHandler (执行 SQL) + ParameterHandler (绑定)
-                          ↓
-                   ResultSetHandler (映射) → Java 对象
-
+应用层
+  ↓
+ORM 层（MyBatis + MyBatis-Plus）
+  ↓
+数据源管理层（Dynamic-Datasource）
+  ↓
+连接池层（HikariCP）
+  ↓
+数据库（MySQL）
+  ↑
+可观测层（P6Spy）
 ```
 
-### MyBatis-Plus
-MyBatis基础上增强
-- CRUD接口封装，提供 insert、updateById、deleteById、selectById 等单表 CRUD 方法，一行代码搞定常见操作，减少 80% 以上 boilerplate 代码
-- 代码生成，自动根据数据库表生成实体类、Mapper 接口、Service、Controller 等，集成模板引擎（如 Velocity），支持自定义模板，大幅加速项目初始化
-- 分页支持，内置分页插件，支持物理/逻辑分页，结合 Page 对象自动处理 limit/offset，无需手动 SQL 修改。
-- 逻辑删除，支持软删除（将 deleted=1 而非物理删除），自动拦截 SQL 注入 where 条件，防止误删数据，便于数据恢复。
-- 乐观锁，版本号控制并发更新，防止数据丢失，适用于高并发场景，自动在 update SQL 中添加 version 检
-- Active Record，实体类继承 Model<T>，支持 AR 模式（如 user.save() 直接保存），简化对象操作，像 JPA 一样直观。
-- 插件系统，支持全局拦截插件（如 P6Spy 用于 SQL 监控），可扩展多租户、字段自动填充、SQL 注入防护等，增强安全性与可观测性。
-- 其他扩展，自定义 TypeHandler 处理枚举；多租户插件隔离数据；@TableField 自动填充创建/更新时间，减少手动设置。
-- 组件集成，集成hikari，druid等连接池组件，以及P6Spy组件
+**架构层次说明：**
 
-### Dynamic-Datasource
-- 支持多数据源切换
+- **ORM 层**：MyBatis 提供核心 SQL 映射能力，MyBatis-Plus 提供增强功能（单表 CRUD、分页、代码生成等），两者完全兼容，只增强不改变
+- **数据源管理层**：Dynamic-Datasource 实现多数据源动态切换，支持主从分离、读写分离等场景，通过注解简化切换逻辑
+- **连接池层**：HikariCP 提供高性能连接池管理，保障数据库连接的高效复用与稳定性
+- **可观测层**：P6Spy 无侵入式拦截数据库操作，记录 SQL 执行日志（含参数、耗时等），辅助调试与性能分析
 
-### HikariCP
-- 高性能的 Java JDBC 连接池库
+**组件协作关系：**
 
-### P6Spy
-- SQL日志记录
+- MyBatis-Plus 基于 MyBatis 扩展，提供增强能力的同时保持完全兼容
+- Dynamic-Datasource 管理多个数据源，每个数据源使用 HikariCP 作为连接池
+- P6Spy 在连接池层进行拦截，监控所有数据库操作，无需修改业务代码
+
 
 ## 配置说明
 
@@ -59,22 +64,22 @@ spring.datasource.dynamic.primary = master
 
 # 基础连接配置
 spring.datasource.dynamic.datasource.master.username = root
-spring.datasource.dynamic.datasource.master.password = workdock
+spring.datasource.dynamic.datasource.master.password = ${DB_PASSWORD:your_password}
 spring.datasource.dynamic.datasource.master.url = jdbc:mysql://localhost:3306/sprival?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
 spring.datasource.dynamic.datasource.master.driver-class-name = com.mysql.cj.jdbc.Driver
 spring.datasource.dynamic.datasource.master.type = com.zaxxer.hikari.HikariDataSource
 
 # HikariCP连接池配置
-spring.datasource.dynamic.hikari.connection_test_query = SELECT 1
-spring.datasource.dynamic.hikari.is-auto-commit = true
-spring.datasource.dynamic.hikari.max_pool_size = 20
-spring.datasource.dynamic.hikari.min_idle = 20
-spring.datasource.dynamic.hikari.max_lifetime = 600000
-spring.datasource.dynamic.hikari.idle_timeout = 300000
-spring.datasource.dynamic.hikari.connection_timeout = 10000
-spring.datasource.dynamic.hikari.validation_timeout = 3000
-spring.datasource.dynamic.hikari.leak_detection_threshold = 60000
-spring.datasource.dynamic.hikari.connection_init_sql = set session wait_timeout=28800,interactive_timeout=28800;
+spring.datasource.dynamic.hikari.connectionTestQuery = SELECT 1
+spring.datasource.dynamic.hikari.autoCommit = true
+spring.datasource.dynamic.hikari.maximumPoolSize = 20
+spring.datasource.dynamic.hikari.minimumIdle = 20
+spring.datasource.dynamic.hikari.maxLifetime = 600000
+spring.datasource.dynamic.hikari.idleTimeout = 300000
+spring.datasource.dynamic.hikari.connectionTimeout = 10000
+spring.datasource.dynamic.hikari.validationTimeout = 3000
+spring.datasource.dynamic.hikari.leakDetectionThreshold = 60000
+spring.datasource.dynamic.hikari.connectionInitSql = set session wait_timeout=28800,interactive_timeout=28800;
 ```
 
 #### 2. 多数据源配置（推荐用于生产环境）
@@ -89,29 +94,29 @@ spring.datasource.dynamic.primary = master
 
 # 主库配置（写库）
 spring.datasource.dynamic.datasource.master.username = root
-spring.datasource.dynamic.datasource.master.password = workdock
+spring.datasource.dynamic.datasource.master.password = ${DB_PASSWORD:your_password}
 spring.datasource.dynamic.datasource.master.url = jdbc:mysql://master-host:3306/sprival?useSSL=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=false
 spring.datasource.dynamic.datasource.master.driver-class-name = com.mysql.cj.jdbc.Driver
 spring.datasource.dynamic.datasource.master.type = com.zaxxer.hikari.HikariDataSource
 
 # 从库配置（读库）
 spring.datasource.dynamic.datasource.slave.username = root
-spring.datasource.dynamic.datasource.slave.password = workdock
+spring.datasource.dynamic.datasource.slave.password = ${DB_PASSWORD:your_password}
 spring.datasource.dynamic.datasource.slave.url = jdbc:mysql://slave-host:3306/sprival?useSSL=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=false
 spring.datasource.dynamic.datasource.slave.driver-class-name = com.mysql.cj.jdbc.Driver
 spring.datasource.dynamic.datasource.slave.type = com.zaxxer.hikari.HikariDataSource
 
 # HikariCP连接池优化配置
-spring.datasource.dynamic.hikari.connection_test_query = SELECT 1
-spring.datasource.dynamic.hikari.is-auto-commit = true
-spring.datasource.dynamic.hikari.max_pool_size = 20
-spring.datasource.dynamic.hikari.min_idle = 20
-spring.datasource.dynamic.hikari.max_lifetime = 600000
-spring.datasource.dynamic.hikari.idle_timeout = 300000
-spring.datasource.dynamic.hikari.connection_timeout = 10000
-spring.datasource.dynamic.hikari.validation_timeout = 3000
-spring.datasource.dynamic.hikari.leak_detection_threshold = 60000
-spring.datasource.dynamic.hikari.connection_init_sql = set session wait_timeout=28800,interactive_timeout=28800;
+spring.datasource.dynamic.hikari.connectionTestQuery = SELECT 1
+spring.datasource.dynamic.hikari.autoCommit = true
+spring.datasource.dynamic.hikari.maximumPoolSize = 20
+spring.datasource.dynamic.hikari.minimumIdle = 20
+spring.datasource.dynamic.hikari.maxLifetime = 600000
+spring.datasource.dynamic.hikari.idleTimeout = 300000
+spring.datasource.dynamic.hikari.connectionTimeout = 10000
+spring.datasource.dynamic.hikari.validationTimeout = 3000
+spring.datasource.dynamic.hikari.leakDetectionThreshold = 60000
+spring.datasource.dynamic.hikari.connectionInitSql = set session wait_timeout=28800,interactive_timeout=28800;
 ```
 
 ### 标准JDBC URL格式
@@ -138,16 +143,16 @@ jdbc:mysql://[host][:port]/[database][?propertyName1=propertyValue1[&propertyNam
 
 | 配置项 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
-| `spring.datasource.dynamic.hikari.connection_test_query` | String | - | 连接测试查询SQL |
-| `spring.datasource.dynamic.hikari.is-auto-commit` | Boolean | true | 是否自动提交事务 |
-| `spring.datasource.dynamic.hikari.max_pool_size` | Integer | 10 | 连接池最大连接数 |
-| `spring.datasource.dynamic.hikari.min_idle` | Integer | - | 连接池最小空闲连接数 |
-| `spring.datasource.dynamic.hikari.max_lifetime` | Long | 1800000 | 连接最大生存时间（毫秒） |
-| `spring.datasource.dynamic.hikari.idle_timeout` | Long | 600000 | 连接空闲超时时间（毫秒） |
-| `spring.datasource.dynamic.hikari.connection_timeout` | Long | 30000 | 获取连接超时时间（毫秒） |
-| `spring.datasource.dynamic.hikari.validation_timeout` | Long | 5000 | 连接验证超时时间（毫秒） |
-| `spring.datasource.dynamic.hikari.leak_detection_threshold` | Long | 0 | 连接泄漏检测阈值（毫秒），0表示禁用 |
-| `spring.datasource.dynamic.hikari.connection_init_sql` | String | - | 连接初始化SQL语句 |
+| `spring.datasource.dynamic.hikari.connectionTestQuery` | String | - | 连接测试查询SQL |
+| `spring.datasource.dynamic.hikari.autoCommit` | Boolean | true | 是否自动提交事务 |
+| `spring.datasource.dynamic.hikari.maximumPoolSize` | Integer | 10 | 连接池最大连接数 |
+| `spring.datasource.dynamic.hikari.minimumIdle` | Integer | 10 | 连接池最小空闲连接数（默认等于maximumPoolSize） |
+| `spring.datasource.dynamic.hikari.maxLifetime` | Long | 1800000 | 连接最大生存时间（毫秒） |
+| `spring.datasource.dynamic.hikari.idleTimeout` | Long | 600000 | 连接空闲超时时间（毫秒） |
+| `spring.datasource.dynamic.hikari.connectionTimeout` | Long | 30000 | 获取连接超时时间（毫秒） |
+| `spring.datasource.dynamic.hikari.validationTimeout` | Long | 5000 | 连接验证超时时间（毫秒） |
+| `spring.datasource.dynamic.hikari.leakDetectionThreshold` | Long | 0 | 连接泄漏检测阈值（毫秒），0表示禁用 |
+| `spring.datasource.dynamic.hikari.connectionInitSql` | String | - | 连接初始化SQL语句 |
 
 ### 配置注意事项
 
