@@ -1,30 +1,50 @@
-# Spring HTTP Client 模块
-
-## 核心特性
-- ✅ **高性能传输**: 采用OkHttp高性能HTTP客户端，支持连接池、HTTP/2
-- ✅ **声明式编程**: 基于Feign的声明式HTTP客户端，简化开发
-- ✅ **容错机制**: 集成Resilience4j提供熔断、重试、限流等容错能力
+# Spring HTTP Client
 
 ## 组件说明
 
+### 技术选型
+
+采用「声明式客户端 + 容错机制 + 高性能传输 + 可观测性工具」的组合方案，覆盖 HTTP 调用全场景需求。
+
+| 组件 | 选型理由 |
+|------|---------|
+| [Feign](https://github.com/OpenFeign/feign) | Spring Cloud 官方声明式 HTTP 客户端，与 Spring 生态完美集成，简化 HTTP 调用开发，支持注解式接口定义 |
+| [Resilience4j](https://resilience4j.readme.io/) | 现代容错库，提供熔断器、重试器、限流器、隔板等完整容错能力，轻量级且功能强大 |
+| [OkHttp](https://square.github.io/okhttp/) | 高性能 HTTP 客户端，提供连接池、HTTP/2 支持、拦截器等企业级特性，性能优于 JDK 默认实现 |
+| [Micrometer](https://micrometer.io/) | 统一指标收集和监控，支持 Prometheus、Grafana 等多种监控系统，与 Spring Boot 深度集成 |
+| [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html) | 健康检查和监控端点，提供运维友好的管理接口，支持多种监控协议 |
+
+### 架构设计
+
+采用分层架构设计，各层职责清晰，组件协作紧密：
+
 ```
-应用代码 → Feign接口 → Resilience4j容错 → OkHttp传输 → 目标服务（服务端负载均衡）
-                ↓
-            Micrometer监控 ← Actuator健康检查
+应用层
+  ↓
+声明式客户端层（Feign）
+  ↓
+容错层（Resilience4j）
+  ↓
+HTTP传输层（OkHttp）
+  ↓
+目标服务（服务端负载均衡）
+  ↑
+监控与治理层（Micrometer + Actuator）
 ```
 
-#### 1. HTTP传输层
-- **OkHttp**: 高性能HTTP客户端，提供连接池、HTTP/2支持、拦截器等企业级特性
+**架构层次说明：**
 
-#### 2. 声明式客户端层
-- **Feign**: Spring Cloud官方声明式HTTP客户端，与Spring生态完美集成，简化HTTP调用开发
+- **声明式客户端层**：Feign 提供基于注解的声明式 HTTP 客户端，通过接口定义简化远程调用，支持请求/响应编解码、拦截器等扩展能力
+- **容错层**：Resilience4j 提供熔断器、重试器、限流器等容错机制，保障服务调用的稳定性和可用性，防止级联故障
+- **HTTP传输层**：OkHttp 提供高性能 HTTP 传输能力，支持连接池复用、HTTP/2 协议、请求/响应拦截等特性，提升传输效率
+- **监控与治理层**：Micrometer 统一收集指标数据，Actuator 提供健康检查和监控端点，支持 Prometheus、Grafana 等监控系统集成
 
-#### 3. 容错层
-- **Resilience4j**: 现代容错库，提供熔断器、重试器、限流器、隔板等完整容错能力
+**组件协作关系：**
 
-#### 4. 监控与治理层
-- **Micrometer**: 统一指标收集和监控，支持Prometheus、Grafana等多种监控系统
-- **Spring Boot Actuator**: 健康检查和监控端点，提供运维友好的管理接口
+- Feign 作为声明式客户端，通过注解定义接口，自动生成 HTTP 调用代码
+- Resilience4j 与 Feign 集成，在 Feign 调用前后提供容错保护，支持熔断、重试等机制
+- OkHttp 作为 Feign 的底层 HTTP 客户端，提供高性能的 HTTP 传输能力，替代 JDK 默认实现
+- Micrometer 自动收集 Feign 和 Resilience4j 的指标数据，通过 Actuator 端点暴露，支持监控系统集成
 
 
 ## 配置说明

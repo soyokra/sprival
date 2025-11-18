@@ -848,30 +848,63 @@
         <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
             <h1>Redis</h1>
 <h2>组件说明</h2>
-<ul>
-<li><a href="https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#io.caching">Spring Cache</a></li>
-<li><a href="https://docs.spring.io/spring-data/redis/docs/2.7.18/reference/html/">Spring Data Redis</a></li>
-<li><a href="https://redisson.pro/docs/overview/">Redisson</a></li>
-</ul>
-<pre><code>Spring Cache (注解抽象: @Cacheable 等)
-    ↓ (使用 CacheManager 接口)
-RedisCacheManager (Spring Data Redis 提供)
-    ↓ (依赖 RedisConnectionFactory)
-RedissonConnectionFactory (Redisson 提供)
-    ↓ (底层客户端)
-Redisson (高级 Redis 客户端: 分布式锁、异步等)
+<h3>技术选型</h3>
+<p>采用「缓存抽象 + 数据访问层 + 连接池 + 分布式框架」的组合方案，覆盖 Redis 操作全场景需求。</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>选型理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#io.caching">Spring Cache</a></td>
+<td>Spring 框架提供的声明式缓存抽象，通过注解（@Cacheable、@CacheEvict 等）简化缓存操作，支持多种缓存实现，与 Spring 生态无缝集成</td>
+</tr>
+<tr>
+<td><a href="https://docs.spring.io/spring-data/redis/docs/2.7.18/reference/html/">Spring Data Redis</a></td>
+<td>Spring Data 项目的数据访问层抽象，提供 RedisTemplate、Repository 等高级 API，简化 Redis 操作和 Spring 集成，支持事务、序列化等特性</td>
+</tr>
+<tr>
+<td><a href="https://lettuce.io/">Lettuce</a></td>
+<td>异步非阻塞 Redis 客户端，基于 Netty 实现，支持响应式编程模型，性能优异，Spring Data Redis 默认客户端</td>
+</tr>
+<tr>
+<td><a href="https://redisson.pro/docs/overview/">Redisson</a></td>
+<td>基于 Netty 的高级 Redis 客户端，提供分布式锁、分布式集合、分布式对象等高级数据结构和服务，抽象 Redis 复杂性，适合复杂分布式场景</td>
+</tr>
+</tbody>
+</table>
+<h3>架构设计</h3>
+<p>采用分层架构设计，各层职责清晰，组件协作紧密：</p>
+<pre><code>应用层
+  ↓
+缓存抽象层（Spring Cache）
+  ↓
+数据访问层（Spring Data Redis）
+  ↓
+连接工厂层（RedissonConnectionFactory / LettuceConnectionFactory）
+  ↓
+客户端层（Redisson / Lettuce）
+  ↓
+Redis 服务器
 </code></pre>
-<h3>Spring Cache</h3>
+<p><strong>架构层次说明：</strong></p>
 <ul>
-<li>声明式缓存</li>
+<li><strong>缓存抽象层</strong>：Spring Cache 提供声明式缓存抽象，通过注解（@Cacheable、@CacheEvict 等）简化缓存操作，支持多种缓存实现，与 Spring 生态无缝集成</li>
+<li><strong>数据访问层</strong>：Spring Data Redis 提供 RedisTemplate、Repository 等高级 API，简化 Redis 操作和 Spring 集成，支持事务、序列化、连接池管理等特性</li>
+<li><strong>连接工厂层</strong>：RedissonConnectionFactory 或 LettuceConnectionFactory 提供 Redis 连接工厂，管理 Redis 连接的创建和生命周期</li>
+<li><strong>客户端层</strong>：Redisson 提供分布式锁、分布式集合等高级功能；Lettuce 提供异步非阻塞的 Redis 客户端，支持响应式编程模型</li>
+<li><strong>Redis 服务器</strong>：Redis 数据库服务器，提供键值存储、数据结构、发布订阅等功能</li>
 </ul>
-<h3>Spring Data Redis</h3>
+<p><strong>组件协作关系：</strong></p>
 <ul>
-<li>数据访问层抽象，简化 Redis 操作和 Spring 集成</li>
-</ul>
-<h3>Redisson</h3>
-<ul>
-<li>分布式框架，提供高级数据结构和服务，抽象 Redis 复杂性</li>
+<li>Spring Cache 通过 CacheManager 接口使用 RedisCacheManager（Spring Data Redis 提供），实现缓存操作的统一管理</li>
+<li>Spring Data Redis 依赖 RedisConnectionFactory 接口，可以使用 RedissonConnectionFactory 或 LettuceConnectionFactory 作为实现</li>
+<li>RedissonConnectionFactory 基于 Redisson 客户端，提供高级分布式功能（分布式锁、分布式对象等）</li>
+<li>LettuceConnectionFactory 基于 Lettuce 客户端，提供高性能异步非阻塞 Redis 操作，Spring Data Redis 默认使用</li>
+<li>两种连接工厂可以共存，根据业务需求选择使用，Redisson 适合需要分布式锁等高级功能的场景，Lettuce 适合高性能异步场景</li>
 </ul>
 <h2>配置说明</h2>
 <h3>配置方式</h3>

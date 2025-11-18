@@ -846,34 +846,67 @@
 <main class="main-content">
     <div class="container max-w-4xl">
         <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
-            <h1>Spring HTTP Client 模块</h1>
-<h2>核心特性</h2>
-<ul>
-<li>✅ <strong>高性能传输</strong>: 采用OkHttp高性能HTTP客户端，支持连接池、HTTP/2</li>
-<li>✅ <strong>声明式编程</strong>: 基于Feign的声明式HTTP客户端，简化开发</li>
-<li>✅ <strong>容错机制</strong>: 集成Resilience4j提供熔断、重试、限流等容错能力</li>
-</ul>
+            <h1>Spring HTTP Client</h1>
 <h2>组件说明</h2>
-<pre><code>应用代码 → Feign接口 → Resilience4j容错 → OkHttp传输 → 目标服务（服务端负载均衡）
-                ↓
-            Micrometer监控 ← Actuator健康检查
+<h3>技术选型</h3>
+<p>采用「声明式客户端 + 容错机制 + 高性能传输 + 可观测性工具」的组合方案，覆盖 HTTP 调用全场景需求。</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>选型理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/OpenFeign/feign">Feign</a></td>
+<td>Spring Cloud 官方声明式 HTTP 客户端，与 Spring 生态完美集成，简化 HTTP 调用开发，支持注解式接口定义</td>
+</tr>
+<tr>
+<td><a href="https://resilience4j.readme.io/">Resilience4j</a></td>
+<td>现代容错库，提供熔断器、重试器、限流器、隔板等完整容错能力，轻量级且功能强大</td>
+</tr>
+<tr>
+<td><a href="https://square.github.io/okhttp/">OkHttp</a></td>
+<td>高性能 HTTP 客户端，提供连接池、HTTP/2 支持、拦截器等企业级特性，性能优于 JDK 默认实现</td>
+</tr>
+<tr>
+<td><a href="https://micrometer.io/">Micrometer</a></td>
+<td>统一指标收集和监控，支持 Prometheus、Grafana 等多种监控系统，与 Spring Boot 深度集成</td>
+</tr>
+<tr>
+<td><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html">Spring Boot Actuator</a></td>
+<td>健康检查和监控端点，提供运维友好的管理接口，支持多种监控协议</td>
+</tr>
+</tbody>
+</table>
+<h3>架构设计</h3>
+<p>采用分层架构设计，各层职责清晰，组件协作紧密：</p>
+<pre><code>应用层
+  ↓
+声明式客户端层（Feign）
+  ↓
+容错层（Resilience4j）
+  ↓
+HTTP传输层（OkHttp）
+  ↓
+目标服务（服务端负载均衡）
+  ↑
+监控与治理层（Micrometer + Actuator）
 </code></pre>
-<h4>1. HTTP传输层</h4>
+<p><strong>架构层次说明：</strong></p>
 <ul>
-<li><strong>OkHttp</strong>: 高性能HTTP客户端，提供连接池、HTTP/2支持、拦截器等企业级特性</li>
+<li><strong>声明式客户端层</strong>：Feign 提供基于注解的声明式 HTTP 客户端，通过接口定义简化远程调用，支持请求/响应编解码、拦截器等扩展能力</li>
+<li><strong>容错层</strong>：Resilience4j 提供熔断器、重试器、限流器等容错机制，保障服务调用的稳定性和可用性，防止级联故障</li>
+<li><strong>HTTP传输层</strong>：OkHttp 提供高性能 HTTP 传输能力，支持连接池复用、HTTP/2 协议、请求/响应拦截等特性，提升传输效率</li>
+<li><strong>监控与治理层</strong>：Micrometer 统一收集指标数据，Actuator 提供健康检查和监控端点，支持 Prometheus、Grafana 等监控系统集成</li>
 </ul>
-<h4>2. 声明式客户端层</h4>
+<p><strong>组件协作关系：</strong></p>
 <ul>
-<li><strong>Feign</strong>: Spring Cloud官方声明式HTTP客户端，与Spring生态完美集成，简化HTTP调用开发</li>
-</ul>
-<h4>3. 容错层</h4>
-<ul>
-<li><strong>Resilience4j</strong>: 现代容错库，提供熔断器、重试器、限流器、隔板等完整容错能力</li>
-</ul>
-<h4>4. 监控与治理层</h4>
-<ul>
-<li><strong>Micrometer</strong>: 统一指标收集和监控，支持Prometheus、Grafana等多种监控系统</li>
-<li><strong>Spring Boot Actuator</strong>: 健康检查和监控端点，提供运维友好的管理接口</li>
+<li>Feign 作为声明式客户端，通过注解定义接口，自动生成 HTTP 调用代码</li>
+<li>Resilience4j 与 Feign 集成，在 Feign 调用前后提供容错保护，支持熔断、重试等机制</li>
+<li>OkHttp 作为 Feign 的底层 HTTP 客户端，提供高性能的 HTTP 传输能力，替代 JDK 默认实现</li>
+<li>Micrometer 自动收集 Feign 和 Resilience4j 的指标数据，通过 Actuator 端点暴露，支持监控系统集成</li>
 </ul>
 <h2>配置说明</h2>
 <h3>Feign配置</h3>

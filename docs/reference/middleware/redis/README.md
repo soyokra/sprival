@@ -1,28 +1,51 @@
 # Redis
 
 ## 组件说明
-- [Spring Cache](https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#io.caching)
-- [Spring Data Redis](https://docs.spring.io/spring-data/redis/docs/2.7.18/reference/html/)
-- [Redisson](https://redisson.pro/docs/overview/)
+
+### 技术选型
+
+采用「缓存抽象 + 数据访问层 + 连接池 + 分布式框架」的组合方案，覆盖 Redis 操作全场景需求。
+
+| 组件 | 选型理由 |
+|------|---------|
+| [Spring Cache](https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#io.caching) | Spring 框架提供的声明式缓存抽象，通过注解（@Cacheable、@CacheEvict 等）简化缓存操作，支持多种缓存实现，与 Spring 生态无缝集成 |
+| [Spring Data Redis](https://docs.spring.io/spring-data/redis/docs/2.7.18/reference/html/) | Spring Data 项目的数据访问层抽象，提供 RedisTemplate、Repository 等高级 API，简化 Redis 操作和 Spring 集成，支持事务、序列化等特性 |
+| [Lettuce](https://lettuce.io/) | 异步非阻塞 Redis 客户端，基于 Netty 实现，支持响应式编程模型，性能优异，Spring Data Redis 默认客户端 |
+| [Redisson](https://redisson.pro/docs/overview/) | 基于 Netty 的高级 Redis 客户端，提供分布式锁、分布式集合、分布式对象等高级数据结构和服务，抽象 Redis 复杂性，适合复杂分布式场景 |
+
+### 架构设计
+
+采用分层架构设计，各层职责清晰，组件协作紧密：
 
 ```
-Spring Cache (注解抽象: @Cacheable 等)
-    ↓ (使用 CacheManager 接口)
-RedisCacheManager (Spring Data Redis 提供)
-    ↓ (依赖 RedisConnectionFactory)
-RedissonConnectionFactory (Redisson 提供)
-    ↓ (底层客户端)
-Redisson (高级 Redis 客户端: 分布式锁、异步等)
+应用层
+  ↓
+缓存抽象层（Spring Cache）
+  ↓
+数据访问层（Spring Data Redis）
+  ↓
+连接工厂层（RedissonConnectionFactory / LettuceConnectionFactory）
+  ↓
+客户端层（Redisson / Lettuce）
+  ↓
+Redis 服务器
 ```
 
-### Spring Cache
-- 声明式缓存
+**架构层次说明：**
 
-### Spring Data Redis
-- 数据访问层抽象，简化 Redis 操作和 Spring 集成
+- **缓存抽象层**：Spring Cache 提供声明式缓存抽象，通过注解（@Cacheable、@CacheEvict 等）简化缓存操作，支持多种缓存实现，与 Spring 生态无缝集成
+- **数据访问层**：Spring Data Redis 提供 RedisTemplate、Repository 等高级 API，简化 Redis 操作和 Spring 集成，支持事务、序列化、连接池管理等特性
+- **连接工厂层**：RedissonConnectionFactory 或 LettuceConnectionFactory 提供 Redis 连接工厂，管理 Redis 连接的创建和生命周期
+- **客户端层**：Redisson 提供分布式锁、分布式集合等高级功能；Lettuce 提供异步非阻塞的 Redis 客户端，支持响应式编程模型
+- **Redis 服务器**：Redis 数据库服务器，提供键值存储、数据结构、发布订阅等功能
 
-### Redisson
-- 分布式框架，提供高级数据结构和服务，抽象 Redis 复杂性
+**组件协作关系：**
+
+- Spring Cache 通过 CacheManager 接口使用 RedisCacheManager（Spring Data Redis 提供），实现缓存操作的统一管理
+- Spring Data Redis 依赖 RedisConnectionFactory 接口，可以使用 RedissonConnectionFactory 或 LettuceConnectionFactory 作为实现
+- RedissonConnectionFactory 基于 Redisson 客户端，提供高级分布式功能（分布式锁、分布式对象等）
+- LettuceConnectionFactory 基于 Lettuce 客户端，提供高性能异步非阻塞 Redis 操作，Spring Data Redis 默认使用
+- 两种连接工厂可以共存，根据业务需求选择使用，Redisson 适合需要分布式锁等高级功能的场景，Lettuce 适合高性能异步场景
 
 ## 配置说明
 

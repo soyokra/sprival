@@ -1,5 +1,9 @@
 # MongoDB
 
+## 组件说明
+官方组件Spring Data MongoDB
+- [Spring Data MongoDB](https://spring.io/projects/spring-data-mongodb)
+
 ## 配置说明
 
 ### 配置方式

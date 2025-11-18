@@ -846,7 +846,436 @@
 <main class="main-content">
     <div class="container max-w-4xl">
         <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
-            
+            <h1>Kafka</h1>
+<h2>组件说明</h2>
+<p>官方组件Spring Kafka<br />
+- <a href="https://spring.io/projects/spring-kafka">Spring Kafka</a></p>
+<h2>配置说明</h2>
+<h3>配置方式</h3>
+<p>Kafka主要通过bootstrap-servers连接，配置分为三个部分：<strong>基础连接配置</strong>、<strong>生产者配置</strong>、<strong>消费者配置</strong>和<strong>监听器配置</strong>。</p>
+<h4>1. 单点模式配置（推荐用于开发环境）</h4>
+<p>单点模式配置适用于开发环境或简单的单点Kafka服务，配置简单直观。</p>
+<pre><code class="language-properties"># 基础连接配置
+spring.kafka.bootstrap-servers = localhost:9092
+spring.kafka.client-id = sprival-client
+
+# 生产者配置
+spring.kafka.producer.key-serializer = org.apache.kafka.common.serialization.StringSerializer
+spring.kafka.producer.value-serializer = org.springframework.kafka.support.serializer.JsonSerializer
+spring.kafka.producer.acks = all
+spring.kafka.producer.retries = 3
+spring.kafka.producer.retry-backoff-ms = 100
+spring.kafka.producer.batch-size = 16384
+spring.kafka.producer.linger-ms = 1
+spring.kafka.producer.buffer-memory = 33554432
+spring.kafka.producer.compression-type = gzip
+spring.kafka.producer.enable-idempotence = true
+spring.kafka.producer.transaction-id-prefix = sprival-tx-
+
+# 消费者配置
+spring.kafka.consumer.group-id = sprival-group
+spring.kafka.consumer.client-id = sprival-consumer
+spring.kafka.consumer.key-deserializer = org.apache.kafka.common.serialization.StringDeserializer
+spring.kafka.consumer.value-deserializer = org.springframework.kafka.support.serializer.JsonDeserializer
+spring.kafka.consumer.auto-offset-reset = earliest
+spring.kafka.consumer.enable-auto-commit = false
+spring.kafka.consumer.auto-commit-interval-ms = 1000
+spring.kafka.consumer.max-poll-records = 500
+spring.kafka.consumer.max-poll-interval-ms = 300000
+spring.kafka.consumer.session-timeout-ms = 30000
+spring.kafka.consumer.heartbeat-interval-ms = 3000
+
+# 监听器配置
+spring.kafka.listener.ack-mode = manual_immediate
+spring.kafka.listener.ack-count = 10
+spring.kafka.listener.ack-time = 1000
+spring.kafka.listener.concurrency = 3
+spring.kafka.listener.poll-timeout = 3000
+spring.kafka.listener.auto-startup = true
+spring.kafka.listener.missing-topics-fatal = false
+
+# JSON反序列化配置
+spring.kafka.consumer.properties.spring.json.trusted.packages = *
+spring.kafka.consumer.properties.spring.json.use.type.headers = false
+spring.kafka.consumer.properties.spring.json.value.default.type = java.lang.Object
+</code></pre>
+<h4>2. 集群模式配置（推荐用于生产环境）</h4>
+<p>集群模式配置支持多个Kafka节点，适合生产环境。</p>
+<pre><code class="language-properties"># 基础连接配置（多个节点用逗号分隔）
+spring.kafka.bootstrap-servers = node1:9092,node2:9092,node3:9092
+spring.kafka.client-id = sprival-client
+
+# 生产者配置（生产环境优化）
+spring.kafka.producer.key-serializer = org.apache.kafka.common.serialization.StringSerializer
+spring.kafka.producer.value-serializer = org.springframework.kafka.support.serializer.JsonSerializer
+spring.kafka.producer.acks = all
+spring.kafka.producer.retries = 3
+spring.kafka.producer.retry-backoff-ms = 100
+spring.kafka.producer.batch-size = 32768
+spring.kafka.producer.linger-ms = 10
+spring.kafka.producer.buffer-memory = 67108864
+spring.kafka.producer.compression-type = snappy
+spring.kafka.producer.enable-idempotence = true
+spring.kafka.producer.transaction-id-prefix = sprival-tx-
+
+# 消费者配置（生产环境优化）
+spring.kafka.consumer.group-id = sprival-group
+spring.kafka.consumer.client-id = sprival-consumer
+spring.kafka.consumer.key-deserializer = org.apache.kafka.common.serialization.StringDeserializer
+spring.kafka.consumer.value-deserializer = org.springframework.kafka.support.serializer.JsonDeserializer
+spring.kafka.consumer.auto-offset-reset = earliest
+spring.kafka.consumer.enable-auto-commit = false
+spring.kafka.consumer.auto-commit-interval-ms = 5000
+spring.kafka.consumer.max-poll-records = 500
+spring.kafka.consumer.max-poll-interval-ms = 300000
+spring.kafka.consumer.session-timeout-ms = 30000
+spring.kafka.consumer.heartbeat-interval-ms = 3000
+
+# 监听器配置（生产环境优化）
+spring.kafka.listener.ack-mode = manual_immediate
+spring.kafka.listener.ack-count = 10
+spring.kafka.listener.ack-time = 1000
+spring.kafka.listener.concurrency = 5
+spring.kafka.listener.poll-timeout = 3000
+spring.kafka.listener.auto-startup = true
+spring.kafka.listener.missing-topics-fatal = false
+</code></pre>
+<h3>标准Bootstrap Servers格式</h3>
+<pre><code class="language-plaintext">host1:port1[,host2:port2,...[,hostN:portN]]
+</code></pre>
+<h2>配置项详解</h2>
+<h3>基础配置项</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.kafka.bootstrap-servers</code></td>
+<td>List<String></td>
+<td>-</td>
+<td>Kafka服务器地址列表，多个节点用逗号分隔，必须配置</td>
+</tr>
+<tr>
+<td><code>spring.kafka.client-id</code></td>
+<td>String</td>
+<td>-</td>
+<td>客户端ID，用于标识客户端</td>
+</tr>
+</tbody>
+</table>
+<h3>生产者配置项</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.kafka.producer.key-serializer</code></td>
+<td>String</td>
+<td>-</td>
+<td>Key序列化器类名</td>
+</tr>
+<tr>
+<td><code>spring.kafka.producer.value-serializer</code></td>
+<td>String</td>
+<td>-</td>
+<td>Value序列化器类名</td>
+</tr>
+<tr>
+<td><code>spring.kafka.producer.acks</code></td>
+<td>String</td>
+<td>1</td>
+<td>生产者确认级别（0/1/all）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.producer.retries</code></td>
+<td>Integer</td>
+<td>0</td>
+<td>发送失败时的重试次数</td>
+</tr>
+<tr>
+<td><code>spring.kafka.producer.retry-backoff-ms</code></td>
+<td>Long</td>
+<td>100</td>
+<td>重试间隔时间（毫秒）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.producer.batch-size</code></td>
+<td>Integer</td>
+<td>16384</td>
+<td>批处理大小（字节）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.producer.linger-ms</code></td>
+<td>Long</td>
+<td>0</td>
+<td>等待更多消息的时间（毫秒）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.producer.buffer-memory</code></td>
+<td>Long</td>
+<td>33554432</td>
+<td>生产者缓冲区大小（字节）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.producer.compression-type</code></td>
+<td>String</td>
+<td>none</td>
+<td>压缩类型（none/gzip/snappy/lz4/zstd）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.producer.enable-idempotence</code></td>
+<td>Boolean</td>
+<td>false</td>
+<td>是否启用幂等性</td>
+</tr>
+<tr>
+<td><code>spring.kafka.producer.transaction-id-prefix</code></td>
+<td>String</td>
+<td>-</td>
+<td>事务ID前缀，启用事务时使用</td>
+</tr>
+</tbody>
+</table>
+<h3>消费者配置项</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.kafka.consumer.group-id</code></td>
+<td>String</td>
+<td>-</td>
+<td>消费者组ID，必须配置</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.client-id</code></td>
+<td>String</td>
+<td>-</td>
+<td>消费者客户端ID</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.key-deserializer</code></td>
+<td>String</td>
+<td>-</td>
+<td>Key反序列化器类名</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.value-deserializer</code></td>
+<td>String</td>
+<td>-</td>
+<td>Value反序列化器类名</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.auto-offset-reset</code></td>
+<td>String</td>
+<td>latest</td>
+<td>Offset重置策略（earliest/latest/none）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.enable-auto-commit</code></td>
+<td>Boolean</td>
+<td>true</td>
+<td>是否自动提交Offset</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.auto-commit-interval-ms</code></td>
+<td>Long</td>
+<td>5000</td>
+<td>自动提交Offset间隔（毫秒）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.max-poll-records</code></td>
+<td>Integer</td>
+<td>500</td>
+<td>单次拉取最大记录数</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.max-poll-interval-ms</code></td>
+<td>Integer</td>
+<td>300000</td>
+<td>最大拉取间隔（毫秒）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.session-timeout-ms</code></td>
+<td>Integer</td>
+<td>45000</td>
+<td>会话超时时间（毫秒）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.heartbeat-interval-ms</code></td>
+<td>Integer</td>
+<td>3000</td>
+<td>心跳间隔时间（毫秒）</td>
+</tr>
+</tbody>
+</table>
+<h3>监听器配置项</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.kafka.listener.ack-mode</code></td>
+<td>String</td>
+<td>BATCH</td>
+<td>确认模式（RECORD/BATCH/TIME/MANUAL/MANUAL_IMMEDIATE）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.listener.ack-count</code></td>
+<td>Integer</td>
+<td>-</td>
+<td>批量确认的记录数（TIME模式）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.listener.ack-time</code></td>
+<td>Long</td>
+<td>-</td>
+<td>批量确认的时间间隔（毫秒，TIME模式）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.listener.concurrency</code></td>
+<td>Integer</td>
+<td>1</td>
+<td>监听器并发线程数</td>
+</tr>
+<tr>
+<td><code>spring.kafka.listener.poll-timeout</code></td>
+<td>Long</td>
+<td>5000</td>
+<td>拉取超时时间（毫秒）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.listener.auto-startup</code></td>
+<td>Boolean</td>
+<td>true</td>
+<td>是否自动启动监听器</td>
+</tr>
+<tr>
+<td><code>spring.kafka.listener.missing-topics-fatal</code></td>
+<td>Boolean</td>
+<td>true</td>
+<td>Topic不存在时是否失败</td>
+</tr>
+</tbody>
+</table>
+<h3>配置注意事项</h3>
+<blockquote>
+<p><strong>重要</strong>: 生产者和消费者配置是独立的，可以根据实际需求分别配置。</p>
+</blockquote>
+<ul>
+<li><strong>单点模式</strong>: 适用于开发环境，配置简单，但功能有限</li>
+<li><strong>集群模式</strong>: 适用于生产环境，支持高可用和负载均衡，建议配置多个节点</li>
+<li><strong>生产者配置</strong>: </li>
+<li>生产环境建议设置 <code>acks=all</code> 确保消息可靠性</li>
+<li>启用 <code>enable-idempotence=true</code> 防止重复消息</li>
+<li>根据消息大小和吞吐量调整 <code>batch-size</code> 和 <code>linger-ms</code></li>
+<li>选择合适的压缩类型（gzip/snappy/lz4）提高性能</li>
+<li><strong>消费者配置</strong>: </li>
+<li>必须配置 <code>group-id</code>，同一组内的消费者共享消息</li>
+<li>生产环境建议设置 <code>enable-auto-commit=false</code>，手动控制Offset提交</li>
+<li>根据消息处理时间调整 <code>max-poll-interval-ms</code>，避免被踢出消费者组</li>
+<li><code>auto-offset-reset=earliest</code> 适合需要处理历史消息的场景</li>
+<li><strong>监听器配置</strong>: </li>
+<li>根据消息处理速度和服务器资源调整 <code>concurrency</code></li>
+<li>生产环境建议使用 <code>ack-mode=manual_immediate</code> 确保消息处理完成后再确认</li>
+<li>设置合适的 <code>poll-timeout</code> 平衡响应性和资源占用</li>
+<li><strong>序列化器选择</strong>: </li>
+<li>简单场景使用 <code>StringSerializer/StringDeserializer</code></li>
+<li>复杂对象使用 <code>JsonSerializer/JsonDeserializer</code>，注意配置 <code>trusted.packages</code></li>
+</ul>
+<h2>监控指标</h2>
+<p>Spring Kafka提供以下关键监控指标：</p>
+<table>
+<thead>
+<tr>
+<th>指标名称</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.kafka.listener</code></td>
+<td>Timer</td>
+<td>监听器处理消息的耗时分布，标签包括：name（容器Bean名称）、result（success/failure）、exception（异常类型）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.template</code></td>
+<td>Timer</td>
+<td>KafkaTemplate发送消息的耗时分布，标签包括：name（模板Bean名称）、result（success/failure）、exception（异常类型）</td>
+</tr>
+<tr>
+<td><code>spring.kafka.producer.record-send-total</code></td>
+<td>Counter</td>
+<td>生产者发送记录总数</td>
+</tr>
+<tr>
+<td><code>spring.kafka.producer.record-send-rate</code></td>
+<td>Gauge</td>
+<td>生产者发送记录速率</td>
+</tr>
+<tr>
+<td><code>spring.kafka.producer.record-error-total</code></td>
+<td>Counter</td>
+<td>生产者发送失败总数</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.records-consumed-total</code></td>
+<td>Counter</td>
+<td>消费者消费记录总数</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.records-consumed-rate</code></td>
+<td>Gauge</td>
+<td>消费者消费记录速率</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.records-lag-max</code></td>
+<td>Gauge</td>
+<td>消费者最大延迟记录数</td>
+</tr>
+<tr>
+<td><code>spring.kafka.consumer.fetch-rate</code></td>
+<td>Gauge</td>
+<td>消费者拉取速率</td>
+</tr>
+</tbody>
+</table>
+<h3>监控说明</h3>
+<ul>
+<li><strong>监听器监控</strong>: 从 Spring Kafka 2.3 版本开始，如果在类路径中检测到 Micrometer 且应用程序上下文中存在单个 <code>MeterRegistry</code>，监听器容器将自动为监听器创建和更新 Micrometer <code>Timer</code></li>
+<li><strong>KafkaTemplate监控</strong>: 从 Spring Kafka 2.5 版本开始，如果在类路径中检测到 Micrometer 且应用程序上下文中存在单个 <code>MeterRegistry</code>，<code>KafkaTemplate</code> 将自动为发送操作创建和更新 Micrometer <code>Timer</code></li>
+<li><strong>指标标签</strong>: 可以通过设置 <code>ContainerProperties</code> 和 <code>KafkaTemplate</code> 的 <code>micrometerTags</code> 属性添加额外的标签</li>
+<li><strong>监控建议</strong>: </li>
+<li>监控监听器处理耗时，识别慢消息处理</li>
+<li>监控生产者发送失败率，及时发现连接或配置问题</li>
+<li>监控消费者延迟（records-lag-max），确保消息及时处理</li>
+<li>监控消费速率，评估系统吞吐量</li>
+</ul>
         </article>
     </div>
 </main>

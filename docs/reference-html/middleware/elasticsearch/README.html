@@ -846,7 +846,247 @@
 <main class="main-content">
     <div class="container max-w-4xl">
         <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
-            
+            <h1>Elasticsearch</h1>
+<h2>组件说明</h2>
+<p>官方组件Spring Data Elasticsearch<br />
+- <a href="https://spring.io/projects/spring-data-elasticsearch">Spring Data Elasticsearch</a></p>
+<h2>配置说明</h2>
+<h3>配置方式</h3>
+<p>Elasticsearch支持两种配置方式：<strong>Host配置</strong>和<strong>URI配置</strong>。</p>
+<h4>1. Host配置（推荐用于单点模式）</h4>
+<p>Host配置适用于单点模式的Elasticsearch服务，配置简单直观。</p>
+<pre><code class="language-properties"># 基础连接配置
+spring.elasticsearch.uris = http://localhost:8200
+spring.elasticsearch.username = 
+spring.elasticsearch.password = 
+
+# 超时配置
+spring.elasticsearch.connection-timeout = 5s
+spring.elasticsearch.socket-timeout = 30s
+
+# 高级配置
+spring.elasticsearch.path-prefix = 
+spring.data.elasticsearch.repositories.enabled = true
+</code></pre>
+<h4>2. URI配置（推荐用于集群模式）</h4>
+<p>URI配置支持集群模式和丰富的连接参数，适合生产环境。</p>
+<pre><code class="language-properties"># 单点配置示例
+spring.elasticsearch.uris = http://localhost:8200
+
+# 集群配置示例
+spring.elasticsearch.uris = http://node1:9200,http://node2:9200,http://node3:9200
+spring.elasticsearch.username = elastic
+spring.elasticsearch.password = workdock
+spring.elasticsearch.connection-timeout = 5s
+spring.elasticsearch.socket-timeout = 30s
+</code></pre>
+<h3>标准URI格式</h3>
+<pre><code class="language-plaintext">http://[username:password@]host[:port][/path-prefix]
+https://[username:password@]host[:port][/path-prefix]  (SSL连接)
+</code></pre>
+<h2>配置项详解</h2>
+<h3>Host配置项</h3>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.elasticsearch.uris</code></td>
+<td>List<String></td>
+<td>http://localhost:9200</td>
+<td>Elasticsearch服务器URI列表，支持多个节点（逗号分隔）</td>
+</tr>
+<tr>
+<td><code>spring.elasticsearch.username</code></td>
+<td>String</td>
+<td>-</td>
+<td>认证用户名</td>
+</tr>
+<tr>
+<td><code>spring.elasticsearch.password</code></td>
+<td>String</td>
+<td>-</td>
+<td>认证密码</td>
+</tr>
+<tr>
+<td><code>spring.elasticsearch.connection-timeout</code></td>
+<td>Duration</td>
+<td>1s</td>
+<td>连接超时时间</td>
+</tr>
+<tr>
+<td><code>spring.elasticsearch.socket-timeout</code></td>
+<td>Duration</td>
+<td>30s</td>
+<td>Socket超时时间</td>
+</tr>
+<tr>
+<td><code>spring.elasticsearch.path-prefix</code></td>
+<td>String</td>
+<td>-</td>
+<td>路径前缀</td>
+</tr>
+<tr>
+<td><code>spring.data.elasticsearch.repositories.enabled</code></td>
+<td>Boolean</td>
+<td>true</td>
+<td>是否启用Elasticsearch Repository</td>
+</tr>
+<tr>
+<td><code>spring.data.elasticsearch.client.reactive.endpoints</code></td>
+<td>List<String></td>
+<td>-</td>
+<td>响应式客户端端点列表</td>
+</tr>
+<tr>
+<td><code>spring.data.elasticsearch.client.reactive.use-ssl</code></td>
+<td>Boolean</td>
+<td>false</td>
+<td>是否使用SSL连接</td>
+</tr>
+</tbody>
+</table>
+<h3>配置注意事项</h3>
+<blockquote>
+<p><strong>重要</strong>: Host配置和URI配置不能同时使用，选择其中一种方式即可。</p>
+</blockquote>
+<ul>
+<li><strong>Host配置</strong>: 适用于单点模式，配置简单，但功能有限</li>
+<li><strong>URI配置</strong>: 适用于集群模式和生产环境，功能丰富，支持更多参数</li>
+<li><strong>认证配置</strong>: 生产环境建议使用认证，开发环境可以跳过</li>
+<li><strong>超时配置</strong>: 生产环境建议根据实际网络情况配置合适的超时时间</li>
+<li><strong>集群配置</strong>: 生产环境建议配置多个节点，提高可用性和性能</li>
+</ul>
+<h2>URI参数详解</h2>
+<h3>连接配置</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>connection-timeout</code></td>
+<td>Duration</td>
+<td>1s</td>
+<td>连接超时时间</td>
+</tr>
+<tr>
+<td><code>socket-timeout</code></td>
+<td>Duration</td>
+<td>30s</td>
+<td>Socket超时时间</td>
+</tr>
+</tbody>
+</table>
+<h3>安全配置</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>username</code></td>
+<td>String</td>
+<td>-</td>
+<td>认证用户名（在URI中通过@符号前指定）</td>
+</tr>
+<tr>
+<td><code>password</code></td>
+<td>String</td>
+<td>-</td>
+<td>认证密码（在URI中通过@符号前指定）</td>
+</tr>
+<tr>
+<td><code>use-ssl</code></td>
+<td>Boolean</td>
+<td>false</td>
+<td>是否使用SSL连接（https://协议）</td>
+</tr>
+</tbody>
+</table>
+<h3>路径配置</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>path-prefix</code></td>
+<td>String</td>
+<td>-</td>
+<td>路径前缀（在URI中通过/符号后指定）</td>
+</tr>
+</tbody>
+</table>
+<h2>监控指标</h2>
+<p>Elasticsearch驱动提供以下关键监控指标：</p>
+<table>
+<thead>
+<tr>
+<th>指标名称</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>elasticsearch_client_requests_total</code></td>
+<td>Counter</td>
+<td>客户端请求总数</td>
+</tr>
+<tr>
+<td><code>elasticsearch_client_requests_seconds</code></td>
+<td>Histogram</td>
+<td>客户端请求耗时分布</td>
+</tr>
+<tr>
+<td><code>elasticsearch_client_requests_seconds_max</code></td>
+<td>Gauge</td>
+<td>客户端请求最大耗时</td>
+</tr>
+<tr>
+<td><code>elasticsearch_client_requests_seconds_sum</code></td>
+<td>Counter</td>
+<td>客户端请求耗时总和</td>
+</tr>
+<tr>
+<td><code>elasticsearch_client_connections_active</code></td>
+<td>Gauge</td>
+<td>当前活跃连接数</td>
+</tr>
+<tr>
+<td><code>elasticsearch_client_connections_idle</code></td>
+<td>Gauge</td>
+<td>当前空闲连接数</td>
+</tr>
+<tr>
+<td><code>elasticsearch_client_connections_total</code></td>
+<td>Gauge</td>
+<td>连接池总连接数</td>
+</tr>
+</tbody>
+</table>
         </article>
     </div>
 </main>

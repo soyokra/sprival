@@ -1,9 +1,8 @@
 # RabbitMQ
 
 ## 组件说明
+官方组件 Spring AMQP
 - [spring-boot-starter-amqp](https://spring.io/projects/spring-amqp)
-- [spring-rabbit](https://github.com/spring-projects/spring-amqp) 
-- [rabbitmq-java-client](https://github.com/rabbitmq/rabbitmq-java-client)
 
 ## 配置说明
 

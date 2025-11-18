@@ -1,12 +1,6 @@
-# HTTP Server 模块
-
-## 核心特性
-
-- **高性能 Jetty 服务器**: 轻量级、低内存占用、高并发处理能力，适合云原生部署
+# HTTP Server
 
 ## 组件说明
-
-- [Eclipse Jetty](https://www.eclipse.org/jetty/) - 嵌入式 Web 服务器和 Servlet 容器
 - [Spring Boot Jetty Starter](https://docs.spring.io/spring-boot/docs/2.7.18/reference/html/web.html#web.servlet.embedded-container.jetty) - Spring Boot Jetty 集成
 
 ## 配置说明
