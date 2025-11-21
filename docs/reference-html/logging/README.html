@@ -846,11 +846,23 @@
 <main class="main-content">
     <div class="container max-w-4xl">
         <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
-            <h1>ELK + Kafka日志集成</h1>
-<h2>概述</h2>
-<p>本文档介绍如何使用 ELK（Elasticsearch, Logstash, Kibana）+ Kafka 构建完整的日志收集、处理和可视化系统。</p>
-<h2>架构</h2>
-<h3>整体架构</h3>
+            <h1>日志</h1>
+<blockquote>
+<p>基于<a href="https://github.com/deviantony/docker-elk">docker-elk</a>，改造成使用python进行初始化(setup)，方便维护和升级，并且集成了kafka服务。</p>
+</blockquote>
+<h2>快速开始</h2>
+<p>启动logging服务</p>
+<pre><code>cd sprival-logging
+docker compose up setup
+docker compose up -d
+</code></pre>
+<p>访问服务：<br />
+- Kibana：http://localhost:5601/<br />
+- ElasticSearch：http://localhost:9200/</p>
+<p>默认登录信息：<br />
+- Kibana 用户名：<code>elastic</code><br />
+- Kibana 密码：<code>workdock</code></p>
+<h2>整体架构</h2>
 <pre><code>┌─────────────────────┐
 │  Spring Boot App    │
 │  (KafkaAppender)    │
@@ -859,23 +871,19 @@
            ↓
 ┌─────────────────────┐
 │      Kafka          │
-│  - application-logs │
-│  - access-logs      │
 └──────────┬──────────┘
            │ Logstash 消费
            ↓
 ┌─────────────────────┐
 │     Logstash        │
 │  - 解析 JSON        │
-│  - 添加字段         │
-│  - 数据转换         │
+│  - 添加字段          │
+│  - 数据转换          │
 └──────────┬──────────┘
            │ 写入索引
            ↓
 ┌─────────────────────┐
 │  Elasticsearch      │
-│  - application-logs-*│
-│  - access-logs-*    │
 └──────────┬──────────┘
            │ 查询和聚合
            ↓
@@ -886,7 +894,7 @@
 │  - Visualize        │
 └─────────────────────┘
 </code></pre>
-<h3>数据流</h3>
+<h2>数据流</h2>
 <ol>
 <li><strong>日志生成</strong>: Spring Boot 应用使用 KafkaAppender 发送日志</li>
 <li><strong>消息队列</strong>: Kafka 作为缓冲，提供削峰填谷能力</li>
