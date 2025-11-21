@@ -846,266 +846,70 @@
 <main class="main-content">
     <div class="container max-w-4xl">
         <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
-            <h1>监控组件</h1>
-<h2>简介</h2>
-<p>监控组件为Sprival项目提供完整的应用监控解决方案，基于Spring Boot Actuator、Micrometer、Prometheus和Grafana构建现代化的监控体系，实现应用性能监控、健康检查、告警通知和可视化展示。</p>
-<h2>功能特性</h2>
-<ul>
-<li><strong>应用监控</strong>: 基于Spring Boot Actuator的应用健康检查和指标暴露</li>
-<li><strong>指标收集</strong>: 使用Micrometer统一收集JVM、HTTP、数据库等各类指标</li>
-<li><strong>时序存储</strong>: 基于Prometheus的指标存储和查询</li>
-<li><strong>可视化展示</strong>: 通过Grafana实现监控数据的可视化展示</li>
-<li><strong>智能告警</strong>: 基于AlertManager的告警路由和通知</li>
-<li><strong>日志监控</strong>: 结构化日志收集和分析</li>
-<li><strong>容器化部署</strong>: 支持Docker和Kubernetes部署</li>
-</ul>
-<h2>环境要求</h2>
-<ul>
-<li><strong>Java版本</strong>: 1.8+</li>
-<li><strong>Spring Boot版本</strong>: 2.7.18</li>
-<li><strong>Prometheus版本</strong>: 2.40+</li>
-<li><strong>Grafana版本</strong>: 9.0+</li>
-<li><strong>AlertManager版本</strong>: 0.25+</li>
-</ul>
+            <h1>监控</h1>
+<blockquote>
+<p>基于 Prometheus + Grafana 构建的监控系统，使用 Python 进行初始化(setup)，方便维护和升级。</p>
+</blockquote>
 <h2>快速开始</h2>
-<h3>安装步骤</h3>
+<p>启动monitoring服务</p>
+<pre><code>cd docker/sprival-monitoring
+docker compose up setup
+docker compose up -d
+</code></pre>
+<p>访问服务：<br />
+- Grafana：http://localhost:3000/<br />
+- Prometheus：http://localhost:9090/</p>
+<p>默认登录信息：<br />
+- Grafana 用户名：<code>admin</code><br />
+- Grafana 密码：<code>workdock</code></p>
+<h2>整体架构</h2>
+<pre><code>┌─────────────────────┐
+│  Spring Boot App    │
+│  (Actuator)         │
+│  /api/actuator/     │
+│  prometheus         │
+└──────────┬──────────┘
+           │ 暴露指标端点
+           ↓
+┌─────────────────────┐
+│    Prometheus       │
+│  - 抓取指标         │
+│  - 时序存储         │
+│  - 查询引擎         │
+└──────────┬──────────┘
+           │ 查询数据
+           ↓
+┌─────────────────────┐
+│      Grafana        │
+│  - Dashboard        │
+│  - Alerting         │
+│  - Explore          │
+└─────────────────────┘
+           ↑
+           │ Setup 初始化
+           │
+┌─────────────────────┐
+│   Setup Service     │
+│  - 添加数据源        │
+│  - 导入 Dashboard   │
+└─────────────────────┘
+</code></pre>
+<h2>数据流</h2>
 <ol>
-<li>项目已配置所需依赖，无需额外添加</li>
-<li>启动Prometheus、Grafana、AlertManager服务</li>
-<li>配置application.properties中的监控相关配置</li>
-<li>启动Spring Boot应用</li>
-<li>访问监控面板查看指标</li>
+<li><strong>指标暴露</strong>: Spring Boot 应用通过 Actuator 暴露 Prometheus 格式的指标</li>
+<li><strong>指标抓取</strong>: Prometheus 定期抓取应用指标并存储到时序数据库</li>
+<li><strong>数据查询</strong>: Grafana 从 Prometheus 查询数据</li>
+<li><strong>可视化展示</strong>: Grafana 通过 Dashboard 提供丰富的监控可视化</li>
 </ol>
-<h3>基础配置</h3>
-<pre><code class="language-properties"># 启用所有监控端点
-management.endpoints.web.exposure.include = *
-
-# 启用Prometheus指标导出
-management.metrics.export.prometheus.enabled = true
-
-# 自定义Actuator端点路径
-management.endpoints.web.base-path = /api/actuator
-
-# 健康检查详细信息
-management.endpoint.health.show-details = always
-management.endpoint.health.show-components = always
-
-# 应用信息配置
-management.info.env.enabled = true
-management.info.build.enabled = true
-management.info.git.enabled = true
-</code></pre>
-<h3>基础使用</h3>
-<pre><code class="language-java">// 自定义业务指标
-@Component
-public class BusinessMetrics {
-
-    private final MeterRegistry meterRegistry;
-    private final Counter requestCounter;
-
-    public BusinessMetrics(MeterRegistry meterRegistry) {
-        this.meterRegistry = meterRegistry;
-        this.requestCounter = Counter.builder(&quot;business.requests.total&quot;)
-            .description(&quot;Total number of business requests&quot;)
-            .register(meterRegistry);
-    }
-
-    public void recordRequest() {
-        requestCounter.increment();
-    }
-}
-</code></pre>
-<h2>配置说明</h2>
-<h3>配置参数</h3>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>类型</th>
-<th>默认值</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>management.endpoints.web.exposure.include</code></td>
-<td>String</td>
-<td>health,info</td>
-<td>暴露的监控端点</td>
-</tr>
-<tr>
-<td><code>management.metrics.export.prometheus.enabled</code></td>
-<td>Boolean</td>
-<td>false</td>
-<td>是否启用Prometheus指标导出</td>
-</tr>
-<tr>
-<td><code>management.endpoint.health.show-details</code></td>
-<td>String</td>
-<td>never</td>
-<td>健康检查详情显示策略</td>
-</tr>
-<tr>
-<td><code>management.metrics.tags.application</code></td>
-<td>String</td>
-<td>-</td>
-<td>应用标签</td>
-</tr>
-<tr>
-<td><code>management.metrics.tags.environment</code></td>
-<td>String</td>
-<td>-</td>
-<td>环境标签</td>
-</tr>
-</tbody>
-</table>
-<h3>高级配置</h3>
-<pre><code class="language-properties"># JVM指标配置
-management.metrics.enable.jvm = true
-management.metrics.enable.process = true
-management.metrics.enable.system = true
-
-# Web指标配置
-management.metrics.web.server.request.autotime.enabled = true
-management.metrics.web.client.request.autotime.enabled = true
-
-# 数据源指标配置
-management.metrics.enable.hikaricp = true
-management.metrics.enable.jdbc = true
-
-# 自定义指标标签
-management.metrics.tags.application = sprival
-management.metrics.tags.environment = ${spring.profiles.active:dev}
-management.metrics.tags.version = @project.version@
-</code></pre>
-<h2>使用示例</h2>
-<h3>基本用法</h3>
-<pre><code class="language-java">// 自定义健康检查
-@Component
-public class CustomHealthIndicator implements HealthIndicator {
-
-    @Override
-    public Health health() {
-        // 检查外部服务连接
-        if (checkExternalService()) {
-            return Health.up()
-                .withDetail(&quot;external-service&quot;, &quot;Available&quot;)
-                .build();
-        } else {
-            return Health.down()
-                .withDetail(&quot;external-service&quot;, &quot;Unavailable&quot;)
-                .build();
-        }
-    }
-
-    private boolean checkExternalService() {
-        // 实际的健康检查逻辑
-        return true;
-    }
-}
-</code></pre>
-<h3>高级用法</h3>
-<pre><code class="language-java">// 自定义指标收集
-@Service
-public class MetricsService {
-
-    private final MeterRegistry meterRegistry;
-    private final Timer businessTimer;
-    private final Counter errorCounter;
-
-    public MetricsService(MeterRegistry meterRegistry) {
-        this.meterRegistry = meterRegistry;
-        this.businessTimer = Timer.builder(&quot;business.operation.duration&quot;)
-            .description(&quot;Business operation duration&quot;)
-            .register(meterRegistry);
-        this.errorCounter = Counter.builder(&quot;business.errors.total&quot;)
-            .description(&quot;Total business errors&quot;)
-            .register(meterRegistry);
-    }
-
-    public void recordOperation(Runnable operation) {
-        Timer.Sample sample = Timer.start(meterRegistry);
-        try {
-            operation.run();
-        } catch (Exception e) {
-            errorCounter.increment();
-            throw e;
-        } finally {
-            sample.stop(businessTimer);
-        }
-    }
-}
-</code></pre>
-<h2>监控</h2>
-<h3>健康检查</h3>
-<pre><code class="language-bash"># 查看应用健康状态
-curl http://localhost:8338/api/actuator/health
-
-# 查看所有监控端点
-curl http://localhost:8338/api/actuator
-
-# 查看Prometheus指标
-curl http://localhost:8338/api/actuator/prometheus
-</code></pre>
-<h3>监控指标</h3>
-<table>
-<thead>
-<tr>
-<th>指标名称</th>
-<th>类型</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>jvm_memory_used_bytes</code></td>
-<td>Gauge</td>
-<td>JVM内存使用量</td>
-</tr>
-<tr>
-<td><code>jvm_gc_pause_seconds</code></td>
-<td>Timer</td>
-<td>GC暂停时间</td>
-</tr>
-<tr>
-<td><code>http_server_requests_seconds</code></td>
-<td>Timer</td>
-<td>HTTP请求处理时间</td>
-</tr>
-<tr>
-<td><code>hikaricp_connections_active</code></td>
-<td>Gauge</td>
-<td>数据库连接池活跃连接数</td>
-</tr>
-<tr>
-<td><code>system_cpu_usage</code></td>
-<td>Gauge</td>
-<td>系统CPU使用率</td>
-</tr>
-<tr>
-<td><code>process_uptime_seconds</code></td>
-<td>Gauge</td>
-<td>应用运行时间</td>
-</tr>
-</tbody>
-</table>
-<h2>常见问题</h2>
-<p><strong>Q: 如何自定义监控指标？</strong><br />
-A: 通过注入MeterRegistry，使用Counter、Timer、Gauge等指标类型收集自定义业务指标。</p>
-<p><strong>Q: 监控数据如何存储？</strong><br />
-A: 使用Prometheus作为时序数据库存储监控数据，支持高效查询和聚合。</p>
-<p><strong>Q: 如何配置告警规则？</strong><br />
-A: 在Prometheus中配置告警规则文件，通过AlertManager处理告警通知。</p>
-<p><strong>Q: 监控数据保留多长时间？</strong><br />
-A: 默认保留15天，可通过Prometheus配置调整保留策略。</p>
-<p><strong>Q: 如何优化监控性能？</strong><br />
-A: 合理设置指标收集频率，避免收集过多不必要的指标，使用采样减少数据量。</p>
-<h2>参考文档</h2>
+<h2>预配置 Dashboard</h2>
+<p>系统已预配置以下监控面板：</p>
 <ul>
-<li><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html">Spring Boot Actuator官方文档</a></li>
-<li><a href="https://micrometer.io/docs">Micrometer官方文档</a></li>
-<li><a href="https://prometheus.io/docs/">Prometheus官方文档</a></li>
-<li><a href="https://grafana.com/docs/">Grafana官方文档</a></li>
+<li><strong>JVM Dashboard</strong>: JVM 内存、GC、线程等监控</li>
+<li><strong>Feign Dashboard</strong>: Feign 客户端调用监控</li>
+<li><strong>Jetty Dashboard</strong>: Jetty 服务器连接和请求监控</li>
+<li><strong>HikariCP Dashboard</strong>: 数据库连接池监控</li>
+<li><strong>Lettuce Dashboard</strong>: Redis 客户端监控</li>
+<li><strong>RabbitMQ Dashboard</strong>: RabbitMQ 消息队列监控</li>
 </ul>
         </article>
     </div>
