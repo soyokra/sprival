@@ -2,6 +2,8 @@ package com.soyokra.sprival.support.logging;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -11,11 +13,12 @@ import org.apache.kafka.common.errors.InterruptException;
 import org.apache.kafka.common.errors.RetriableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.Layout;
 import ch.qos.logback.core.encoder.Encoder;
-import ch.qos.logback.core.layout.EchoLayout;
 import ch.qos.logback.core.util.OptionHelper;
 
 /**
@@ -31,7 +34,20 @@ import ch.qos.logback.core.util.OptionHelper;
  * </ul>
  * 
  * <p>
- * 日志格式化支持 Encoder 或 Layout，默认使用 EchoLayout。
+ * 日志格式化支持 Encoder 或 Layout。如果未配置，默认使用 JSON 格式输出，包含以下字段：
+ * <ul>
+ * <li>timestamp：日志时间戳（毫秒）</li>
+ * <li>level：日志级别</li>
+ * <li>logger：日志记录器名称</li>
+ * <li>message：日志消息</li>
+ * <li>thread：线程名称</li>
+ * <li>mdc：MDC 上下文信息（如果存在）</li>
+ * <li>exception：异常信息（如果存在，包含类名、消息和堆栈跟踪）</li>
+ * <li>caller：调用者信息（如果可用，包含类名、方法名、文件名和行号）</li>
+ * </ul>
+ * 
+ * <p>
+ * JSON 格式与 Logstash 的 JSON codec 兼容，便于日志解析和索引。
  * 
  * <p>
  * 异常处理：发送失败时仅记录错误日志，不会影响应用运行。
@@ -69,6 +85,9 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     // 日志格式化
     private Encoder<ILoggingEvent> encoder;
     private Layout<ILoggingEvent> layout;
+
+    // JSON 序列化器
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     // Kafka Producer 实例
     private Producer<String, String> producer;
@@ -220,26 +239,109 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     }
 
     /**
-     * 格式化日志事件为字符串
+     * 格式化日志事件为 JSON 字符串
      * 
      * @param event 日志事件
-     * @return 格式化后的日志字符串
+     * @return 格式化后的 JSON 字符串
      */
     private String formatLogEvent(ILoggingEvent event) {
         try {
+            // 如果配置了 encoder 或 layout，优先使用它们
             if (encoder != null) {
                 byte[] bytes = encoder.encode(event);
                 return new String(bytes, StandardCharsets.UTF_8);
             } else if (layout != null) {
                 return layout.doLayout(event);
             } else {
-                // 默认格式化
-                return new EchoLayout<ILoggingEvent>().doLayout(event);
+                // 默认使用 JSON 格式
+                return formatLogEventAsJson(event);
             }
         } catch (Exception e) {
             addError("Failed to format log event", e);
             return null;
         }
+    }
+
+    /**
+     * 将日志事件格式化为 JSON 字符串
+     * 
+     * @param event 日志事件
+     * @return JSON 格式的日志字符串
+     */
+    private String formatLogEventAsJson(ILoggingEvent event) {
+        try {
+            Map<String, Object> logMap = new HashMap<>();
+            
+            // 基本字段
+            logMap.put("timestamp", event.getTimeStamp());
+            logMap.put("level", event.getLevel().toString());
+            logMap.put("logger", event.getLoggerName());
+            logMap.put("message", event.getFormattedMessage());
+            logMap.put("thread", event.getThreadName());
+            
+            // MDC 上下文信息
+            if (event.getMDCPropertyMap() != null && !event.getMDCPropertyMap().isEmpty()) {
+                logMap.put("mdc", event.getMDCPropertyMap());
+            }
+            
+            // 异常信息
+            if (event.getThrowableProxy() != null) {
+                ThrowableProxy throwableProxy = (ThrowableProxy) event.getThrowableProxy();
+                Map<String, Object> exceptionMap = new HashMap<>();
+                exceptionMap.put("class", throwableProxy.getClassName());
+                exceptionMap.put("message", throwableProxy.getMessage());
+                
+                // 堆栈跟踪
+                if (throwableProxy.getStackTraceElementProxyArray() != null
+                        && throwableProxy.getStackTraceElementProxyArray().length > 0) {
+                    String[] stackTrace = new String[throwableProxy.getStackTraceElementProxyArray().length];
+                    for (int i = 0; i < throwableProxy.getStackTraceElementProxyArray().length; i++) {
+                        stackTrace[i] = throwableProxy.getStackTraceElementProxyArray()[i].toString();
+                    }
+                    exceptionMap.put("stackTrace", stackTrace);
+                }
+                
+                logMap.put("exception", exceptionMap);
+            }
+            
+            // 调用者信息（可选）
+            if (event.getCallerData() != null && event.getCallerData().length > 0) {
+                StackTraceElement caller = event.getCallerData()[0];
+                Map<String, Object> callerMap = new HashMap<>();
+                callerMap.put("class", caller.getClassName());
+                callerMap.put("method", caller.getMethodName());
+                callerMap.put("file", caller.getFileName());
+                callerMap.put("line", caller.getLineNumber());
+                logMap.put("caller", callerMap);
+            }
+            
+            return objectMapper.writeValueAsString(logMap);
+        } catch (Exception e) {
+            addError("Failed to format log event as JSON", e);
+            // 降级为简单格式
+            return String.format("{\"timestamp\":%d,\"level\":\"%s\",\"logger\":\"%s\",\"message\":\"%s\"}",
+                    event.getTimeStamp(),
+                    event.getLevel().toString(),
+                    escapeJson(event.getLoggerName()),
+                    escapeJson(event.getFormattedMessage()));
+        }
+    }
+
+    /**
+     * 转义 JSON 字符串中的特殊字符
+     * 
+     * @param str 原始字符串
+     * @return 转义后的字符串
+     */
+    private String escapeJson(String str) {
+        if (str == null) {
+            return "";
+        }
+        return str.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 
     /**

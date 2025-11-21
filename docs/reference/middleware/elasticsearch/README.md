@@ -2,8 +2,7 @@
 
 ## 组件说明
 
-官方组件Spring Data Elasticsearch
-- [Spring Data Elasticsearch](https://spring.io/projects/spring-data-elasticsearch)
+采用官方组件[Spring Data Elasticsearch](https://spring.io/projects/spring-data-elasticsearch)
 
 ## 配置说明
 

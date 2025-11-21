@@ -33,3 +33,17 @@ services:
       - "9090:9090"
     networks:
       - frontend
+
+  ### Grafana Setup ###################################################
+  setup:
+    build:
+      context: ./setup
+    depends_on:
+      - grafana
+    environment:
+      - GRAFANA_HOST=grafana
+      - GRAFANA_PORT=3000
+      - GRAFANA_ADMIN_PASSWORD=workdock
+      - PROMETHEUS_URL=http://prometheus:9090
+    networks:
+      - frontend

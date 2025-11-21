@@ -10,9 +10,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # 复制应用代码
 COPY main.py .
-COPY es_setup/ ./es_setup/
-COPY roles/ ./roles/
-COPY templates/ ./templates/
+COPY grafana_setup/ ./grafana_setup/
+COPY dashboard-config/ ./dashboard-config/
 
 # 设置入口点
 ENTRYPOINT ["python", "main.py"]
+

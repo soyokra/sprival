@@ -2,8 +2,7 @@
 
 ## 组件说明
 
-官方组件Spring Kafka
-- [Spring Kafka](https://spring.io/projects/spring-kafka)
+采用官方组件[Spring Kafka](https://spring.io/projects/spring-kafka)
 
 ## 配置说明
 
