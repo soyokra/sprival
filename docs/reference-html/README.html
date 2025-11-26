@@ -846,7 +846,45 @@
 <main class="main-content">
     <div class="container max-w-4xl">
         <article class="markdown-content bg-white rounded-lg shadow p-6 md:p-8">
-            
+            <h1>快速开始</h1>
+<h2>拉取项目</h2>
+<pre><code class="language-bash">git clone https://github.com/soyokra/sprival.git
+</code></pre>
+<h2>启动服务</h2>
+<h3>启动中间件服务</h3>
+<pre><code>cd docker/sprival-middleware
+docker compose up -d
+</code></pre>
+<h3>启动日志服务</h3>
+<pre><code>cd docker/sprival-logging
+docker compose up setup
+docker compose up -d
+</code></pre>
+<ul>
+<li>Kibana：http://localhost:5601/</li>
+<li>ElasticSearch：http://localhost:9200/</li>
+</ul>
+<h3>启动监控服务</h3>
+<pre><code>cd docker/sprival-monitoring
+docker compose up setup
+docker compose up -d
+</code></pre>
+<ul>
+<li>Grafana：http://localhost:3000/</li>
+<li>Prometheus：http://localhost:9090/</li>
+</ul>
+<h2>启动应用部署服务</h2>
+<pre><code>cd docker/sprival-deployment
+docker compose up -d
+</code></pre>
+<ul>
+<li>gitlab: http://localhost/</li>
+</ul>
+<h2>启动应用</h2>
+<pre><code>cd sprival &amp;&amp; mvn clean package
+java -jar target/sprival-*.jar
+</code></pre>
+<p>http://localhost:8338/health</p>
         </article>
     </div>
 </main>
