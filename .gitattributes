@@ -38,3 +38,6 @@
 *.ico binary
 *.zip binary
 *.tar.gz binary
+
+# python 脚本忽略统计
+scripts/** linguist-vendored
