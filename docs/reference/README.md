@@ -16,7 +16,7 @@ docker compose up -d
 ### 启动日志服务
 ```
 cd docker/sprival-logging
-docker compose up setup
+docker compose up setup -d
 docker compose up -d
 ```
 

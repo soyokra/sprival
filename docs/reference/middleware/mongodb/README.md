@@ -4,6 +4,19 @@
 
 采用官方组件[Spring Data MongoDB](https://spring.io/projects/spring-data-mongodb)
 
+## 架构设计
+```
+MongoDB 服务器
+    ↓
+MongoClient（原生驱动，连接管理）
+    ↓
+MongoDbFactory（Spring 工厂，数据库实例管理）
+    ↓
+MongoTemplate（Spring 核心操作类，提供 CRUD/查询封装）
+    ↓
+MongoRepository（业务层接口，简化开发）
+```
+
 ## 配置说明
 
 ### 配置方式
